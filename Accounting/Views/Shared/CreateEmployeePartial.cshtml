@@ -1,0 +1,43 @@
+﻿@using Accounting.DAL.Interfaces.Base
+@using Accounting.Domain.ViewModels
+@using Accounting.Domain.Models
+@model CreateEmployeeViewModel
+@inject IBaseProvider<Group> groupProvider
+@{
+    var Groups = await groupProvider.GetAll();
+}
+<div class="modal" tabindex="-1" id="createEmployeeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Додати</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="Create" asp-controller="Employee" id="createEmployee">
+                    <label asp-for="Name" class="form-label">ПІБ</label>
+                    <input type="text" asp-for="Name" class="form-control p-2"/>
+                    <label asp-for="InnerId" class="form-label">Внутрішній номер</label>
+                    <input type="text" asp-for="InnerId" class="form-control p-2"/>
+                    <label asp-for="IsBet" class="form-label">Ставочник</label>
+                    <input type="checkbox" asp-for="IsBet" class="form-check p-2" />
+                    <label asp-for="Bet" class="form-label">Ставка</label>
+                    <input type="text" asp-for="Bet"  class="form-control p-2"/> 
+                    <select asp-for="GroupId" class="form-select">
+                        @foreach (var item in Groups.Data)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form="createEmployee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>

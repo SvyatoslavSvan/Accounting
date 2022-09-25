@@ -1,0 +1,29 @@
+﻿@using Accounting.DAL.Interfaces.Base
+@using Accounting.DAL.Providers
+@using Accounting.Domain.Models
+@using Accounting.Domain.Models.Base
+@using Accounting.Domain.ViewModels
+@model UpdateEmployeeViewModel
+@inject IBaseProvider<Group> groupProvider;
+@{
+    var Groups = await groupProvider.GetAll();
+}
+<form asp-action="Update" asp-controller="Employee" method="post" id="updateEmployee">
+    <input type="hidden"  asp-for="IsBet" id="updateIsBet"/>
+    <input type="hidden" asp-for="Id" />
+    <label asp-for="Name" class="form-label">ПІБ</label>
+    <input type="text" asp-for="Name" class="form-control p-2" />
+    <label asp-for="InnerId" class="form-label">Внутрішній номер</label>
+    <input type="text" asp-for="InnerId" class="form-control p-2" />
+    @if (Model.IsBet)
+    {
+        <label asp-for="Bet" class="form-label">Ставка</label>
+        <input type="text" asp-for="Bet" id="updateBetInput" class="form-control p-2" />
+    }
+    <select asp-for="GroupId" class="form-select">
+        @foreach (var item in Groups.Data)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </select>
+</form>

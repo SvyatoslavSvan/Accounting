@@ -1,0 +1,84 @@
+﻿@using Accounting.Domain.ViewModels
+@using Accounting.Domain.Models.Base
+@model List<EmployeeBase>
+
+<div class="container m-auto">
+    <div class="col-md-12">
+        <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
+            <ul class="list-group">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item d-flex align-content-between">
+
+                        <div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Внутрішній номер: @item.InnerId </li>
+                                <li class="list-group-item">Група: @item.Group.Name</li>
+                                <li class="list-group-item">ПІБ: @item.Name</li>
+                            </ul>
+                        </div>
+                        <form asp-action="Delete" asp-controller="Employee" method="post">
+                             <input type="hidden" name="id" value="@item.Id"/>
+                             <button type="submit" class="btn btn-outline-danger mx-4">Видалити</button>
+                        </form>
+                        <button type="button" class="btn btn-outline-success mx-4" style="height: 40px" data-bs-toggle="modal" data-bs-target="#updateEmployeeModal" onclick="openUpdateModal('@item.Id')">Оновити</button>
+                    </li>
+                    
+                }
+            </ul>
+        </div>
+        <button type="button" class="btn btn-primary my-3 mx-auto" data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
+            Створити працівника
+        </button>
+        <button type="button" class="btn btn-primary my-3 mx-auto" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+            Створити групу
+        </button>
+    </div>
+   
+</div>
+@*modal for update*@
+<div class="modal fade" id="updateEmployeeModal" tabindex="-1" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form="updateEmployee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("CreateEmployeePartial", new CreateEmployeeViewModel());
+@await Html.PartialAsync("CreateGroupPartial", new GroupViewModel());
+<script type="text/javascript">
+    function openUpdateModal(Id){
+        const url = `/Employee/Update/${Id}`;
+        const modal = $("#updateEmployeeModal");
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(response){
+                modal.find(".modal-body").html(response);
+                modal.modal("show");
+            },
+        });
+    }
+    var isBet = document.getElementById('IsBet'); 
+    if (isBet.checked == false) {
+        document.getElementById('Bet').disabled = true; 
+    }
+    isBet.onchange = function () {
+        if (isBet.checked == false) {
+            document.getElementById('Bet').disabled = true;
+        } else {
+            document.getElementById('Bet').disabled = false;
+        }
+    }
+</script>
