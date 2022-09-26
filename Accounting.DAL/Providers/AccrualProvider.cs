@@ -4,20 +4,19 @@ using Accounting.Domain.Models;
 
 namespace Accounting.DAL.Providers
 {
-#nullable disable
-    public class DocumentProvider : IBaseProvider<Document>
+    public class AccrualProvider : IBaseProvider<Accrual>
     {
-        private readonly IBaseRepository<Document> _documentRepository;
-        public DocumentProvider(IBaseRepository<Document> documentRepository)
+        private readonly IBaseRepository<Accrual> _accrualRepository;
+        public AccrualProvider(IBaseRepository<Accrual> accrualRepository)
         {
-            _documentRepository = documentRepository;
+            _accrualRepository = accrualRepository;
         }
 
-        public async Task<BaseResult<bool>> Create(Document entity)
+        public async Task<BaseResult<bool>> Create(Accrual entity)
         {
             try
             {
-                await _documentRepository.Add(entity);
+                await _accrualRepository.Add(entity);
                 return new BaseResult<bool>(true, true);
             }
             catch (Exception)
@@ -30,7 +29,7 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                await _documentRepository.Delete(id);
+                await _accrualRepository.Delete(id);
                 return new BaseResult<bool>(true, true);
             }
             catch (Exception)
@@ -39,37 +38,37 @@ namespace Accounting.DAL.Providers
             }
         }
 
-        public async Task<BaseResult<List<Document>>> GetAll()
+        public async Task<BaseResult<List<Accrual>>> GetAll()
         {
             try
             {
-                var documents = await _documentRepository.ReadAll();
-                return new BaseResult<List<Document>>(false, documents.ToList());
+                var accruals = await _accrualRepository.ReadAll();
+                return new BaseResult<List<Accrual>>(true, accruals.ToList());
             }
             catch (Exception)
             {
-                return new BaseResult<List<Document>>(false, null);
+                return new BaseResult<List<Accrual>>(false, null);
             }
         }
 
-        public async Task<BaseResult<Document>> GetById(Guid id)
+        public async Task<BaseResult<Accrual>> GetById(Guid id)
         {
             try
             {
-                var document = await _documentRepository.ReadById(id);
-                return new BaseResult<Document>(true, document);
+                var accrual = await _accrualRepository.ReadById(id);
+                return new BaseResult<Accrual>(true, accrual);
             }
             catch (Exception)
             {
-                return new BaseResult<Document>(false, null);
+                return new BaseResult<Accrual>(true, null);
             }
         }
 
-        public async Task<BaseResult<bool>> Update(Document entity)
+        public async Task<BaseResult<bool>> Update(Accrual entity)
         {
             try
             {
-                await _documentRepository.Update(entity);
+                await _accrualRepository.Update(entity);
                 return new BaseResult<bool>(true, true);
             }
             catch (Exception)

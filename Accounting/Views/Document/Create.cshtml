@@ -1,0 +1,97 @@
+﻿@using Accounting.DAL.Interfaces
+@using Accounting.Domain.ViewModels
+@model DocumentViewModel
+@inject IEmployeeProvider employeeProvider
+@{
+    var employees = await employeeProvider.GetNotBetEmployees();
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 m-auto mb-4">
+            <form method="post" asp-action="Create" asp-controller="Document">
+                <label class="form-label" asp-for="Name">Назва документа</label>
+                <input type="text" asp-for="Name" class="form-control"/>
+                <label class="form-label" asp-for="Name">Дата Створення</label>
+                <input type="datetime-local" asp-for="DateCreate" class="form-control"/>
+                <button type="submit" class="btn btn-outline-primary m-auto">Сохранити</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Внутрішній номер</th>
+                            <th scope="col">ПІБ</th>
+                            <th scope="col">Начислення</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
+        </div>
+    </div>
+</div>
+@*
+modal*@
+<div class="modal fade" id="addEmployeeToDocumentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Додати працівника в документ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <ul class="list-group">
+                                @foreach (var item in employees.Data)
+                                {
+                                    <li class="list-group-item">
+                                        <h4>Номер: @item.InnerId</h4>
+                                        <h5>ПІБ: @item.Name</h5>
+                                        <form asp-action="AddEmployeeToDocument" asp-controller="Document" class="my-1" id="@item.Id">
+                                            <input type="hidden" name="EmployeeId" value="@item.Id"/>
+                                            <label for="Accrual" class="form-label">Начислення</label>
+                                            <input type="number" class="form-control" name="accrual"/>
+                                            <button type="button" class="btn btn-primary my-3" onclick="sendForm('@item.Id')">Додати</button>
+                                        </form>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function sendForm(formId)
+    {
+        $.ajax({
+            url: '/Document/AddEmployeeToDocument',
+            type: 'POST',
+            dataType: 'html',
+            data: $("#" + formId).serialize(),
+            success: function(response){
+
+            },
+            error: function(response){
+                alert('Error while send form')
+            }
+        });
+    }
+</script>

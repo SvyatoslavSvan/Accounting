@@ -14,7 +14,6 @@
         public Guid DocumentId { get; private set; }
         public Document Document { get; private set; }
         public Guid EmployeeId { get; private set; }
-        public NotBetEmployee Employee { get; set; }
-
+        public NotBetEmployee Employee { get; private set; }
     }
 }

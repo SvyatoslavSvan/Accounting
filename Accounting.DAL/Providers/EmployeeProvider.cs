@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using System.Runtime.CompilerServices;
 
 namespace Accounting.DAL.Providers
 {
@@ -164,6 +165,32 @@ namespace Accounting.DAL.Providers
                 return new BaseResult<bool>(false, false);
             }
 
+        }
+
+        public async Task<BaseResult<NotBetEmployee>> getNotBetEmployee(Guid id)
+        {
+            try
+            {
+                var employee = await _notBetEmployeeRepository.ReadById(id);
+                return new BaseResult<NotBetEmployee>(true, employee);
+            }
+            catch (Exception)
+            {
+                return new BaseResult<NotBetEmployee>(false, null);
+            }
+        }
+
+        public async Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployees()
+        {
+            try
+            {
+                var employees = await _notBetEmployeeRepository.ReadAll();
+                return new BaseResult<IEnumerable<NotBetEmployee>>(true, employees);
+            }
+            catch (Exception)
+            {
+                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null);
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Accounting.DAL.Repositories
         
         public async Task Add(Document entity)
         {
+            _dbContext.AttachRange(entity.Employees);
             await _dbContext.Documents.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
         }

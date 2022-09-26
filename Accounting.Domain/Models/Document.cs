@@ -3,6 +3,8 @@
     public class Document
     {
 #nullable disable
+       
+        
         public Document(string name, DateTime dateCreate)
         {
             Name = name;
@@ -10,16 +12,27 @@
         }
         public Guid Id { get; private set; }
         public string Name { get; private set; }
-        public List<NotBetEmployee> Employees { get; set; }
+        public List<NotBetEmployee> Employees { get; private set; } 
         public DateTime DateCreate { get; private set; }  
         public List<Accrual> Accruals { get; private set; }
         public void AddEmployeesToDocument(List<NotBetEmployee> employees)
         {
-            if (employees.Count() == 0)
+            if (Employees is null)
                 Employees = employees;
             else
-              Employees.AddRange(employees);
+                Employees.AddRange(employees);
         }
-
+        public void SetId(Guid newId)
+        {
+            if (Id == Guid.Empty)
+                Id = newId;
+        }
+        public void AddAccrualsToDocument(List<Accrual> accruals)
+        {
+            if(this.Accruals is null)
+                this.Accruals = accruals;
+            else
+                this.Accruals.AddRange(accruals);
+        }
     }
 }
