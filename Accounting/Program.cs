@@ -4,6 +4,8 @@ using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Providers;
 using Accounting.DAL.Repositories;
 using Accounting.Domain.Models;
+using Accounting.Services;
+using Accounting.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,7 @@ builder.Services.AddTransient<IBaseRepository<Document>, DocumentRepository>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
 builder.Services.AddTransient<IBaseProvider<Document>, DocumentProvider>();
+builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

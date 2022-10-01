@@ -1,10 +1,7 @@
 ﻿@using Accounting.DAL.Interfaces
 @using Accounting.Domain.ViewModels
 @model DocumentViewModel
-@inject IEmployeeProvider employeeProvider
-@{
-    var employees = await employeeProvider.GetNotBetEmployees();
-}
+
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
@@ -40,38 +37,4 @@
 </div>
 @*
 modal*@
-<div class="modal fade" id="addEmployeeToDocumentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Додати працівника в документ</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-11">
-                            <ul class="list-group">
-                                @foreach (var item in employees.Data)
-                                {
-                                    <li class="list-group-item">
-                                        <h4>Номер: @item.InnerId</h4>
-                                        <h5>ПІБ: @item.Name</h5>
-                                        <form asp-action="AddEmployeeToDocument" asp-controller="Document" class="my-1" id="@item.Id">
-                                            <input type="hidden" name="employeeId" value="@item.Id"/>
-                                            <button type="button" class="btn btn-primary my-3" onclick="sendForm('@item.Id', '/Document/AddEmployeeToDocument')">Додати</button>
-                                        </form>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<partial name="AddEmployeeToDocumentPartial"></partial>

@@ -57,6 +57,8 @@ namespace Accounting.DAL.Providers
             try
             {
                 var document = await _documentRepository.ReadById(id);
+                if (document is null)
+                    return new BaseResult<Document>(false, null);
                 return new BaseResult<Document>(true, document);
             }
             catch (Exception)

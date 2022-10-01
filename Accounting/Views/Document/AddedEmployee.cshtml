@@ -2,18 +2,19 @@
 @model NotBetEmployee
 @{
     var formId = Model.Id + "form";
+    var formTdId = Model.Id + "tdForm";
 }
 <tr>
     <td>@Model.InnerId</td>
     <td>@Model.Name</td>
-    <td>
+    <td id="@formTdId">
        <div class="container">
            <div class="row">
                <div class="col-md-4">
                     <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
                         <input type="hidden" name="EmployeeId" value="@Model.Id" />
                         <input type="number" name="Ammount" class="form-control" />
-                        <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee')" class="btn btn-info mx-auto">Начислити</button>
+                        <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee', '@formTdId')" class="btn btn-info mx-auto">Начислити</button>
                     </form>
                </div>
            </div>

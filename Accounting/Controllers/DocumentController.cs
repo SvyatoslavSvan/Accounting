@@ -4,6 +4,7 @@ using Accounting.Domain.Models;
 using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 using Accounting.Extensions;
+using Accounting.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -13,34 +14,60 @@ namespace Accounting.Controllers
     {
         private readonly IBaseProvider<Document> _documentProvider;
         private readonly IEmployeeProvider _employeeProvider;
-        private readonly ISession _session;
         private readonly IBaseProvider<Accrual> _accrualProvider;
+        private readonly ISessionDocumentService _sessionDocumentService;
         private const string sessionDocumentKey = "sessionDocumentKey";
-        public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IServiceProvider provider, IBaseProvider<Accrual> accrualProvider)
+        public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IBaseProvider<Accrual> accrualProvider, ISessionDocumentService sessionDocumentService)
         {
             _documentProvider = documentProvider;
             _employeeProvider = employeeProvider;
-            _session = provider.GetRequiredService<IHttpContextAccessor>().HttpContext.Session;
             _accrualProvider = accrualProvider;
+            _sessionDocumentService = sessionDocumentService;
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Documents()
         {
-            var document = new SessionDocument();
-            _session.SetJson(sessionDocumentKey, document);
-            return View(new DocumentViewModel() { DateCreate = DateTime.Now});  
+            var getAllResult = await _documentProvider.GetAll();
+            if (getAllResult.Succed)
+                return View(getAllResult.Data);
+            return View("NotFound");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Document(Guid id)
+        {
+            var getByIdResult = await _documentProvider.GetById(id);
+            if (getByIdResult.Succed)
+                return View(getByIdResult);
+            return BadRequest();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleteResult = await _documentProvider.Delete(id);
+            if (deleteResult.Succed)
+                return RedirectToAction(nameof(Documents));
+            return BadRequest();
+        }
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            if (await _sessionDocumentService.CreateSessionDocument())
+                return View(new DocumentViewModel() { DateCreate = DateTime.Now });
+            return BadRequest();
         }
         [HttpPost]
         public async Task<IActionResult> Create(DocumentViewModel documentViewModel)
         {
             if (ModelState.IsValid)
             {
-                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
-                var document = new Document(documentViewModel.Name, documentViewModel.DateCreate);
-                document.AddEmployeesToDocument(this.MapToListFromSessionEmployee(sessionDocument.Employees));
+                var document = _sessionDocumentService.GetDocument(documentViewModel);
                 var createResult = await _documentProvider.Create(document);
                 if (createResult.Succed)
-                    return Ok();
+                {
+                    await _sessionDocumentService.Clear();
+                    return RedirectToAction(nameof(Documents));
+                }
                 ModelState.AddModelError("", "Не вдалося створити документ");
             }
             return View();
@@ -52,10 +79,9 @@ namespace Accounting.Controllers
             var getByIdResult = await _employeeProvider.getNotBetEmployee(employeeId);
             if (getByIdResult.Succed)
             {
-                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey) ?? new SessionDocument();
-                sessionDocument.Employees.Add(this.MapToSessionEmployee(getByIdResult.Data));
-                _session.SetJson(sessionDocumentKey, sessionDocument);
-                return PartialView("AddedEmployee", getByIdResult.Data);
+                var addEmployeeToDocumentResult = await _sessionDocumentService.AddEmployee(getByIdResult.Data);
+                if (addEmployeeToDocumentResult)
+                    return PartialView("AddedEmployee", getByIdResult.Data);
             }
             return BadRequest();
         }
@@ -69,7 +95,7 @@ namespace Accounting.Controllers
                 accrual.AddEmployee(getByIdResult.Data);
                 var createAccrualResult = await _accrualProvider.Create(accrual);
                 if (createAccrualResult.Succed)
-                    return Ok();
+                    return PartialView("AddedAccrual",accrual.Ammount);
             }
             return BadRequest();
         }

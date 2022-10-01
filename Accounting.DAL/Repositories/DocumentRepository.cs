@@ -24,7 +24,7 @@ namespace Accounting.DAL.Repositories
             _dbContext.Documents.Remove(documnetToDelete);
         }
 
-        public async Task<IEnumerable<Document>> ReadAll() => await _dbContext.Documents.Include(x => x.Employees).ToListAsync();
+        public async Task<IEnumerable<Document>> ReadAll() => await _dbContext.Documents.ToListAsync();
 
         public async Task<Document> ReadById(Guid id) => await _dbContext.Documents.Include(x => x.Employees).SingleOrDefaultAsync(x => x.Id == id);
 
