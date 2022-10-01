@@ -1,23 +1,21 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
-using Accounting.Domain.JsonModels;
 using Accounting.Domain.Models;
 using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 using Accounting.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Diagnostics.SymbolStore;
 
 namespace Accounting.Controllers
 {
+#nullable disable
     public class DocumentController : Controller
     {
         private readonly IBaseProvider<Document> _documentProvider;
         private readonly IEmployeeProvider _employeeProvider;
         private readonly ISession _session;
         private readonly IBaseProvider<Accrual> _accrualProvider;
-        private const string sessionDocumentKey = "SESSIONDOCUMENTKEY";
+        private const string sessionDocumentKey = "sessionDocumentKey";
         public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IServiceProvider provider, IBaseProvider<Accrual> accrualProvider)
         {
             _documentProvider = documentProvider;
@@ -28,11 +26,9 @@ namespace Accounting.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            _session.SetJson(sessionDocumentKey, new SessionDocument());
-            return View(new DocumentViewModel()
-            {
-                DateCreate = DateTime.Now.ToLocalTime(),
-            });
+            var document = new SessionDocument();
+            _session.SetJson(sessionDocumentKey, document);
+            return View(new DocumentViewModel() { DateCreate = DateTime.Now});  
         }
         [HttpPost]
         public async Task<IActionResult> Create(DocumentViewModel documentViewModel)
@@ -41,44 +37,64 @@ namespace Accounting.Controllers
             {
                 var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
                 var document = new Document(documentViewModel.Name, documentViewModel.DateCreate);
-                List<NotBetEmployee> notBetEmployees = new List<NotBetEmployee>();
-                foreach (var item in sessionDocument.Employees)
-                {
-                    var employee = new NotBetEmployee(item.Name, item.InnerId);
-                    employee.SetId(item.Id);
-                    employee.AddAcruals(sessionDocument.Accruals);
-                    notBetEmployees.Add(employee);
-                }
-                document.AddEmployeesToDocument(notBetEmployees);
-                document.AddAccrualsToDocument(sessionDocument.Accruals);
+                document.AddEmployeesToDocument(this.MapToListFromSessionEmployee(sessionDocument.Employees));
                 var createResult = await _documentProvider.Create(document);
                 if (createResult.Succed)
-                    return RedirectToAction("Employee", "Employees");
-
+                    return Ok();
+                ModelState.AddModelError("", "Не вдалося створити документ");
             }
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> AddEmployeeToDocument(AddEmployeeToDocumentViewModel viewModel)
+        public async Task<IActionResult> AddEmployeeToDocument(Guid employeeId)
         {
-            var getEmployeeToAddResult = await _employeeProvider.getNotBetEmployee(viewModel.EmployeeId);
-            if (getEmployeeToAddResult.Succed)
+            var getByIdResult = await _employeeProvider.getNotBetEmployee(employeeId);
+            if (getByIdResult.Succed)
             {
-                var document = _session.GetJson<SessionDocument>(sessionDocumentKey) ?? new SessionDocument();
-                var accrual = new Accrual(DateTime.Now, viewModel.Accrual);
-                getEmployeeToAddResult.Data.AddAccrual(accrual);
-                var notBetEmployeeJsonModel = new NotBetEmployeeJsonModel();
-                notBetEmployeeJsonModel.Id = getEmployeeToAddResult.Data.Id;
-                notBetEmployeeJsonModel.InnerId = getEmployeeToAddResult.Data.InnerId;
-                notBetEmployeeJsonModel.Accruals = getEmployeeToAddResult.Data.Accruals;
-                notBetEmployeeJsonModel.Name = getEmployeeToAddResult.Data.Name;
-                document.Accruals.Add(accrual);
-                document.Employees.Add(notBetEmployeeJsonModel);
-                _session.Clear();
-                _session.SetJson(sessionDocumentKey, document);
-                return PartialView("AddedEmployee", getEmployeeToAddResult.Data);
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey) ?? new SessionDocument();
+                sessionDocument.Employees.Add(this.MapToSessionEmployee(getByIdResult.Data));
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                return PartialView("AddedEmployee", getByIdResult.Data);
             }
             return BadRequest();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddAccrualToEmployee(AccrualViewModel accrualViewModel)
+        {
+            var getByIdResult = await _employeeProvider.getNotBetEmployee(accrualViewModel.EmployeeId);
+            if (getByIdResult.Succed)
+            {
+                var accrual = new Accrual(DateTime.Now, accrualViewModel.Ammount);
+                accrual.AddEmployee(getByIdResult.Data);
+                var createAccrualResult = await _accrualProvider.Create(accrual);
+                if (createAccrualResult.Succed)
+                    return Ok();
+            }
+            return BadRequest();
+        }
+        private SessionNotBetEmployee MapToSessionEmployee(NotBetEmployee employee)
+        {
+            var sessionEmployee = new SessionNotBetEmployee()
+            {
+                Name = employee.Name,
+                Id = employee.Id,
+                InnerId = employee.InnerId
+            };
+            return sessionEmployee;
+        }
+        private NotBetEmployee MapFromSessionEmployee(SessionNotBetEmployee sessionEmployee)
+        {
+            var employee = new NotBetEmployee(sessionEmployee.Name, sessionEmployee.InnerId);
+            employee.SetId(sessionEmployee.Id);
+            return employee;
+        }
+        private List<NotBetEmployee> MapToListFromSessionEmployee(List<SessionNotBetEmployee> sessionEmployees)
+        {
+            List<NotBetEmployee> employees = new List<NotBetEmployee>();
+            foreach (var item in sessionEmployees)
+                employees.Add(this.MapFromSessionEmployee(item));
+            return employees;
         }
     }
 }

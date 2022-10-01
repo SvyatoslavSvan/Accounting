@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221001093123_DocumentDeletedFromAccrual")]
+    partial class DocumentDeletedFromAccrual
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,10 +36,15 @@ namespace Accounting.DAL.Migrations
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
 
                     b.HasIndex("EmployeeId");
 
@@ -139,6 +146,10 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.Accrual", b =>
                 {
+                    b.HasOne("Accounting.Domain.Models.Document", null)
+                        .WithMany("Accruals")
+                        .HasForeignKey("DocumentId");
+
                     b.HasOne("Accounting.Domain.Models.NotBetEmployee", "Employee")
                         .WithMany("Accruals")
                         .HasForeignKey("EmployeeId")
@@ -183,6 +194,11 @@ namespace Accounting.DAL.Migrations
                         .HasForeignKey("EmployeesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Accounting.Domain.Models.Document", b =>
+                {
+                    b.Navigation("Accruals");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Group", b =>

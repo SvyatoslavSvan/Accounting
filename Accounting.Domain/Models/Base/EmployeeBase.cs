@@ -27,10 +27,9 @@
         public void SetId(Guid id)
         {
             if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Name))
-            {
                 return;
-            }
-            Id = id;
+            if (this.Id == Guid.Empty)
+                this.Id = id;
         }
         
     }

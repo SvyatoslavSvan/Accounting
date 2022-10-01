@@ -13,6 +13,7 @@ namespace Accounting.DAL.Repositories
 
         public async Task Add(Accrual entity)
         {
+            _dbContext.Attach(entity.Employee);
             await _dbContext.Accruals.AddAsync(entity);
             await _dbContext.SaveChangesAsync();   
         }
@@ -24,9 +25,9 @@ namespace Accounting.DAL.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Accrual>> ReadAll() => await _dbContext.Accruals.Include(x => x.Employee).Include(x => x.Document).ToListAsync();
+        public async Task<IEnumerable<Accrual>> ReadAll() => await _dbContext.Accruals.Include(x => x.Employee).ToListAsync();
 
-        public async Task<Accrual> ReadById(Guid id) => await _dbContext.Accruals.Include(x => x.Employee).Include(x => x.Document).SingleOrDefaultAsync(x => x.Id == id);
+        public async Task<Accrual> ReadById(Guid id) => await _dbContext.Accruals.Include(x => x.Employee).SingleOrDefaultAsync(x => x.Id == id);
 
         public async Task Update(Accrual entity)
         {

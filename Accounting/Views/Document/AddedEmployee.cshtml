@@ -1,7 +1,22 @@
 ﻿@using Accounting.Domain.Models
 @model NotBetEmployee
+@{
+    var formId = Model.Id + "form";
+}
 <tr>
-    <th scope="row"></th>
     <td>@Model.InnerId</td>
     <td>@Model.Name</td>
+    <td>
+       <div class="container">
+           <div class="row">
+               <div class="col-md-4">
+                    <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
+                        <input type="hidden" name="EmployeeId" value="@Model.Id" />
+                        <input type="number" name="Ammount" class="form-control" />
+                        <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee')" class="btn btn-info mx-auto">Начислити</button>
+                    </form>
+               </div>
+           </div>
+       </div>
+    </td>
 </tr>

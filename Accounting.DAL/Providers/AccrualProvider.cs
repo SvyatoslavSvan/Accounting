@@ -6,6 +6,7 @@ namespace Accounting.DAL.Providers
 {
     public class AccrualProvider : IBaseProvider<Accrual>
     {
+#nullable disable
         private readonly IBaseRepository<Accrual> _accrualRepository;
         public AccrualProvider(IBaseRepository<Accrual> accrualRepository)
         {

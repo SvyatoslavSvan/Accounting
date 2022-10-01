@@ -14,7 +14,6 @@
         public string Name { get; private set; }
         public List<NotBetEmployee> Employees { get; private set; } 
         public DateTime DateCreate { get; private set; }  
-        public List<Accrual> Accruals { get; private set; }
         public void AddEmployeesToDocument(List<NotBetEmployee> employees)
         {
             if (Employees is null)
@@ -26,13 +25,6 @@
         {
             if (Id == Guid.Empty)
                 Id = newId;
-        }
-        public void AddAccrualsToDocument(List<Accrual> accruals)
-        {
-            if(this.Accruals is null)
-                this.Accruals = accruals;
-            else
-                this.Accruals.AddRange(accruals);
         }
     }
 }

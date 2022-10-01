@@ -32,7 +32,7 @@ namespace Accounting.DAL.Repositories
         
 
         public async Task<IEnumerable<NotBetEmployee>> ReadAll() => await _dbContext.NotBetEmployees.Include(x => x.Group).ToListAsync();
-        public async Task<NotBetEmployee> ReadById(Guid id) => await _dbContext.NotBetEmployees.Include(x => x.Accruals).Include(x => x.Documents).SingleOrDefaultAsync(x => x.Id == id);
+        public async Task<NotBetEmployee> ReadById(Guid id) => await _dbContext.NotBetEmployees.SingleOrDefaultAsync(x => x.Id == id);
         public async Task Update(NotBetEmployee entity)
         {
             _dbContext.Update(entity);
