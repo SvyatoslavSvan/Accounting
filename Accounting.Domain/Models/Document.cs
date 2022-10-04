@@ -10,21 +10,17 @@
             Name = name;
             DateCreate = dateCreate;
         }
+        public Document(List<NotBetEmployee> employees, List<Accrual> accruals, string name, DateTime dateCreate)
+        {
+            Employees = employees;
+            Accruals = accruals;
+            Name = name;
+            DateCreate = dateCreate;
+        }
         public Guid Id { get; private set; }
         public string Name { get; private set; }
-        public List<NotBetEmployee> Employees { get; private set; } 
+        public List<NotBetEmployee> Employees { get; private set; }
+        public List<Accrual> Accruals { get; private set; }
         public DateTime DateCreate { get; private set; }  
-        public void AddEmployeesToDocument(List<NotBetEmployee> employees)
-        {
-            if (Employees is null)
-                Employees = employees;
-            else
-                Employees.AddRange(employees);
-        }
-        public void SetId(Guid newId)
-        {
-            if (Id == Guid.Empty)
-                Id = newId;
-        }
     }
 }

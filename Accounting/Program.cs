@@ -20,8 +20,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
 builder.Services.AddScoped<IBaseEmployeeRepository<BetEmployee>, BetEmployeeRepository>();
 builder.Services.AddScoped<IBaseEmployeeRepository<NotBetEmployee> ,NotBetEmployeeRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<IBaseRepository<Accrual>, AccrualRepository>();
-builder.Services.AddScoped<IBaseProvider<Accrual>, AccrualProvider>();
+builder.Services.AddScoped<IAccrualRepository, AccrualRepository>();
+builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
 builder.Services.AddTransient<IBaseRepository<Document>, DocumentRepository>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();

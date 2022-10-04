@@ -1,9 +1,7 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
-using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
-using Accounting.Extensions;
 using Accounting.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,16 +12,17 @@ namespace Accounting.Controllers
     {
         private readonly IBaseProvider<Document> _documentProvider;
         private readonly IEmployeeProvider _employeeProvider;
-        private readonly IBaseProvider<Accrual> _accrualProvider;
+        private readonly IAccrualProvider _accrualProvider;
         private readonly ISessionDocumentService _sessionDocumentService;
-        private const string sessionDocumentKey = "sessionDocumentKey";
-        public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IBaseProvider<Accrual> accrualProvider, ISessionDocumentService sessionDocumentService)
+
+        public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IAccrualProvider accrualProvider, ISessionDocumentService sessionDocumentService)
         {
             _documentProvider = documentProvider;
             _employeeProvider = employeeProvider;
             _accrualProvider = accrualProvider;
             _sessionDocumentService = sessionDocumentService;
         }
+
         [HttpGet]
         public async Task<IActionResult> Documents()
         {
@@ -41,6 +40,7 @@ namespace Accounting.Controllers
                 return View(getByIdResult);
             return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -49,13 +49,17 @@ namespace Accounting.Controllers
                 return RedirectToAction(nameof(Documents));
             return BadRequest();
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            if (await _sessionDocumentService.CreateSessionDocument())
+            if (await _sessionDocumentService.Clear() && await _sessionDocumentService.CreateSessionDocument())
                 return View(new DocumentViewModel() { DateCreate = DateTime.Now });
             return BadRequest();
         }
+        [HttpGet]
+        public IActionResult GetSumOfAccruals() => PartialView(_sessionDocumentService.SumOfAccruals());
+
         [HttpPost]
         public async Task<IActionResult> Create(DocumentViewModel documentViewModel)
         {
@@ -86,6 +90,29 @@ namespace Accounting.Controllers
             return BadRequest();
         }
         [HttpPost]
+        public async Task<IActionResult> DeleteAccrual(Guid accrualId)
+        {
+            var deleteAccrualResult = await _accrualProvider.Delete(accrualId);
+            if (deleteAccrualResult.Succed)
+            {
+                var deleteFromSessionResult = await _sessionDocumentService.DeleteAccrual(accrualId);
+                if (deleteFromSessionResult)
+                    return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteEmployeeFromDocument(Guid EmployeeId)
+        {
+            var deleteResult = await _sessionDocumentService.DeleteEmployee(EmployeeId);
+            var employeeToAdd = await _employeeProvider.getNotBetEmployee(EmployeeId);
+            if (deleteResult)
+                return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
+            return BadRequest();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> AddAccrualToEmployee(AccrualViewModel accrualViewModel)
         {
             var getByIdResult = await _employeeProvider.getNotBetEmployee(accrualViewModel.EmployeeId);
@@ -95,32 +122,14 @@ namespace Accounting.Controllers
                 accrual.AddEmployee(getByIdResult.Data);
                 var createAccrualResult = await _accrualProvider.Create(accrual);
                 if (createAccrualResult.Succed)
-                    return PartialView("AddedAccrual",accrual.Ammount);
+                {
+                    var addAccrualToSessionReuslt = await _sessionDocumentService.AddAccrual(accrual);
+                    if(addAccrualToSessionReuslt)
+                        return PartialView("AddedAccrual", accrual.Ammount);
+                }
             }
             return BadRequest();
         }
-        private SessionNotBetEmployee MapToSessionEmployee(NotBetEmployee employee)
-        {
-            var sessionEmployee = new SessionNotBetEmployee()
-            {
-                Name = employee.Name,
-                Id = employee.Id,
-                InnerId = employee.InnerId
-            };
-            return sessionEmployee;
-        }
-        private NotBetEmployee MapFromSessionEmployee(SessionNotBetEmployee sessionEmployee)
-        {
-            var employee = new NotBetEmployee(sessionEmployee.Name, sessionEmployee.InnerId);
-            employee.SetId(sessionEmployee.Id);
-            return employee;
-        }
-        private List<NotBetEmployee> MapToListFromSessionEmployee(List<SessionNotBetEmployee> sessionEmployees)
-        {
-            List<NotBetEmployee> employees = new List<NotBetEmployee>();
-            foreach (var item in sessionEmployees)
-                employees.Add(this.MapFromSessionEmployee(item));
-            return employees;
-        }
+       
     }
 }

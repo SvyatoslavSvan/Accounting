@@ -1,11 +1,13 @@
 ﻿using Accounting.DAL.Contexts;
+using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Accounting.DAL.Repositories
 {
-    public class AccrualRepository : IBaseRepository<Accrual>
+    public class AccrualRepository : IAccrualRepository
     {
 #nullable disable
         private readonly ApplicationDBContext _dbContext;

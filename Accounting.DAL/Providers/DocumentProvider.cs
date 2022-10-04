@@ -44,7 +44,7 @@ namespace Accounting.DAL.Providers
             try
             {
                 var documents = await _documentRepository.ReadAll();
-                return new BaseResult<List<Document>>(false, documents.ToList());
+                return new BaseResult<List<Document>>(true, documents.ToList());
             }
             catch (Exception)
             {

@@ -21,5 +21,23 @@ function insertResponse(url, response, elementToRemoveId) {
     if (url == '/Document/AddAccrualToEmployee') {
         $('#' + elementToRemoveId).empty();
         $('#' + elementToRemoveId).append(response);
+        getSumOfAccruals();
     }
+    if (url == '/Document/DeleteEmployeeFromDocument') {
+        $('#' + elementToRemoveId).remove();
+        getSumOfAccruals();
+        $('#chooseEmployeeUl').append(response);
+    }
+}
+function getSumOfAccruals() {
+    $.ajax({
+        url: '/Document/GetSumOfAccruals',
+        method: 'get', 
+        success: function (response) {
+            $('#sumAccrual').html(response);
+        },
+        error: function (response) {
+            
+        }
+    });
 }

@@ -44,10 +44,11 @@ namespace Accounting.Services
         public Document GetDocument(DocumentViewModel documentViewModel)
         {
             var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
-            var document = new Document(documentViewModel.Name, documentViewModel.DateCreate);
-            document.AddEmployeesToDocument(this.MapToListFromSessionEmployee(sessionDocument.Employees));
+            var document = new Document(this.MapToListFromSessionEmployee(sessionDocument.Employees),this.MapToListFromSessionAccrual(sessionDocument.Accruals)
+                ,documentViewModel.Name, documentViewModel.DateCreate);
             return document;
         }
+
         public async Task<bool> CreateSessionDocument()
         {
             try
@@ -61,6 +62,69 @@ namespace Accounting.Services
                 return false;
             }
         }
+
+        public async Task<bool> AddAccrual(Accrual accrual)
+        {
+            try
+            {
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+                sessionDocument.Accruals.Add(this.MapToSessionAccrual(accrual));
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                await _session.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public int SumOfAccruals()
+        {
+            var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+            return sessionDocument.Accruals.Sum(x => x.Ammount);
+        }
+        public async Task<bool> DeleteEmployee(Guid id)
+        {
+            try
+            {
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+                sessionDocument.Employees.Remove(sessionDocument.Employees.FirstOrDefault(x => x.Id == id));
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                await _session.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> DeleteAccrual(Guid id)
+        {
+            try
+            {
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+                sessionDocument.Accruals.Remove(sessionDocument.Accruals.SingleOrDefault(x => x.Id == id));
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                await _session.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private SessionAccrual MapToSessionAccrual(Accrual accrual)
+        {
+            var sessionAccrual = new SessionAccrual()
+            {
+                Ammount = accrual.Ammount,
+                Id = accrual.Id,
+                DateCreate = accrual.DateCreate
+            };
+            return sessionAccrual;
+        }
+        private Accrual MapFromSessionAccrual(SessionAccrual sessionAccrual) => new Accrual(sessionAccrual.DateCreate, sessionAccrual.Ammount, sessionAccrual.Id);
         private SessionNotBetEmployee MapToSessionEmployee(NotBetEmployee employee)
         {
             var sessionEmployee = new SessionNotBetEmployee()
@@ -83,6 +147,13 @@ namespace Accounting.Services
             foreach (var item in sessionEmployees)
                 employees.Add(this.MapFromSessionEmployee(item));
             return employees;
+        }
+        private List<Accrual> MapToListFromSessionAccrual(List<SessionAccrual> sessionAccruals)
+        {
+            List<Accrual> accruals = new List<Accrual>();
+            foreach (var item in sessionAccruals)
+                accruals.Add(this.MapFromSessionAccrual(item));
+            return accruals;
         }
 
     }

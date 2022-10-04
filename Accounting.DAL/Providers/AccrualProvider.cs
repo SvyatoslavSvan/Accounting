@@ -1,14 +1,16 @@
-﻿using Accounting.DAL.Interfaces.Base;
+﻿using Accounting.DAL.Interfaces;
+using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Accounting.DAL.Providers
 {
-    public class AccrualProvider : IBaseProvider<Accrual>
+    public class AccrualProvider : IAccrualProvider
     {
 #nullable disable
-        private readonly IBaseRepository<Accrual> _accrualRepository;
-        public AccrualProvider(IBaseRepository<Accrual> accrualRepository)
+        private readonly IAccrualRepository _accrualRepository;
+        public AccrualProvider(IAccrualRepository accrualRepository)
         {
             _accrualRepository = accrualRepository;
         }
@@ -39,6 +41,7 @@ namespace Accounting.DAL.Providers
             }
         }
 
+
         public async Task<BaseResult<List<Accrual>>> GetAll()
         {
             try
@@ -51,6 +54,7 @@ namespace Accounting.DAL.Providers
                 return new BaseResult<List<Accrual>>(false, null);
             }
         }
+
 
         public async Task<BaseResult<Accrual>> GetById(Guid id)
         {
