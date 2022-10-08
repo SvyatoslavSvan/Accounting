@@ -11,8 +11,10 @@ namespace Accounting.Services.Interfaces
         public Task<bool> Clear();
         public Task<bool> CreateSessionDocument();
         public Task<bool> AddAccrual(Accrual accrual);
-        public int SumOfAccruals();
+        public decimal SumOfAccruals();
         public Task<bool> DeleteEmployee(Guid Id);
         public Task<bool> DeleteAccrual(Guid Id);
+        public Accrual GetAccrualByEmployeeId(Guid employeeId);
+        public Task<bool> UpdateAccrual(decimal ammount, Guid accrualId);
     }
 }

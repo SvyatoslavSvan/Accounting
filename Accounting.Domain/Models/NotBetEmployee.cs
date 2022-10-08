@@ -30,5 +30,10 @@ namespace Accounting.Domain.Models
             else
                 this.Accruals.AddRange(accruals);
         }
+
+        public override decimal CalculateSalary(DateTime from)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

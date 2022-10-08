@@ -62,7 +62,13 @@ namespace Accounting.Services
                 return false;
             }
         }
-
+        public Accrual GetAccrualByEmployeeId(Guid employeeId)
+        {
+            var sessionAccrual = _session.GetJson<SessionDocument>(sessionDocumentKey).Accruals.SingleOrDefault(x => x.EmployeeId == employeeId);
+            if (sessionAccrual is not null)
+                return this.MapFromSessionAccrual(sessionAccrual);
+            return null;
+        }
         public async Task<bool> AddAccrual(Accrual accrual)
         {
             try
@@ -78,17 +84,28 @@ namespace Accounting.Services
                 return false;
             }
         }
-        public int SumOfAccruals()
-        {
-            var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
-            return sessionDocument.Accruals.Sum(x => x.Ammount);
-        }
+        public decimal SumOfAccruals() => _session.GetJson<SessionDocument>(sessionDocumentKey).Accruals.Sum(x => x.Ammount);
         public async Task<bool> DeleteEmployee(Guid id)
         {
             try
             {
                 var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
                 sessionDocument.Employees.Remove(sessionDocument.Employees.FirstOrDefault(x => x.Id == id));
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                await _session.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public async Task<bool> UpdateAccrual(decimal ammount, Guid accrualId)
+        {
+            try
+            {
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+                sessionDocument.Accruals.SingleOrDefault(x => x.Id == accrualId).Ammount = ammount;
                 _session.SetJson(sessionDocumentKey, sessionDocument);
                 await _session.CommitAsync();
                 return true;
@@ -120,7 +137,8 @@ namespace Accounting.Services
             {
                 Ammount = accrual.Ammount,
                 Id = accrual.Id,
-                DateCreate = accrual.DateCreate
+                DateCreate = accrual.DateCreate,
+                EmployeeId = accrual.EmployeeId,
             };
             return sessionAccrual;
         }
@@ -155,6 +173,5 @@ namespace Accounting.Services
                 accruals.Add(this.MapFromSessionAccrual(item));
             return accruals;
         }
-
     }
 }

@@ -2,8 +2,9 @@
 {
     public class SessionAccrual
     {
-        public int Ammount { get; set; }
+        public decimal Ammount { get; set; }
         public Guid Id { get; set; }
         public DateTime DateCreate { get; set; }
+        public Guid EmployeeId { get; set; }
     }
 }

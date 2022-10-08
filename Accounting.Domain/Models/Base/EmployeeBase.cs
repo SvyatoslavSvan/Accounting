@@ -1,7 +1,7 @@
 ﻿namespace Accounting.Domain.Models.Base
 {
 #nullable disable
-    public class EmployeeBase
+    public abstract class EmployeeBase
     {
         public Guid Id { get; private set; }
         public string Name { get; private set; }
@@ -13,10 +13,7 @@
             Name = name ?? throw new ArgumentNullException(nameof(Name));
             InnerId = innerId ?? throw new ArgumentNullException(nameof(InnerId));
         }
-        public virtual decimal CalculateSalary(DateTime from)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract decimal CalculateSalary(DateTime from);
         public virtual void AddToGroup(Group group)
         {
             if(group is null)

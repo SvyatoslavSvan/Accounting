@@ -1,4 +1,22 @@
-﻿@model int
-<td>
-    @Model
+﻿@using Accounting.Domain.ViewModels
+
+@model UpdateAccrualViewModel
+@{
+    var formId = Model.EmployeeId + "form";
+    var formTdId = Model.EmployeeId + "tdForm";
+}
+<td id="@formTdId">
+    @Model.Ammount
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
+                    <input type="hidden" name="EmployeeId" value="@Model.EmployeeId" />
+                    <input asp-for="AccrualId" type="hidden" />
+                    <input type="number" name="Ammount" class="form-control" />
+                    <button type="button" onclick="sendForm('@formId', '/Document/UpdateAccrual', '@formTdId')" class="btn btn-info mx-auto">Начислити</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </td>

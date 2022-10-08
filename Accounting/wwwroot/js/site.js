@@ -28,6 +28,10 @@ function insertResponse(url, response, elementToRemoveId) {
         getSumOfAccruals();
         $('#chooseEmployeeUl').append(response);
     }
+    if (url == '/Document/UpdateAccrual') {
+        getSumOfAccruals();
+        $('#' + elementToRemoveId).html(response);
+    }
 }
 function getSumOfAccruals() {
     $.ajax({

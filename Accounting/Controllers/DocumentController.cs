@@ -90,25 +90,45 @@ namespace Accounting.Controllers
             return BadRequest();
         }
         [HttpPost]
-        public async Task<IActionResult> DeleteAccrual(Guid accrualId)
+        public async Task<IActionResult> UpdateAccrual(UpdateAccrualViewModel updateAccrualViewModel)
         {
-            var deleteAccrualResult = await _accrualProvider.Delete(accrualId);
-            if (deleteAccrualResult.Succed)
+            if (ModelState.IsValid)
             {
-                var deleteFromSessionResult = await _sessionDocumentService.DeleteAccrual(accrualId);
-                if (deleteFromSessionResult)
-                    return Ok();
+                var getAccrualToUpdateResult = await _accrualProvider.GetById(updateAccrualViewModel.AccrualId);
+                if (getAccrualToUpdateResult.Succed)
+                    getAccrualToUpdateResult.Data.SetAmmount(updateAccrualViewModel.Ammount);
+                var updateAccrualResult = await _accrualProvider.Update(getAccrualToUpdateResult.Data);
+                if (updateAccrualResult.Succed)
+                    if (await _sessionDocumentService.UpdateAccrual(updateAccrualViewModel.Ammount, updateAccrualViewModel.AccrualId))
+                        return PartialView("AddedAccrual", updateAccrualViewModel);
             }
             return BadRequest();
         }
-
         [HttpPost]
         public async Task<IActionResult> DeleteEmployeeFromDocument(Guid EmployeeId)
         {
-            var deleteResult = await _sessionDocumentService.DeleteEmployee(EmployeeId);
+            var deleteEmployeeFromSessionResult = await _sessionDocumentService.DeleteEmployee(EmployeeId);
             var employeeToAdd = await _employeeProvider.getNotBetEmployee(EmployeeId);
-            if (deleteResult)
-                return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
+            if (employeeToAdd.Succed)
+            {
+                var tiedToEmployeeAccrual = _sessionDocumentService.GetAccrualByEmployeeId(employeeToAdd.Data.Id);
+                if (tiedToEmployeeAccrual is not null)
+                {
+                    if (await _sessionDocumentService.DeleteAccrual(tiedToEmployeeAccrual.Id))
+                    {
+                        if (_accrualProvider.Delete(tiedToEmployeeAccrual.Id).GetAwaiter().GetResult().Succed)
+                        {
+                            if (deleteEmployeeFromSessionResult)
+                                return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
+                        }
+                    }
+                }
+                else
+                {
+                    if (deleteEmployeeFromSessionResult)
+                        return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
+                }
+            }
             return BadRequest();
         }
 
@@ -125,7 +145,7 @@ namespace Accounting.Controllers
                 {
                     var addAccrualToSessionReuslt = await _sessionDocumentService.AddAccrual(accrual);
                     if(addAccrualToSessionReuslt)
-                        return PartialView("AddedAccrual", accrual.Ammount);
+                        return PartialView("AddedAccrual", new UpdateAccrualViewModel() { AccrualId = accrual.Id, Ammount = accrualViewModel.Ammount, EmployeeId = accrualViewModel.EmployeeId});
                 }
             }
             return BadRequest();

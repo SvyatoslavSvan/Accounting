@@ -9,5 +9,10 @@ namespace Accounting.Domain.Models
         {
             Bet = bet;
         }
+
+        public override decimal CalculateSalary(DateTime from)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
