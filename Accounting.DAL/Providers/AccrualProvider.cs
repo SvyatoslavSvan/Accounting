@@ -1,8 +1,6 @@
 ﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Accounting.DAL.Providers
 {
@@ -41,6 +39,18 @@ namespace Accounting.DAL.Providers
             }
         }
 
+        public async Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals)
+        {
+            try
+            {
+                await _accrualRepository.DeleteRange(accruals);
+                return new BaseResult<bool>(true, true);
+            }
+            catch (Exception)
+            {
+                return new BaseResult<bool>(false, false);
+            }
+        }
 
         public async Task<BaseResult<List<Accrual>>> GetAll()
         {

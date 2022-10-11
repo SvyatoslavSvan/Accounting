@@ -62,11 +62,11 @@ namespace Accounting.Services
                 return false;
             }
         }
-        public Accrual GetAccrualByEmployeeId(Guid employeeId)
+        public List<Accrual> GetAccrualsByEmployeeId(Guid employeeId)
         {
-            var sessionAccrual = _session.GetJson<SessionDocument>(sessionDocumentKey).Accruals.SingleOrDefault(x => x.EmployeeId == employeeId);
-            if (sessionAccrual is not null)
-                return this.MapFromSessionAccrual(sessionAccrual);
+            var sessionAccruals = _session.GetJson<SessionDocument>(sessionDocumentKey).Accruals.Where(x => x.EmployeeId == employeeId);
+            if (sessionAccruals is not null)
+                return this.MapToListFromSessionAccrual(sessionAccruals.ToList());
             return null;
         }
         public async Task<bool> AddAccrual(Accrual accrual)
@@ -115,12 +115,12 @@ namespace Accounting.Services
                 return false;
             }
         }
-        public async Task<bool> DeleteAccrual(Guid id)
+        public async Task<bool> DeleteAccrualsByEmployeeId(Guid id)
         {
             try
             {
                 var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
-                sessionDocument.Accruals.Remove(sessionDocument.Accruals.SingleOrDefault(x => x.Id == id));
+                sessionDocument.Accruals.RemoveAll(x => x.EmployeeId == id);
                 _session.SetJson(sessionDocumentKey, sessionDocument);
                 await _session.CommitAsync();
                 return true;

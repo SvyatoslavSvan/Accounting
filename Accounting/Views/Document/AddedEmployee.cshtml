@@ -9,8 +9,11 @@
 <tr id="@trId">
     <td>@Model.InnerId</td>
     <td>@Model.Name</td>
-    <td id="@formTdId">
-       <div class="container">
+    <td>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccrualModal" onclick="openCreateAccrualModal('@Model.Id')">
+            Додати виплати
+        </button>
+       @*<div class="container">
            <div class="row">
                <div class="col-md-4">
                     <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
@@ -20,7 +23,7 @@
                     </form>
                </div>
            </div>
-       </div>
+       </div>*@
     </td>
     <td>
         <div class="container">

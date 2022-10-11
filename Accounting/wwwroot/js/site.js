@@ -5,22 +5,30 @@
         dataType: 'html',
         data: $("#" + formId).serialize(),
         success: function (response) {
-            insertResponse(url, response, elementToRemoveId);
+            insertResponse(url, response, elementToRemoveId, formId);
         },
         error: function (response) {
             alert('Error while sending form')
         }
     });
 }
-
-function insertResponse(url, response, elementToRemoveId) {
+function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/AddEmployeeToDocument') {
         $('#addedEmployeesTbody').append(response);
         $('#' + elementToRemoveId).remove();
     }
     if (url == '/Document/AddAccrualToEmployee') {
-        $('#' + elementToRemoveId).empty();
-        $('#' + elementToRemoveId).append(response);
+        /*$('#' + elementToRemoveId).append(response);*/
+        appendCreatedAccrualResponse(response, true);
+        var ammountInput = document.getElementById('ammountInput');
+        ammountInput.parentNode.removeChild(ammountInput);
+        var addAccrualForm = document.getElementById(formId);
+        var newAmmountInput = document.createElement('input');
+        newAmmountInput.id = 'ammountInput';
+        newAmmountInput.type = 'number';
+        newAmmountInput.name = 'Ammount';
+        newAmmountInput.className = 'form-control';
+        addAccrualForm.appendChild(newAmmountInput);
         getSumOfAccruals();
     }
     if (url == '/Document/DeleteEmployeeFromDocument') {
@@ -30,7 +38,7 @@ function insertResponse(url, response, elementToRemoveId) {
     }
     if (url == '/Document/UpdateAccrual') {
         getSumOfAccruals();
-        $('#' + elementToRemoveId).html(response);
+        $('#' + elementToRemoveId).append(response);
     }
 }
 function getSumOfAccruals() {
@@ -45,3 +53,26 @@ function getSumOfAccruals() {
         }
     });
 }
+function openCreateAccrualModal(employeeId) {
+    $.ajax({
+        url: `/Document/CreateAccrual/${employeeId}`,
+        method: 'get',
+        success: function (response) {
+            appendCreatedAccrualResponse(response, false);
+        },
+        error: function (response) {
+            alert('Вадим лютин');
+            console.log(response);
+        }
+    });
+}
+function appendCreatedAccrualResponse(response, addAccrualToUl) {
+    if (!addAccrualToUl) {
+        $('#createAccrualModalBody').empty();
+        $('#createAccrualModalBody').append(response);
+    } else {
+        $('#accrualUl').append(response);
+    }
+    
+}
+

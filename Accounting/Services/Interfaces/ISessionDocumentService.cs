@@ -1,5 +1,4 @@
 ﻿using Accounting.Domain.Models;
-using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 
 namespace Accounting.Services.Interfaces
@@ -13,8 +12,8 @@ namespace Accounting.Services.Interfaces
         public Task<bool> AddAccrual(Accrual accrual);
         public decimal SumOfAccruals();
         public Task<bool> DeleteEmployee(Guid Id);
-        public Task<bool> DeleteAccrual(Guid Id);
-        public Accrual GetAccrualByEmployeeId(Guid employeeId);
+        public Task<bool> DeleteAccrualsByEmployeeId(Guid Id);
+        public List<Accrual> GetAccrualsByEmployeeId(Guid employeeId);
         public Task<bool> UpdateAccrual(decimal ammount, Guid accrualId);
     }
 }

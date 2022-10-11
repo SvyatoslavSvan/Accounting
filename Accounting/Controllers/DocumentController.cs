@@ -104,6 +104,7 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteEmployeeFromDocument(Guid EmployeeId)
         {
@@ -111,12 +112,12 @@ namespace Accounting.Controllers
             var employeeToAdd = await _employeeProvider.getNotBetEmployee(EmployeeId);
             if (employeeToAdd.Succed)
             {
-                var tiedToEmployeeAccrual = _sessionDocumentService.GetAccrualByEmployeeId(employeeToAdd.Data.Id);
-                if (tiedToEmployeeAccrual is not null)
+                var tiedToEmployeeAccruals = _sessionDocumentService.GetAccrualsByEmployeeId(employeeToAdd.Data.Id);
+                if (tiedToEmployeeAccruals is not null)
                 {
-                    if (await _sessionDocumentService.DeleteAccrual(tiedToEmployeeAccrual.Id))
+                    if (await _sessionDocumentService.DeleteAccrualsByEmployeeId(employeeToAdd.Data.Id))
                     {
-                        if (_accrualProvider.Delete(tiedToEmployeeAccrual.Id).GetAwaiter().GetResult().Succed)
+                        if (_accrualProvider.DeleteRange(tiedToEmployeeAccruals).GetAwaiter().GetResult().Succed)
                         {
                             if (deleteEmployeeFromSessionResult)
                                 return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
@@ -131,6 +132,13 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        public IActionResult CreateAccrual(Guid id) => PartialView(new CreateAccrualViewModel()
+        {
+            Accruals = _sessionDocumentService.GetAccrualsByEmployeeId(id),
+            EmployeeId = id
+        });
 
         [HttpPost]
         public async Task<IActionResult> AddAccrualToEmployee(AccrualViewModel accrualViewModel)

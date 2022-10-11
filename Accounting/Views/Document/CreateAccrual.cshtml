@@ -1,0 +1,33 @@
+﻿@using Accounting.Domain.ViewModels;
+@model CreateAccrualViewModel
+@{
+    var formId = Model.EmployeeId + "form";
+    var updateFormId = Model.EmployeeId + "updateForm";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group" id="accrualUl">
+                    @foreach (var item in Model.Accruals)
+                    {
+                        <li class="list-group-item">
+                        @item.Ammount
+                        <form id="@updateFormId">
+                            <input type="hidden" name="EmployeeId" value="@Model.EmployeeId" />
+                            <input name="AccrualId" type="hidden" value="@item.Id"/>
+                            <input type="number" name="Ammount" class="form-control" />
+                            <button type="button" onclick="sendForm('@updateFormId', '/Document/UpdateAccrual', '')" class="btn btn-info mx-auto">Оновити</button>
+                        </form>
+                    </li>
+                    }
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <form id="@formId">
+            <input asp-for="EmployeeId" type="hidden" value="@Model.EmployeeId" />
+            <input name="Ammount" class="form-control" type="number" id="ammountInput"/>
+            <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee', 'accrualUl' )" class="btn btn-primary">Начислити</button>
+        </form>
+    </div>
+</div>

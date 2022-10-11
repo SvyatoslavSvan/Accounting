@@ -27,6 +27,12 @@ namespace Accounting.DAL.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task DeleteRange(List<Accrual> accruals)
+        {
+            _dbContext.Accruals.RemoveRange(accruals);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<Accrual>> ReadAll() => await _dbContext.Accruals.Include(x => x.Employee).ToListAsync();
 
         public async Task<Accrual> ReadById(Guid id) => await _dbContext.Accruals.Include(x => x.Employee).SingleOrDefaultAsync(x => x.Id == id);
