@@ -44,9 +44,13 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid documentId)
         {
-            var deleteResult = await _documentProvider.Delete(documentId);
-            if (deleteResult.Succed)
-                return Ok();
+            var deleteAccrualsTiedToDocumentResult = await _accrualProvider.DeleteRangeByDocumentId(documentId);
+            if (deleteAccrualsTiedToDocumentResult.Succed)
+            {
+                var deleteResult = await _documentProvider.Delete(documentId);
+                if (deleteResult.Succed)
+                    return Ok();
+            }
             return BadRequest();
         }
 

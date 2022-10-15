@@ -6,5 +6,6 @@ namespace Accounting.DAL.Interfaces
     public interface IAccrualRepository : IBaseRepository<Accrual>
     {
         public Task DeleteRange(List<Accrual> accruals);
+        public Task DeleteRangeByDocumentId(Guid documentId);
     }
 }

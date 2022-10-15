@@ -52,6 +52,19 @@ namespace Accounting.DAL.Providers
             }
         }
 
+        public async Task<BaseResult<bool>> DeleteRangeByDocumentId(Guid documentId)
+        {
+            try
+            {
+                await _accrualRepository.DeleteRangeByDocumentId(documentId);
+                return new BaseResult<bool>(true, true);
+            }
+            catch (Exception)
+            {
+                return new BaseResult<bool>(false, false);
+            }
+        }
+
         public async Task<BaseResult<List<Accrual>>> GetAll()
         {
             try

@@ -1,9 +1,7 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
-using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Accounting.DAL.Repositories
 {
@@ -30,6 +28,13 @@ namespace Accounting.DAL.Repositories
         public async Task DeleteRange(List<Accrual> accruals)
         {
             _dbContext.Accruals.RemoveRange(accruals);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteRangeByDocumentId(Guid documentId)
+        {
+            var accrualsToDelete = await _dbContext.Accruals.Include(x => x.Document).Where(x => x.Document.Id == documentId).ToListAsync();
+            _dbContext.Accruals.RemoveRange(accrualsToDelete);
             await _dbContext.SaveChangesAsync();
         }
 

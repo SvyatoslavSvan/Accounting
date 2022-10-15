@@ -7,5 +7,6 @@ namespace Accounting.DAL.Interfaces
     public interface IAccrualProvider : IBaseProvider<Accrual>
     {
         public Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals);
+        public Task<BaseResult<bool>> DeleteRangeByDocumentId(Guid documentId);
     }
 }
