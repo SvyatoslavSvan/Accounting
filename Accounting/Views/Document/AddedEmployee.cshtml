@@ -12,18 +12,7 @@
     <td>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccrualModal" onclick="openCreateAccrualModal('@Model.Id')">
             Додати виплати
-        </button>
-       @*<div class="container">
-           <div class="row">
-               <div class="col-md-4">
-                    <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
-                        <input type="hidden" name="EmployeeId" value="@Model.Id" />
-                        <input type="number" name="Ammount" class="form-control" />
-                        <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee', '@formTdId')" class="btn btn-info mx-auto">Начислити</button>
-                    </form>
-               </div>
-           </div>
-       </div>*@
+        </button> 
     </td>
     <td>
         <div class="container">

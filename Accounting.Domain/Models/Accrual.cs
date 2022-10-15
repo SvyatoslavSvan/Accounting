@@ -19,7 +19,8 @@
         public DateTime DateCreate { get; private set; }
         public Guid EmployeeId { get; private set; }
         public NotBetEmployee Employee { get; private set; }
-        public Document Document { get; private set; }
+        public Document Document { get; private set; } 
+
         public void AddEmployee(NotBetEmployee employee)
         {
             if (Employee is null)

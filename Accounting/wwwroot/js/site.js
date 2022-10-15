@@ -38,7 +38,15 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     }
     if (url == '/Document/UpdateAccrual') {
         getSumOfAccruals();
-        $('#' + elementToRemoveId).append(response);
+        var ammountInput = document.getElementById(elementToRemoveId);
+        ammountInput.value = response;
+    }
+    if (url == '/Document/DeleteAccrual') {
+        getSumOfAccruals();
+        $('#' + elementToRemoveId).remove();
+    }
+    if (url == '/Document/Delete') {
+        $('#' + elementToRemoveId).remove();
     }
 }
 function getSumOfAccruals() {
@@ -74,5 +82,8 @@ function appendCreatedAccrualResponse(response, addAccrualToUl) {
         $('#accrualUl').append(response);
     }
     
+}
+function onAmmountInputChanged(updateAccrualFormId) {
+    sendForm(updateAccrualFormId, '/Document/UpdateAccrual');
 }
 

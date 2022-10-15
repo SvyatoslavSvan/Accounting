@@ -15,5 +15,6 @@ namespace Accounting.Services.Interfaces
         public Task<bool> DeleteAccrualsByEmployeeId(Guid Id);
         public List<Accrual> GetAccrualsByEmployeeId(Guid employeeId);
         public Task<bool> UpdateAccrual(decimal ammount, Guid accrualId);
+        public Task<bool> DeleteAccrual(Guid accrualId);
     }
 }

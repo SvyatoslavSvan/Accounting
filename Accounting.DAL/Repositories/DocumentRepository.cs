@@ -21,8 +21,9 @@ namespace Accounting.DAL.Repositories
 
         public async Task Delete(Guid id)
         {
-            var documnetToDelete = await _dbContext.Documents.SingleOrDefaultAsync(x => x.Id == id);
+            var documnetToDelete = await _dbContext.Documents.Include(x => x.Accruals).Include(x => x.Employees).SingleOrDefaultAsync(x => x.Id == id);
             _dbContext.Documents.Remove(documnetToDelete);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Document>> ReadAll() => await _dbContext.Documents.ToListAsync();

@@ -1,15 +1,21 @@
 ﻿@using Accounting.Domain.ViewModels
 @model UpdateAccrualViewModel
 @{
-    var formId = Model.EmployeeId + "updateAccrualForm";
-    var formTdId = Model.EmployeeId + "tdForm";
+    var updateAccrualFormId = Model.AccrualId + "updateAccrualForm";
+    var formTdId = Model.AccrualId + "tdForm";
+    var accrualLiId = Model.AccrualId + "litodelete";
+    var deleteAccrualFormId = Model.AccrualId + "deleteForm";
+    var ammountInputId = Model.AccrualId + "ammountInputId";
 }
-<li class="list-group-item" id="@formTdId">
-    @Model.Ammount
-    <form asp-action="AddAccrualToEmployee" asp-controller="Document" id="@formId">
-        <input type="hidden" name="EmployeeId" value="@Model.EmployeeId" />
-        <input asp-for="AccrualId" type="hidden" />
-        <input type="number" name="Ammount" class="form-control" />
-        <button type="button" onclick="sendForm('@formId', '/Document/UpdateAccrual', '@formTdId')" class="btn btn-info mx-auto">Оновити</button>
-    </form>
+<li class="list-group-item" id="@accrualLiId">
+    <div class="d-flex justify-content-between">
+        <form id="@updateAccrualFormId">
+            <input type="hidden" name="AccrualId" value="@Model.AccrualId" />
+            <input type="number" name="Ammount" value="@Model.Ammount" onchange="onAmmountInputChanged('@updateAccrualFormId')" class="form-control-sm" id="@ammountInputId"/>
+        </form>
+        <form id="@deleteAccrualFormId">
+            <input type="hidden" name="accrualId" value="@Model.AccrualId"/>
+            <button class="btn btn-outline-danger" type="button" onclick="sendForm('@deleteAccrualFormId', '/Document/DeleteAccrual', '@accrualLiId')">Видалити</button>
+        </form>
+    </div>
 </li>

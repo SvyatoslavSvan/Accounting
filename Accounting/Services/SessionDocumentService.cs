@@ -130,6 +130,21 @@ namespace Accounting.Services
                 return false;
             }
         }
+        public async Task<bool> DeleteAccrual(Guid accrualId)
+        {
+            try
+            {
+                var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
+                sessionDocument.Accruals.RemoveAll(x => x.Id == accrualId);
+                _session.SetJson(sessionDocumentKey, sessionDocument);
+                await _session.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         private SessionAccrual MapToSessionAccrual(Accrual accrual)
         {
@@ -142,6 +157,7 @@ namespace Accounting.Services
             };
             return sessionAccrual;
         }
+        
         private Accrual MapFromSessionAccrual(SessionAccrual sessionAccrual) => new Accrual(sessionAccrual.DateCreate, sessionAccrual.Ammount, sessionAccrual.Id);
         private SessionNotBetEmployee MapToSessionEmployee(NotBetEmployee employee)
         {
@@ -172,6 +188,6 @@ namespace Accounting.Services
             foreach (var item in sessionAccruals)
                 accruals.Add(this.MapFromSessionAccrual(item));
             return accruals;
-        }
+        }   
     }
 }

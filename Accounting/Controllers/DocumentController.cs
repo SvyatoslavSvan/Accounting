@@ -42,11 +42,11 @@ namespace Accounting.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid documentId)
         {
-            var deleteResult = await _documentProvider.Delete(id);
+            var deleteResult = await _documentProvider.Delete(documentId);
             if (deleteResult.Succed)
-                return RedirectToAction(nameof(Documents));
+                return Ok();
             return BadRequest();
         }
 
@@ -100,7 +100,7 @@ namespace Accounting.Controllers
                 var updateAccrualResult = await _accrualProvider.Update(getAccrualToUpdateResult.Data);
                 if (updateAccrualResult.Succed)
                     if (await _sessionDocumentService.UpdateAccrual(updateAccrualViewModel.Ammount, updateAccrualViewModel.AccrualId))
-                        return PartialView("AddedAccrual", updateAccrualViewModel);
+                        return Ok(updateAccrualViewModel.Ammount);
             }
             return BadRequest();
         }
@@ -153,11 +153,21 @@ namespace Accounting.Controllers
                 {
                     var addAccrualToSessionReuslt = await _sessionDocumentService.AddAccrual(accrual);
                     if(addAccrualToSessionReuslt)
-                        return PartialView("AddedAccrual", new UpdateAccrualViewModel() { AccrualId = accrual.Id, Ammount = accrualViewModel.Ammount, EmployeeId = accrualViewModel.EmployeeId});
+                        return PartialView("AddedAccrual", new UpdateAccrualViewModel() { AccrualId = accrual.Id, Ammount = accrualViewModel.Ammount});
                 }
             }
             return BadRequest();
         }
-       
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccrual(Guid accrualId)
+        {
+            if (await _sessionDocumentService.DeleteAccrual(accrualId))
+            {
+                var deleteAccrualResult = await _accrualProvider.Delete(accrualId);
+                if (deleteAccrualResult.Succed)
+                    return Ok();
+            }
+            return BadRequest();
+        }
     }
 }

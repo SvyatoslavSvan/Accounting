@@ -2,7 +2,10 @@
 @model CreateAccrualViewModel
 @{
     var formId = Model.EmployeeId + "form";
-    var updateFormId = Model.EmployeeId + "updateForm";
+    var deleteAccrualFormId = Model.EmployeeId + "deleteForm";
+    var accrualLiId = Model.EmployeeId + "litodelete";
+    string getUpdateAccrualFromId(Guid id) => id.ToString() + "updateAccrualForm";
+    string getAmmountInputId(Guid id) => id.ToString() + "ammountInputId";
 }
 <div class="container">
     <div class="row">
@@ -10,24 +13,32 @@
             <ul class="list-group" id="accrualUl">
                     @foreach (var item in Model.Accruals)
                     {
-                        <li class="list-group-item">
-                        @item.Ammount
-                        <form id="@updateFormId">
-                            <input type="hidden" name="EmployeeId" value="@Model.EmployeeId" />
-                            <input name="AccrualId" type="hidden" value="@item.Id"/>
-                            <input type="number" name="Ammount" class="form-control" />
-                            <button type="button" onclick="sendForm('@updateFormId', '/Document/UpdateAccrual', '')" class="btn btn-info mx-auto">Оновити</button>
-                        </form>
-                    </li>
+                       
+                        
+                        <li class="list-group-item" id="@accrualLiId">
+                        <div class="d-flex justify-content-between">
+                                <form id="@getUpdateAccrualFromId(item.Id)">
+                                    <input type="hidden" name="AccrualId" value="@item.Id" /> 
+                                    <input type="number" name="Ammount" value="@item.Ammount" onchange="onAmmountInputChanged('@getUpdateAccrualFromId(item.Id)')" class="form-control-sm" id="@getAmmountInputId(item.Id)"/>
+                                </form>
+                                
+                                <form id="@deleteAccrualFormId">
+                                    <input type="hidden" name="accrualId" value="@item.Id" />
+                                    <button class="btn btn-outline-danger" type="button" onclick="sendForm('@deleteAccrualFormId', '/Document/DeleteAccrual', '@accrualLiId')">Видалити</button>
+                                </form>
+                        </div>
+                        </li>
                     }
             </ul>
         </div>
     </div>
     <div class="row">
-        <form id="@formId">
-            <input asp-for="EmployeeId" type="hidden" value="@Model.EmployeeId" />
-            <input name="Ammount" class="form-control" type="number" id="ammountInput"/>
+       <div class="col-md-5 m-auto">
+            <form id="@formId">
+                <input asp-for="EmployeeId" type="hidden" value="@Model.EmployeeId" />
+                <input name="Ammount" class="form-control" type="number" id="ammountInput" />
+            </form>
             <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee', 'accrualUl' )" class="btn btn-primary">Начислити</button>
-        </form>
+       </div>
     </div>
 </div>

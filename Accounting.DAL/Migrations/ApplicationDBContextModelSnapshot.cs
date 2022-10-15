@@ -46,7 +46,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Accruals");
+                    b.ToTable("Accruals", (string)null);
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.BetEmployee", b =>
@@ -71,7 +71,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("BetEmployees");
+                    b.ToTable("BetEmployees", (string)null);
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Document", b =>
@@ -88,7 +88,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Documents");
+                    b.ToTable("Documents", (string)null);
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Group", b =>
@@ -102,7 +102,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.NotBetEmployee", b =>
@@ -124,7 +124,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("NotBetEmployees");
+                    b.ToTable("NotBetEmployees", (string)null);
                 });
 
             modelBuilder.Entity("DocumentNotBetEmployee", b =>
@@ -139,7 +139,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeesId");
 
-                    b.ToTable("DocumentNotBetEmployee");
+                    b.ToTable("DocumentNotBetEmployee", (string)null);
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Accrual", b =>
