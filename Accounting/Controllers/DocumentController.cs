@@ -1,5 +1,4 @@
 ﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
@@ -10,12 +9,12 @@ namespace Accounting.Controllers
 #nullable disable
     public class DocumentController : Controller
     {
-        private readonly IBaseProvider<Document> _documentProvider;
+        private readonly IDocumentProvider _documentProvider;
         private readonly IEmployeeProvider _employeeProvider;
         private readonly IAccrualProvider _accrualProvider;
         private readonly ISessionDocumentService _sessionDocumentService;
 
-        public DocumentController(IBaseProvider<Document> documentProvider, IEmployeeProvider employeeProvider, IAccrualProvider accrualProvider, ISessionDocumentService sessionDocumentService)
+        public DocumentController(IDocumentProvider documentProvider, IEmployeeProvider employeeProvider, IAccrualProvider accrualProvider, ISessionDocumentService sessionDocumentService)
         {
             _documentProvider = documentProvider;
             _employeeProvider = employeeProvider;
@@ -30,6 +29,14 @@ namespace Accounting.Controllers
             if (getAllResult.Succed)
                 return View(getAllResult.Data);
             return View("NotFound");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSearch(DateTime from = new DateTime(), DateTime to = new DateTime(), DateTime dateCreate = new DateTime(), string name = "")
+        {
+            var getBySearchResult = await _documentProvider.GetBySearchDocuments(from, to, name, dateCreate);
+            if (getBySearchResult.Succed)
+                return PartialView(getBySearchResult.Data);
+            return BadRequest();
         }
 
         [HttpGet]

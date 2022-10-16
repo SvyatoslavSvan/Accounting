@@ -22,10 +22,10 @@ builder.Services.AddScoped<IBaseEmployeeRepository<NotBetEmployee> ,NotBetEmploy
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IAccrualRepository, AccrualRepository>();
 builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
-builder.Services.AddTransient<IBaseRepository<Document>, DocumentRepository>();
+builder.Services.AddTransient<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
-builder.Services.AddTransient<IBaseProvider<Document>, DocumentProvider>();
+builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();

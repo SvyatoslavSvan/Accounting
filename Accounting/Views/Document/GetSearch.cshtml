@@ -1,0 +1,19 @@
+﻿@using Accounting.Domain.Models
+@model IEnumerable<Document>
+@{
+    string getDeleteDocumentFormId(Guid id) => id.ToString() + "deleteDocument";
+    string getDocumentTrId(Guid id) => id.ToString() + "documentTr";
+}
+@foreach (var item in Model)
+{
+    <tr id="@getDocumentTrId(item.Id)">
+        <td>@item.Name</td>
+        <td>@item.DateCreate</td>
+        <td>
+            <form id="@getDeleteDocumentFormId(item.Id)">
+                <input type="hidden" name="documentId" value="@item.Id">
+                <button type="button" class="btn btn-outline-danger" onclick="sendForm('@getDeleteDocumentFormId(item.Id)', '/Document/Delete', '@getDocumentTrId(item.Id)')">Видалити</button>
+            </form>
+        </td>
+    </tr>
+}

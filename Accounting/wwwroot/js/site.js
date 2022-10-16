@@ -1,7 +1,7 @@
-﻿function sendForm(formId, url, elementToRemoveId) {
+﻿function sendForm(formId, url, elementToRemoveId, type = 'POST') {
     $.ajax({
         url: url,
-        type: 'POST',
+        type: type,
         dataType: 'html',
         data: $("#" + formId).serialize(),
         success: function (response) {
@@ -48,6 +48,9 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/Delete') {
         $('#' + elementToRemoveId).remove();
     }
+    if (url == '/Document/GetSearch') {
+        insertFoundDocuments(response, elementToRemoveId);
+    }
 }
 function getSumOfAccruals() {
     $.ajax({
@@ -86,4 +89,8 @@ function appendCreatedAccrualResponse(response, addAccrualToUl) {
 function onAmmountInputChanged(updateAccrualFormId) {
     sendForm(updateAccrualFormId, '/Document/UpdateAccrual');
 }
+function insertFoundDocuments(response, TbodyId) {
+    $('#' + TbodyId).html(response);
+}
+    
 

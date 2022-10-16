@@ -45,7 +45,7 @@ namespace Accounting.Services
         {
             var sessionDocument = _session.GetJson<SessionDocument>(sessionDocumentKey);
             var document = new Document(this.MapToListFromSessionEmployee(sessionDocument.Employees),this.MapToListFromSessionAccrual(sessionDocument.Accruals)
-                ,documentViewModel.Name, documentViewModel.DateCreate);
+                ,documentViewModel.Name, documentViewModel.DateCreate.Date);
             return document;
         }
 

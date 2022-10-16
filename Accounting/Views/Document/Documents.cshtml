@@ -6,6 +6,21 @@
 }
 <div class="container">
     <div class="row">
+       <div class="col-md-5 m-auto">
+            <form id="searchInDocuments">
+                <label class="form-label">З</label>
+                <input type="date" name="from" class="form-control"/>
+                <label class="form-label">По</label>
+                <input type="date" name="to" class="form-control"/>
+                <label class="form-label">Дата створення</label>
+                <input type="date" name="dateCreate"  class="form-control"/>
+                <label class="form-label">Назва</label>
+                <input type="text" name="name" class="form-control" />
+                <button type="button" class="btn btn-outline-primary" onclick="sendForm('searchInDocuments', '/Document/GetSearch', 'documentsTbody', 'GET')">Знайти</button>
+            </form>
+       </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
                 <table class="table table-hover" id="addedEmployees">
@@ -15,7 +30,7 @@
                             <th scope="col">Дата створення</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="documentsTbody">
                     @foreach (var item in Model)
                     {
                         <tr id="@getDocumentTrId(item.Id)">
