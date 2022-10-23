@@ -48,17 +48,17 @@
                     }
                 }
             }
-            var elementsToRemove = new List<int>();
+            var elementsToRemove = new List<Guid>();
             foreach (var thisAccrual in Accruals)
             {
                 var containsInUpdate = accruals.Contains(accruals.FirstOrDefault(x => x.Id == thisAccrual.Id));
                 if (!containsInUpdate)
                 {
-                    elementsToRemove.Add(Accruals.IndexOf(thisAccrual));
+                    elementsToRemove.Add(thisAccrual.Id);
                 }
             }
             foreach (var item in elementsToRemove)
-                Accruals.RemoveAt(item);
+                Accruals.RemoveAll(x => x.Id == item);
         }
 
         private void UpdateEmployees(List<NotBetEmployee> employees)
@@ -75,23 +75,18 @@
                     }
                 }
             }
-            var elementsToRemove = new List<int>();
+            var elementsToRemove = new List<Guid>();
             foreach (var thisEmployee in Employees)
             {
                 var containsInUpdate = employees.Contains(employees.FirstOrDefault(x => x.Id == thisEmployee.Id));
                 if (!containsInUpdate)
                 { 
-                    elementsToRemove.Add(Employees.IndexOf(thisEmployee));
+                    elementsToRemove.Add(thisEmployee.Id);
                 }
             }
             foreach (var item in elementsToRemove)
             {
-                if (item == 0 && Employees.Count == 1)
-                {
-                    Employees.RemoveAt(0);
-                    break;
-                }
-                Employees.RemoveAt(item);
+                Employees.RemoveAll(x => x.Id == item);
             }
         }
 
