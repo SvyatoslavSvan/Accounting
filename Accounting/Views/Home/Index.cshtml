@@ -1,5 +1,34 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Домашня сторінка";
 }
-
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Документи</h6>
+                    <a class="btn btn-outline-success" asp-action="Create" asp-controller="Document">
+                        Створити
+                    </a>
+                    <a asp-action="Documents" asp-controller="Document" class="btn btn-outline-primary">
+                        Документи
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Працівники</h6>
+                    <a class="btn btn-outline-success" asp-action="Create" asp-controller="Document">
+                        Створити
+                    </a>
+                    <a asp-action="Employees" asp-controller="Employee" class="btn btn-outline-primary">
+                        Працівники
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 

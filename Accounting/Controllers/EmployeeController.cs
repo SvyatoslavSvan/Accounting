@@ -24,10 +24,7 @@ namespace Accounting.Controllers
             {
                 return View(getAllResult.Data);
             }
-            else
-            {
-                return View("NotFound");
-            }
+            return BadRequest();
         }
         [HttpPost]
         public async Task<IActionResult> Create(CreateEmployeeViewModel employeeViewModel)
@@ -49,15 +46,16 @@ namespace Accounting.Controllers
                 var createResult = await _employeeProvider.Create(employee);
                 if (createResult.Succed)
                 {
-                    return RedirectToAction(nameof(Employees));
+                    return PartialView("createdEmployee" ,employee);
                 }
                 else
                 {
                     return BadRequest();
                 }
             }
-            return RedirectToAction(nameof(Employees));
+            return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -71,6 +69,7 @@ namespace Accounting.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
@@ -93,6 +92,7 @@ namespace Accounting.Controllers
             }
             return PartialView(updateViewModel);
         }
+
         [HttpPost]
         public async Task<IActionResult> Update(UpdateEmployeeViewModel viewModel)
         {

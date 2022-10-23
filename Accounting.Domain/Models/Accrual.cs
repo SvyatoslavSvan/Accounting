@@ -4,7 +4,7 @@
     {
 #nullable disable
         public Guid Id { get; private set; }
-        public Accrual(DateTime dateCreate, int ammount)
+        public Accrual(DateTime dateCreate, decimal ammount)
         {
             DateCreate = dateCreate;
             Ammount = ammount;

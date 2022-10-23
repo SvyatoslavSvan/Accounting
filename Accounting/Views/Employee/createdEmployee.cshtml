@@ -1,0 +1,17 @@
+﻿@using Accounting.Domain.Models.Base
+@model EmployeeBase
+<li class="list-group-item d-flex align-content-between">
+
+    <div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Внутрішній номер: @Model.InnerId </li>
+            <li class="list-group-item">Група: @Model.Group.Name</li>
+            <li class="list-group-item">ПІБ: @Model.Name</li>
+        </ul>
+    </div>
+    <form asp-action="Delete" asp-controller="Employee" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-outline-danger mx-4">Видалити</button>
+    </form>
+    <button type="button" class="btn btn-outline-success mx-4" style="height: 40px" data-bs-toggle="modal" data-bs-target="#updateEmployeeModal" onclick="openUpdateModal('@Model.Id')">Оновити</button>
+</li>

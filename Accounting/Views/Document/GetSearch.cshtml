@@ -14,6 +14,9 @@
                 <input type="hidden" name="documentId" value="@item.Id">
                 <button type="button" class="btn btn-outline-danger" onclick="sendForm('@getDeleteDocumentFormId(item.Id)', '/Document/Delete', '@getDocumentTrId(item.Id)')">Видалити</button>
             </form>
+            <a class="btn btn-outline-success mt-2" asp-action="Update" asp-controller="Document" asp-route-id="@item.Id">
+                Редагувати
+            </a>
         </td>
     </tr>
 }

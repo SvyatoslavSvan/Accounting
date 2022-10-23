@@ -4,6 +4,7 @@
     string getDeleteDocumentFormId(Guid id) => id.ToString() + "deleteDocument";
     string getDocumentTrId(Guid id) => id.ToString() + "documentTr";
 }
+<h4 class="text-center">Документи</h4>
 <div class="container">
     <div class="row">
        <div class="col-md-5 m-auto">
@@ -41,12 +42,20 @@
                                     <input type="hidden" name="documentId" value="@item.Id">
                                     <button type="button" class="btn btn-outline-danger" onclick="sendForm('@getDeleteDocumentFormId(item.Id)', '/Document/Delete', '@getDocumentTrId(item.Id)')">Видалити</button>
                                 </form>
+                                <a class="btn btn-outline-success mt-2" asp-action="Update" asp-controller="Document" asp-route-id="@item.Id">
+                                    Редагувати
+                                </a>
                             </td>
                         </tr>
                     }
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <a class="btn btn-outline-primary" asp-action="Create" asp-controller="Document">Створити документ</a>
         </div>
     </div>
 </div>

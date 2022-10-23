@@ -5,11 +5,10 @@
 <div class="container m-auto">
     <div class="col-md-12">
         <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
-            <ul class="list-group">
+            <ul class="list-group" id="employeesUl">
                 @foreach (var item in Model)
                 {
                     <li class="list-group-item d-flex align-content-between">
-
                         <div>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">Внутрішній номер: @item.InnerId </li>
@@ -22,8 +21,7 @@
                              <button type="submit" class="btn btn-outline-danger mx-4">Видалити</button>
                         </form>
                         <button type="button" class="btn btn-outline-success mx-4" style="height: 40px" data-bs-toggle="modal" data-bs-target="#updateEmployeeModal" onclick="openUpdateModal('@item.Id')">Оновити</button>
-                    </li>
-                    
+                    </li>    
                 }
             </ul>
         </div>
@@ -57,6 +55,7 @@
 
 @await Html.PartialAsync("CreateEmployeePartial", new CreateEmployeeViewModel());
 @await Html.PartialAsync("CreateGroupPartial", new GroupViewModel());
+
 <script type="text/javascript">
     function openUpdateModal(Id){
         const url = `/Employee/Update/${Id}`;

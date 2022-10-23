@@ -12,6 +12,7 @@
         }
     });
 }
+
 function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/AddEmployeeToDocument') {
         $('#addedEmployeesTbody').append(response);
@@ -25,7 +26,7 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         var addAccrualForm = document.getElementById(formId);
         var newAmmountInput = document.createElement('input');
         newAmmountInput.id = 'ammountInput';
-        newAmmountInput.type = 'number';
+        newAmmountInput.type = 'text';
         newAmmountInput.name = 'Ammount';
         newAmmountInput.className = 'form-control';
         addAccrualForm.appendChild(newAmmountInput);
@@ -51,7 +52,12 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/GetSearch') {
         insertFoundDocuments(response, elementToRemoveId);
     }
+    if (url == '/Employee/Create') {
+        document.getElementById('createEmployee').reset();
+        $('#' + elementToRemoveId).append(response);
+    }
 }
+
 function getSumOfAccruals() {
     $.ajax({
         url: '/Document/GetSumOfAccruals',
@@ -64,6 +70,7 @@ function getSumOfAccruals() {
         }
     });
 }
+
 function openCreateAccrualModal(employeeId) {
     $.ajax({
         url: `/Document/CreateAccrual/${employeeId}`,
@@ -77,6 +84,7 @@ function openCreateAccrualModal(employeeId) {
         }
     });
 }
+
 function appendCreatedAccrualResponse(response, addAccrualToUl) {
     if (!addAccrualToUl) {
         $('#createAccrualModalBody').empty();
@@ -86,11 +94,17 @@ function appendCreatedAccrualResponse(response, addAccrualToUl) {
     }
     
 }
+
 function onAmmountInputChanged(updateAccrualFormId) {
     sendForm(updateAccrualFormId, '/Document/UpdateAccrual');
 }
+
 function insertFoundDocuments(response, TbodyId) {
     $('#' + TbodyId).html(response);
+}
+
+function createEmployee(createEmployeeFormId) {
+    sendForm(createEmployeeFormId, '/Employee/Create', 'employeesUl');
 }
     
 

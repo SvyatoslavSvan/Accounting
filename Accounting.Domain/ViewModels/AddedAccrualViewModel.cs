@@ -8,7 +8,7 @@
             AccrualId = accrualId;
         }
 
-        public int Ammount { get; set; }
+        public decimal Ammount { get; set; }
         public Guid AccrualId { get; set; }
     }
 }
