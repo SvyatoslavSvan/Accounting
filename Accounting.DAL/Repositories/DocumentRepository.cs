@@ -35,6 +35,8 @@ namespace Accounting.DAL.Repositories
 
         public async Task Update(Document entity)
         {
+            _dbContext.AttachRange(entity.Accruals);
+            _dbContext.AttachRange(entity.Employees);
             _dbContext.Documents.Update(entity);
             await _dbContext.SaveChangesAsync();
         }

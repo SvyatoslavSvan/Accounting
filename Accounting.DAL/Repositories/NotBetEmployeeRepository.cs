@@ -1,11 +1,12 @@
 ﻿using Accounting.DAL.Contexts;
+using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Accounting.DAL.Repositories
 {
-    public class NotBetEmployeeRepository : IBaseEmployeeRepository<NotBetEmployee>
+    public class NotBetEmployeeRepository : INotBetEmployeeRepository
     {
 #nullable disable
         private readonly ApplicationDBContext _dbContext;
@@ -29,8 +30,8 @@ namespace Accounting.DAL.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        
-
+        public async Task<IEnumerable<NotBetEmployee>> GetAllIncludeDocument() => await _dbContext.NotBetEmployees.Include(x => x.Documents).ToListAsync();
+       
         public async Task<IEnumerable<NotBetEmployee>> ReadAll() => await _dbContext.NotBetEmployees.Include(x => x.Group).ToListAsync();
         public async Task<NotBetEmployee> ReadById(Guid id) => await _dbContext.NotBetEmployees.SingleOrDefaultAsync(x => x.Id == id);
         public async Task Update(NotBetEmployee entity)

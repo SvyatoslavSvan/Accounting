@@ -23,6 +23,56 @@ namespace Accounting.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var getDocumentToUpdateResult = await _documentProvider.GetById(id);
+            if (getDocumentToUpdateResult.Succed)
+            {
+                var loadToSessionResult = await _sessionDocumentService.LoadDocument(getDocumentToUpdateResult.Data);
+                if (loadToSessionResult)
+                    return View(await GetUpdateViewModelAsync(getDocumentToUpdateResult.Data));    
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdateDocumentViewModel viewModel)
+        {
+            var getDocumentToUpdateResult = await _documentProvider.GetById(viewModel.Id);
+            if (getDocumentToUpdateResult.Succed)
+            {
+                var documentFromSession = _sessionDocumentService.GetDocument(viewModel);
+                getDocumentToUpdateResult.Data.Update(documentFromSession);
+                var updateResult = await _documentProvider.Update(getDocumentToUpdateResult.Data);
+                if (updateResult.Succed)
+                    return RedirectToAction(nameof(Documents));
+            }
+            return BadRequest();
+        }
+
+        [NonAction]
+        private async Task<UpdateDocumentViewModel> GetUpdateViewModelAsync(Document document) => new UpdateDocumentViewModel()
+        {
+            Name = document.Name,
+            DateCreate = document.DateCreate,
+            Id = document.Id,
+            EmployeesInDocument = document.Employees,
+            EmployeesAddToDocument = await GetEmployeesExcludeByDocumentIdAsync(document.Id)
+        };
+
+        [NonAction]
+        private async Task<List<NotBetEmployee>> GetEmployeesExcludeByDocumentIdAsync(Guid id)
+        {
+            var getEmployeesResult = await _employeeProvider.GetNotBetEmployeesIncludeDocument();
+            var employees = getEmployeesResult.Data.ToList();
+            var employeesWithoutDocument = employees.Where(x => x.Documents == null).ToList();
+            employees.RemoveAll(x => x.Documents == null);
+            employees.RemoveAll(x => x.Documents.Contains(x.Documents.FirstOrDefault(x => x.Id == id)));
+            employees.AddRange(employeesWithoutDocument);
+            return employees;
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Documents()
         {
             var getAllResult = await _documentProvider.GetAll();
@@ -64,7 +114,7 @@ namespace Accounting.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            if (await _sessionDocumentService.Clear() && await _sessionDocumentService.CreateSessionDocument())
+            if (await _sessionDocumentService.CreateSessionDocument())
                 return View(new DocumentViewModel() { DateCreate = DateTime.Now });
             return BadRequest();
         }
@@ -100,6 +150,7 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> UpdateAccrual(UpdateAccrualViewModel updateAccrualViewModel)
         {

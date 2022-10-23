@@ -7,6 +7,7 @@ namespace Accounting.Services.Interfaces
     {
         public Task<bool> AddEmployee(NotBetEmployee employee);
         public Document GetDocument(DocumentViewModel documentViewModel);
+        public Document GetDocument(UpdateDocumentViewModel documentViewModel);
         public Task<bool> Clear();
         public Task<bool> CreateSessionDocument();
         public Task<bool> AddAccrual(Accrual accrual);
@@ -16,5 +17,6 @@ namespace Accounting.Services.Interfaces
         public List<Accrual> GetAccrualsByEmployeeId(Guid employeeId);
         public Task<bool> UpdateAccrual(decimal ammount, Guid accrualId);
         public Task<bool> DeleteAccrual(Guid accrualId);
+        public Task<bool> LoadDocument(Document document);
     }
 }

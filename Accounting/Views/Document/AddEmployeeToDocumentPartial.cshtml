@@ -1,10 +1,10 @@
 ﻿@using Accounting.DAL.Interfaces
-@inject IEmployeeProvider employeeProvider
+@using Accounting.Domain.Models
+@model IEnumerable<NotBetEmployee>
 @{
-    var employees = await employeeProvider.GetNotBetEmployees();
+    
     string getLiId(Guid id) => id + "li";
 }
-
 <div class="modal fade" id="addEmployeeToDocumentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
@@ -17,7 +17,7 @@
                     <div class="row">
                         <div class="col-md-11">
                             <ul class="list-group" id="chooseEmployeeUl">
-                                @foreach (var item in employees.Data)
+                                @foreach (var item in Model)
                                 {
                                     <li class="list-group-item" id="@getLiId(item.Id)">
                                         <h4>Номер: @item.InnerId</h4>

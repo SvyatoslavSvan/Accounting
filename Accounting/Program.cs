@@ -18,7 +18,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection"));
 });
 builder.Services.AddScoped<IBaseEmployeeRepository<BetEmployee>, BetEmployeeRepository>();
-builder.Services.AddScoped<IBaseEmployeeRepository<NotBetEmployee> ,NotBetEmployeeRepository>();
+builder.Services.AddScoped<INotBetEmployeeRepository ,NotBetEmployeeRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IAccrualRepository, AccrualRepository>();
 builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();

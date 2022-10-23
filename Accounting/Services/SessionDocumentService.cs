@@ -39,6 +39,12 @@ namespace Accounting.Services
                 ,documentViewModel.Name, documentViewModel.DateCreate.Date);
             return document;
         }
+        public Document GetDocument(UpdateDocumentViewModel documentViewModel)
+        {
+            var sessionDocument = GetSessionDocument();
+            return new Document(documentViewModel.Id, this.MapToListFromSessionEmployee(sessionDocument.Employees), 
+                this.MapToListFromSessionAccrual(sessionDocument.Accruals), documentViewModel.Name, documentViewModel.DateCreate);
+        }
 
         public async Task<bool> CreateSessionDocument() => await Commit(new SessionDocument());
 
@@ -85,6 +91,27 @@ namespace Accounting.Services
             var sessionDocument = GetSessionDocument();
             sessionDocument.Accruals.RemoveAll(x => x.Id == accrualId);
             return await Commit(sessionDocument);
+        }
+        public async Task<bool> LoadDocument(Document document) => await Commit(new SessionDocument()
+        {
+            Accruals = MapToListFromAccruals(document.Accruals),
+            Employees = MapToListFromEmployees(document.Employees)
+        });
+
+        private List<SessionAccrual> MapToListFromAccruals(List<Accrual> accruals)
+        {
+            var sessionAccruals = new List<SessionAccrual>();
+            foreach (var item in accruals)
+                sessionAccruals.Add(MapToSessionAccrual(item));
+            return sessionAccruals;
+        }
+
+        private List<SessionNotBetEmployee> MapToListFromEmployees(List<NotBetEmployee> employees)
+        {
+            var sessionEmployees = new List<SessionNotBetEmployee>();
+            foreach (var item in employees)
+                sessionEmployees.Add(MapToSessionEmployee(item));
+            return sessionEmployees;
         }
 
         private SessionDocument GetSessionDocument() => _session.GetJson<SessionDocument>(sessionDocumentKey);
@@ -149,6 +176,6 @@ namespace Accounting.Services
             foreach (var item in sessionAccruals)
                 accruals.Add(this.MapFromSessionAccrual(item));
             return accruals;
-        }   
+        }
     }
 }

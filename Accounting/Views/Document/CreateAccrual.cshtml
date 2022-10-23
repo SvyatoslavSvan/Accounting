@@ -19,7 +19,7 @@
                         <div class="d-flex justify-content-between">
                                 <form id="@getUpdateAccrualFromId(item.Id)">
                                     <input type="hidden" name="AccrualId" value="@item.Id" /> 
-                                    <input type="number" name="Ammount" value="@item.Ammount" onchange="onAmmountInputChanged('@getUpdateAccrualFromId(item.Id)')" class="form-control-sm" id="@getAmmountInputId(item.Id)"/>
+                                    <input type="text" name="Ammount" value="@item.Ammount" onchange="onAmmountInputChanged('@getUpdateAccrualFromId(item.Id)')" class="form-control-sm" id="@getAmmountInputId(item.Id)"/>
                                 </form>
                                 
                                 <form id="@deleteAccrualFormId">
@@ -36,7 +36,7 @@
        <div class="col-md-5 m-auto">
             <form id="@formId">
                 <input asp-for="EmployeeId" type="hidden" value="@Model.EmployeeId" />
-                <input name="Ammount" class="form-control" type="number" id="ammountInput" />
+                <input name="Ammount" class="form-control" type="text" id="ammountInput" />
             </form>
             <button type="button" onclick="sendForm('@formId', '/Document/AddAccrualToEmployee', 'accrualUl' )" class="btn btn-primary">Начислити</button>
        </div>

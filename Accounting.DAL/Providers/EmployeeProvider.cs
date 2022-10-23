@@ -3,7 +3,6 @@ using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
-using System.Runtime.CompilerServices;
 
 namespace Accounting.DAL.Providers
 {
@@ -11,9 +10,9 @@ namespace Accounting.DAL.Providers
     {
 #nullable disable
         private readonly IBaseEmployeeRepository<BetEmployee> _betEmployeeRepository;
-        private readonly IBaseEmployeeRepository<NotBetEmployee> _notBetEmployeeRepository;
+        private readonly INotBetEmployeeRepository _notBetEmployeeRepository;
         public EmployeeProvider(IBaseEmployeeRepository<BetEmployee> betEmployeeRepository,
-            IBaseEmployeeRepository<NotBetEmployee> notBetEmployeeRepository)
+           INotBetEmployeeRepository notBetEmployeeRepository)
         {
             _betEmployeeRepository = betEmployeeRepository;
             _notBetEmployeeRepository = notBetEmployeeRepository;
@@ -186,6 +185,18 @@ namespace Accounting.DAL.Providers
             {
                 var employees = await _notBetEmployeeRepository.ReadAll();
                 return new BaseResult<IEnumerable<NotBetEmployee>>(true, employees);
+            }
+            catch (Exception)
+            {
+                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null);
+            }
+        }
+
+        public async Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployeesIncludeDocument()
+        {
+            try
+            {
+                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _notBetEmployeeRepository.GetAllIncludeDocument());
             }
             catch (Exception)
             {

@@ -1,20 +1,18 @@
-﻿@using Accounting.DAL.Interfaces
-@using Accounting.Domain.ViewModels
-@model DocumentViewModel
-@inject IEmployeeProvider employeeProvider
+﻿@using Accounting.Domain.ViewModels
+@model UpdateDocumentViewModel
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
-            <form method="post" asp-action="Create" asp-controller="Document">
+            <form method="post" asp-action="Update" asp-controller="Document">
+                <input type="hidden" asp-for="Id" value="@Model.Id"/>
                 <label class="form-label" asp-for="Name">Назва документа</label>
-                <input type="text" asp-for="Name" class="form-control"/>
+                <input type="text" asp-for="Name" class="form-control" />
                 <label class="form-label" asp-for="Name">Дата Створення</label>
-                <input type="datetime-local" asp-for="DateCreate" class="form-control"/>
+                <input type="datetime-local" asp-for="DateCreate" class="form-control" />
                 <button type="submit" class="btn btn-outline-primary m-auto">Сохранити</button>
             </form>
         </div>
         <div class="col-md-2 m-auto" id="sumAccrual">
-
         </div>
     </div>
     <div class="row">
@@ -29,6 +27,10 @@
                         </tr>
                     </thead>
                     <tbody id="addedEmployeesTbody">
+                        @foreach (var item in Model.EmployeesInDocument)
+                        {
+                            <partial name="AddedEmployee" model="item"></partial>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -39,4 +41,4 @@
     </div>
 </div>
 <partial name="CreateAccrualModalPartial"></partial>
-<partial name="AddEmployeeToDocumentPartial" model="employeeProvider.GetNotBetEmployees().Result.Data"></partial>
+<partial name="AddEmployeeToDocumentPartial" model="Model.EmployeesAddToDocument"></partial>
