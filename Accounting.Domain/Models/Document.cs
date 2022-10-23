@@ -85,7 +85,14 @@
                 }
             }
             foreach (var item in elementsToRemove)
+            {
+                if (item == 0 && Employees.Count == 1)
+                {
+                    Employees.RemoveAt(0);
+                    break;
+                }
                 Employees.RemoveAt(item);
+            }
         }
 
         public Guid Id { get; private set; }

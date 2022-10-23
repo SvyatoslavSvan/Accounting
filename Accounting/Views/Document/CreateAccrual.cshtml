@@ -1,9 +1,9 @@
 ﻿@using Accounting.Domain.ViewModels;
 @model CreateAccrualViewModel
 @{
-    var formId = Model.EmployeeId + "form";
-    var deleteAccrualFormId = Model.EmployeeId + "deleteForm";
-    var accrualLiId = Model.EmployeeId + "litodelete";
+    var formId = Model.EmployeeId + "form"; 
+    string getdeleteAccrualFormId(Guid id) => id.ToString() + "deleteForm";
+    string getAccrualLiID(Guid id) => id.ToString() + "litodelete";
     string getUpdateAccrualFromId(Guid id) => id.ToString() + "updateAccrualForm";
     string getAmmountInputId(Guid id) => id.ToString() + "ammountInputId";
 }
@@ -12,19 +12,17 @@
         <div class="col-md-12">
             <ul class="list-group" id="accrualUl">
                     @foreach (var item in Model.Accruals)
-                    {
-                       
-                        
-                        <li class="list-group-item" id="@accrualLiId">
+                    {  
+                        <li class="list-group-item" id="@getAccrualLiID(item.Id)">
                         <div class="d-flex justify-content-between">
                                 <form id="@getUpdateAccrualFromId(item.Id)">
                                     <input type="hidden" name="AccrualId" value="@item.Id" /> 
                                     <input type="text" name="Ammount" value="@item.Ammount" onchange="onAmmountInputChanged('@getUpdateAccrualFromId(item.Id)')" class="form-control-sm" id="@getAmmountInputId(item.Id)"/>
                                 </form>
                                 
-                                <form id="@deleteAccrualFormId">
+                                <form id="@getdeleteAccrualFormId(item.Id)">
                                     <input type="hidden" name="accrualId" value="@item.Id" />
-                                    <button class="btn btn-outline-danger" type="button" onclick="sendForm('@deleteAccrualFormId', '/Document/DeleteAccrual', '@accrualLiId')">Видалити</button>
+                                <button class="btn btn-outline-danger" type="button" onclick="sendForm('@getdeleteAccrualFormId(item.Id)', '/Document/DeleteAccrual', '@getAccrualLiID(item.Id)')">Видалити</button>
                                 </form>
                         </div>
                         </li>
