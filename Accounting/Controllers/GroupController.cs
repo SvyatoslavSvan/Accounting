@@ -25,5 +25,6 @@ namespace Accounting.Controllers
                 return RedirectToAction(nameof(Groups));
             return BadRequest();
         }
+        
     }
 }
