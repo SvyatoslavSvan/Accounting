@@ -1,6 +1,12 @@
-﻿using Accounting.DAL.Interfaces;
+﻿using Accounting.DAL.Contexts;
+using Accounting.DAL.Interfaces;
+using Accounting.DAL.Migrations;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Calabonga.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Accounting.DAL.Providers
 {
@@ -8,73 +14,85 @@ namespace Accounting.DAL.Providers
     {
 #nullable disable
         private readonly IAccrualRepository _accrualRepository;
-        public AccrualProvider(IAccrualRepository accrualRepository)
+        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
+        private readonly ILogger<Accrual> _logger;
+        public AccrualProvider(IAccrualRepository accrualRepository, IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger)
         {
             _accrualRepository = accrualRepository;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<BaseResult<bool>> Create(Accrual entity)
         {
-            try
+            _unitOfWork.DbContext.Attach(entity.Employee);
+            await _unitOfWork.GetRepository<Accrual>().InsertAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                await _accrualRepository.Add(entity);
-                return new BaseResult<bool>(true, true);
+                return HandleException<bool>();
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
+
+        private BaseResult<T> HandleException<T>(Exception exception = null)
+        {
+            LogErrorMessage(exception);
+            return new BaseResult<T>(false, default(T), OperationStatuses.Error);
+        }
+
+        private void LogErrorMessage(Exception ex = null)
+        {
+            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
+            _logger.LogError(exception.Message);
+            _logger.LogError(exception.InnerException.Message ?? "");
+            _logger.LogError(exception.StackTrace);
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            try
+            _unitOfWork.GetRepository<Accrual>().Delete(await _unitOfWork.GetRepository<Accrual>().GetFirstOrDefaultAsync(predicate: x => x.Id == id)); // колхоз ибо в сборке ошибка
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                await _accrualRepository.Delete(id);
-                return new BaseResult<bool>(true, true);
+                return HandleException<bool>();
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals)
         {
-            try
+            _unitOfWork.GetRepository<Accrual>().Delete(accruals);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                await _accrualRepository.DeleteRange(accruals);
-                return new BaseResult<bool>(true, true);
+                return HandleException<bool>();
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<bool>> DeleteRangeByDocumentId(Guid documentId)
         {
-            try
+            var accrualsToDelete = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(predicate: x => x.Document.Id == documentId);
+            _unitOfWork.GetRepository<Accrual>().Delete(accrualsToDelete);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                await _accrualRepository.DeleteRangeByDocumentId(documentId);
-                return new BaseResult<bool>(true, true);
+                return HandleException<bool>();
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<List<Accrual>>> GetAll()
         {
             try
             {
-                var accruals = await _accrualRepository.ReadAll();
-                return new BaseResult<List<Accrual>>(true, accruals.ToList());
+                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false, include: x => x.Include(x => x.Employee));
+                return new BaseResult<List<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<List<Accrual>>(false, null);
+                return HandleException<List<Accrual>>(ex);
             }
         }
 
@@ -83,26 +101,24 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                var accrual = await _accrualRepository.ReadById(id);
-                return new BaseResult<Accrual>(true, accrual);
+                return new BaseResult<Accrual>(true, await _unitOfWork.GetRepository<Accrual>().
+                    GetFirstOrDefaultAsync(predicate: x => x.Id == id, include: x => x.Include(x => x.Employee), disableTracking: false), OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<Accrual>(true, null);
+                return HandleException<Accrual>(ex);
             }
         }
 
         public async Task<BaseResult<bool>> Update(Accrual entity)
         {
-            try
+            _unitOfWork.GetRepository<Accrual>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                await _accrualRepository.Update(entity);
-                return new BaseResult<bool>(true, true);
+                return HandleException<bool>();
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
     }
 }

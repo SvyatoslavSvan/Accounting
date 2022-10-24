@@ -15,6 +15,7 @@
             Ammount = ammount;
             Id = id;
         }
+        
         public decimal Ammount { get; private set; }
         public DateTime DateCreate { get; private set; }
         public Guid EmployeeId { get; private set; }
