@@ -1,24 +1,20 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
-using Accounting.DAL.Migrations;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Accounting.DAL.Providers
 {
     public class AccrualProvider : IAccrualProvider
     {
 #nullable disable
-        private readonly IAccrualRepository _accrualRepository;
         private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
         private readonly ILogger<Accrual> _logger;
-        public AccrualProvider(IAccrualRepository accrualRepository, IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger)
+        public AccrualProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger)
         {
-            _accrualRepository = accrualRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
@@ -51,7 +47,7 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            _unitOfWork.GetRepository<Accrual>().Delete(await _unitOfWork.GetRepository<Accrual>().GetFirstOrDefaultAsync(predicate: x => x.Id == id)); // колхоз ибо в сборке ошибка
+            _unitOfWork.GetRepository<Accrual>().Delete(id); 
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {

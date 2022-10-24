@@ -3,7 +3,7 @@
     public class Document
     {
 #nullable disable
-       
+        public Document() { }
         
         public Document(string name, DateTime dateCreate)
         {

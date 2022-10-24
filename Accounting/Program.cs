@@ -2,7 +2,6 @@ using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Providers;
-using Accounting.DAL.Repositories;
 using Accounting.Domain.Models;
 using Accounting.Services;
 using Accounting.Services.Interfaces;
@@ -21,9 +20,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
 });
 builder.Logging.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger());
 builder.Services.AddUnitOfWork<ApplicationDBContext>();
-builder.Services.AddScoped<IAccrualRepository, AccrualRepository>();
 builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
-builder.Services.AddTransient<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
 builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();

@@ -3,6 +3,7 @@
     public class Accrual
     {
 #nullable disable
+        public Accrual() { }
         public Guid Id { get; private set; }
         public Accrual(DateTime dateCreate, decimal ammount)
         {
