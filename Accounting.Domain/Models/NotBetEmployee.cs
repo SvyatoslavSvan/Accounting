@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Models.Base;
+using Accounting.Domain.ViewModels;
 
 namespace Accounting.Domain.Models
 {
@@ -11,26 +12,16 @@ namespace Accounting.Domain.Models
         {
             
         }
-        public void AddAccrual(Accrual accrual)
+        public NotBetEmployee(Guid id, Group group, string name, string innerId) : base(id, group ,name, innerId)
         {
-            if (Accruals is null)
-            {
-                Accruals = new List<Accrual>();
-                Accruals.Add(accrual);
-            }
-            else
-            {
-                Accruals.Add(accrual);
-            }  
-        }
-        public void AddAcruals(List<Accrual> accruals)
-        {
-            if (this.Accruals is null)
-                this.Accruals = accruals;
-            else
-                this.Accruals.AddRange(accruals);
-        }
 
+        }
+        public void Update(UpdateEmployeeViewModel viewModel, Group group)
+        {
+            Name = viewModel.Name; 
+            Group = group;
+            InnerId = viewModel.InnerId;
+        }
         public override decimal CalculateSalary(DateTime from)
         {
             throw new NotImplementedException();

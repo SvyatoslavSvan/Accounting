@@ -1,73 +1,88 @@
-﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Interfaces.Base;
+﻿using Accounting.DAL.Contexts;
+using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using Calabonga.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
     public class EmployeeProvider : IEmployeeProvider
     {
 #nullable disable
-        private readonly IBaseEmployeeRepository<BetEmployee> _betEmployeeRepository;
-        private readonly INotBetEmployeeRepository _notBetEmployeeRepository;
-        public EmployeeProvider(IBaseEmployeeRepository<BetEmployee> betEmployeeRepository,
-           INotBetEmployeeRepository notBetEmployeeRepository)
+        
+        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
+        private readonly ILogger<EmployeeBase> _logger;
+        public EmployeeProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<EmployeeBase> logger)
         {
-            _betEmployeeRepository = betEmployeeRepository;
-            _notBetEmployeeRepository = notBetEmployeeRepository;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
         public async Task<BaseResult<bool>> Create(EmployeeBase entity)
         {
-            try
+            var isUniq = await IsUniqInnerId(entity);
+            if (isUniq)
             {
-                var isUniq = await IsUniqInnerId(entity);
-                if (isUniq)
+                _unitOfWork.DbContext.Attach(entity.Group);
+                if (entity is BetEmployee betEmployee)
                 {
-                    if (entity is BetEmployee betEmployee)
-                    {
-                        await _betEmployeeRepository.Add(betEmployee);
-                        return new BaseResult<bool>(true, true);
-                    }
-                    else if (entity is NotBetEmployee notBetEmployee)
-                    {
-                        await _notBetEmployeeRepository.Add(notBetEmployee);
-                        return new BaseResult<bool>(true, true);
-                    }
+                    await _unitOfWork.GetRepository<BetEmployee>().InsertAsync(betEmployee);
                 }
-                return new BaseResult<bool>(false, false);
+                else if (entity is NotBetEmployee notBetEmployee)
+                {
+                    await _unitOfWork.GetRepository<NotBetEmployee>().InsertAsync(notBetEmployee);  
+                }
+                await _unitOfWork.SaveChangesAsync();
+                if (!_unitOfWork.LastSaveChangesResult.IsOk)
+                {
+                    LogErrorMessage();
+                    return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                }
+                return new BaseResult<bool>(true, true, OperationStatuses.Ok);
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(false, false, OperationStatuses.NotUniqInnerId);
         }
 
-        private async Task<bool> IsUniqInnerId(EmployeeBase entity)
+        private void LogErrorMessage(Exception ex = null)
         {
-            if(entity is BetEmployee betEmployee)
-                return await _betEmployeeRepository.CountGroupsWithInnerId(entity.InnerId) == 0 ? true : false;
-            if(entity is NotBetEmployee notBetEmployee)
-                return await _notBetEmployeeRepository.CountGroupsWithInnerId(entity.InnerId) == 0 ? true : false;
+            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
+            _logger.LogError(exception.Message);
+            _logger.LogError(exception.InnerException.Message ?? "");
+            _logger.LogError(exception.StackTrace);
+        }
+
+        private async Task<bool> IsUniqInnerId(EmployeeBase entity) => await CheckInnerId(entity);
+
+        private async Task<bool> CheckInnerId(EmployeeBase entity)
+        {
+            if (entity is BetEmployee)
+                return await CountOfEmployee<BetEmployee>(x => x.InnerId == entity.InnerId) == 0 ? true : false;
+            if (entity is NotBetEmployee)
+                return await CountOfEmployee<NotBetEmployee>(x => x.InnerId == entity.InnerId) == 0 ? true : false;
             return false;
         }
+
+        private async Task<int> CountOfEmployee<TRepository>(Expression<Func<TRepository, bool>> predicate) where TRepository : EmployeeBase => await _unitOfWork.GetRepository<TRepository>()
+            .CountAsync(predicate: predicate);
 
         public async Task<BaseResult<List<EmployeeBase>>> GetAll()
         {
             try
-            {
-                var betEmployees = await _betEmployeeRepository.ReadAll();
-                var notBetEmployees = await _notBetEmployeeRepository.ReadAll();
-                List<EmployeeBase> employees = new List<EmployeeBase>();
-                employees.AddRange(betEmployees);
-                employees.AddRange(notBetEmployees);
+            { 
+                var employees = new List<EmployeeBase>();
+                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
+                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
                 employees.OrderBy(x => x.Name);
-                return new BaseResult<List<EmployeeBase>>(true, employees);
+                return new BaseResult<List<EmployeeBase>>(true, employees, OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<List<EmployeeBase>>(false, null);
+                LogErrorMessage(ex);
+                return new BaseResult<List<EmployeeBase>>(false, null, OperationStatuses.Error);
             }
         }
 
@@ -75,107 +90,92 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                var betEmployee = await _betEmployeeRepository.ReadById(id);
-                if (betEmployee is not null)
-                    return new BaseResult<EmployeeBase>(true, betEmployee);
-                var notBetEmployee = await _notBetEmployeeRepository.ReadById(id);
-                if (notBetEmployee is not null)
-                    return new BaseResult<EmployeeBase>(true, notBetEmployee);
-                return new BaseResult<EmployeeBase>(false, null);
+                var count = await _unitOfWork.GetRepository<BetEmployee>().CountAsync(x => x.Id == id);
+                if (count > 0)
+                {
+                    return await GetEmployee<BetEmployee>(id);
+                }
+                else
+                {
+                    return await GetEmployee<NotBetEmployee>(id);
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<EmployeeBase>(false, null);
+                LogErrorMessage(ex);
+                return new BaseResult<EmployeeBase>(false, null, OperationStatuses.Error);
             }
-            
+        }
+
+        private async Task<BaseResult<EmployeeBase>> GetEmployee<TRepository>(Guid id) where TRepository : EmployeeBase
+        {
+            var employee = await _unitOfWork.GetRepository<TRepository>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, disableTracking: false);
+            if (employee is null)
+                return new BaseResult<EmployeeBase>(false, null, OperationStatuses.NotFound);
+            return new BaseResult<EmployeeBase>(true, employee, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<bool>> Update(EmployeeBase entity)
         {
-            try
+            _unitOfWork.DbContext.Attach(entity.Group);
+            SelectEmployeeRepository(entity);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                if (entity is BetEmployee betEmployee)
-                {
-                    await _betEmployeeRepository.Update(betEmployee);
-                    return new BaseResult<bool>(true, true);
-                }
-                else if (entity is NotBetEmployee notBetEmployee)
-                {
-                    await _notBetEmployeeRepository.Update(notBetEmployee);
-                    return new BaseResult<bool>(true, true);
-                }
-                return new BaseResult<bool>(false, false);
+                LogErrorMessage();
+                return new BaseResult<bool>(false, false, OperationStatuses.Error);
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<NotBetEmployee>> GetNotBetEmployeeById(Guid Id)
+        private void SelectEmployeeRepository(EmployeeBase entity)
         {
-            try
-            {
-                var notBetEmployee = await _notBetEmployeeRepository.ReadById(Id);
-                if (notBetEmployee is not null)
-                    return new BaseResult<NotBetEmployee>(true, notBetEmployee);
-                return new BaseResult<NotBetEmployee>(false, null);
-            }
-            catch (Exception)
-            {
-                return new BaseResult<NotBetEmployee>(false, null);
-            }
+            if (entity is BetEmployee betEmployee)
+                UpdateEmployee<BetEmployee>(betEmployee);
+            if (entity is NotBetEmployee notBetEmployee)
+                UpdateEmployee<NotBetEmployee>(notBetEmployee);
         }
 
-        public async Task<BaseResult<BetEmployee>> GetBetEmployeeById(Guid id)
-        {
-            try
-            {
-                var betEmployee = await _betEmployeeRepository.ReadById(id);
-                if (betEmployee is not null)
-                    return new BaseResult<BetEmployee>(true, betEmployee);
-                return new BaseResult<BetEmployee>(false, null);
-            }
-            catch (Exception)
-            {
-                return new BaseResult<BetEmployee>(false, null);
-            }
-        }
+        private void UpdateEmployee<TRepository>(TRepository employee) where TRepository : EmployeeBase => _unitOfWork.GetRepository<TRepository>().Update(employee);
+
+        
+
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            try
+            await ChooseRepositoryToDelete(id);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                var betEmployeeToDelete = await _betEmployeeRepository.ReadById(id);
-                if (betEmployeeToDelete is not null)
-                {
-                    await _betEmployeeRepository.Delete(id);
-                    return new BaseResult<bool>(true, true);
-                }
-                var notBetEmployeeToDelete = await _notBetEmployeeRepository.ReadById(id);
-                if (notBetEmployeeToDelete is not null)
-                {
-                    await _notBetEmployeeRepository.Delete(id);
-                    return new BaseResult<bool>(true, true);
-                }
-                return new BaseResult<bool>(false, false);
+                LogErrorMessage();
+                return new BaseResult<bool>(false, false, OperationStatuses.Error);
             }
-            catch (Exception)
-            {
-                return new BaseResult<bool>(false, false);
-            }
-
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
+
+        private async Task ChooseRepositoryToDelete(Guid id)
+        {
+            var countOfBetEmployees = await CountOfEmployee<BetEmployee>(x => x.Id == id);
+            if (countOfBetEmployees > 0)
+                DeleteEmployee<BetEmployee>(id);
+            else
+                DeleteEmployee<NotBetEmployee>(id);
+        }
+
+        private void DeleteEmployee<TRepository>(Guid id) where TRepository : EmployeeBase => _unitOfWork.GetRepository<TRepository>().Delete(id);
 
         public async Task<BaseResult<NotBetEmployee>> getNotBetEmployee(Guid id)
         {
             try
             {
-                var employee = await _notBetEmployeeRepository.ReadById(id);
-                return new BaseResult<NotBetEmployee>(true, employee);
+                var employee = await _unitOfWork.GetRepository<NotBetEmployee>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, disableTracking: false);
+                if (employee is null)
+                    return new BaseResult<NotBetEmployee>(false, null, OperationStatuses.NotFound);
+                return new BaseResult<NotBetEmployee>(true, employee, OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<NotBetEmployee>(false, null);
+                LogErrorMessage(ex);
+                return new BaseResult<NotBetEmployee>(false, null, OperationStatuses.Error);
             }
         }
 
@@ -183,12 +183,13 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                var employees = await _notBetEmployeeRepository.ReadAll();
-                return new BaseResult<IEnumerable<NotBetEmployee>>(true, employees);
+                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _unitOfWork.
+                    GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group), disableTracking: false), OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null);
+                LogErrorMessage(ex);
+                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null, OperationStatuses.Error);
             }
         }
 
@@ -196,11 +197,29 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _notBetEmployeeRepository.GetAllIncludeDocument());
+                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _unitOfWork.
+                    GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Documents), disableTracking: false), OperationStatuses.Ok);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null);
+                LogErrorMessage(ex);
+                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null, OperationStatuses.Error);
+            }
+        }
+
+        public async Task<BaseResult<BetEmployee>> GetBetEmployee(Guid id)
+        {
+            try
+            {
+                var employee = await _unitOfWork.GetRepository<BetEmployee>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, disableTracking: false);
+                if (employee is null)
+                    return new BaseResult<BetEmployee>(true, employee, OperationStatuses.NotFound);
+                return new BaseResult<BetEmployee>(true, employee, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return new BaseResult<BetEmployee>(false, null, OperationStatuses.Error);
             }
         }
     }

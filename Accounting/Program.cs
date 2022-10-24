@@ -6,6 +6,7 @@ using Accounting.DAL.Repositories;
 using Accounting.Domain.Models;
 using Accounting.Services;
 using Accounting.Services.Interfaces;
+using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -19,9 +20,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection"));
 });
 builder.Logging.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger());
-builder.Services.AddScoped<IBaseEmployeeRepository<BetEmployee>, BetEmployeeRepository>();
-builder.Services.AddScoped<INotBetEmployeeRepository ,NotBetEmployeeRepository>();
-builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddUnitOfWork<ApplicationDBContext>();
 builder.Services.AddScoped<IAccrualRepository, AccrualRepository>();
 builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
 builder.Services.AddTransient<IDocumentRepository, DocumentRepository>();

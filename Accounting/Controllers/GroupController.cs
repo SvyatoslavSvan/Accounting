@@ -23,8 +23,9 @@ namespace Accounting.Controllers
             var createResult = await _groupProvider.Create(new Group(groupViewModel.Name));
             if (createResult.Succed)
                 return RedirectToAction(nameof(Groups));
+            if (createResult.OperationStatus == DAL.Result.Provider.Base.OperationStatuses.Error)
+                return View("Error");
             return BadRequest();
         }
-        
     }
 }

@@ -98,22 +98,30 @@ namespace Accounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                EmployeeBase employeeToUpdate;
-                var group = await _groupProvider.GetById(viewModel.GroupId);
-                if (viewModel.IsBet)
+                var getGroupResult = await _groupProvider.GetById(viewModel.GroupId);
+                if (getGroupResult.Succed)
                 {
-                    employeeToUpdate = new BetEmployee(viewModel.Name, (decimal)viewModel.Bet, viewModel.InnerId);
-                    employeeToUpdate.SetId(viewModel.Id);
+                    if (viewModel.IsBet)
+                    {
+                        var getEmployeeToUpdateResult = await _employeeProvider.GetBetEmployee(viewModel.Id);
+                        if (getEmployeeToUpdateResult.Succed)
+                        {
+                            getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
+                            await _employeeProvider.Update(getEmployeeToUpdateResult.Data);
+                            return RedirectToAction(nameof(Employees));
+                        }
+                    }
+                    else
+                    {
+                        var getEmployeeToUpdateResult = await _employeeProvider.getNotBetEmployee(viewModel.Id);
+                        if (getEmployeeToUpdateResult.Succed)
+                        {
+                            getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
+                            await _employeeProvider.Update(getEmployeeToUpdateResult.Data);
+                        }
+                        return RedirectToAction(nameof(Employees));
+                    }
                 }
-                else
-                {
-                    employeeToUpdate = new NotBetEmployee(viewModel.Name, viewModel.InnerId);
-                }
-                employeeToUpdate.AddToGroup(group.Data);
-                var updateResult = await _employeeProvider.Update(employeeToUpdate);
-                if (updateResult.Succed)
-                    return RedirectToAction(nameof(Employees));
-                return BadRequest();
             }
             return View();
         }
