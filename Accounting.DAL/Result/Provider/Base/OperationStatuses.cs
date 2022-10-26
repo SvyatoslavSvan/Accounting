@@ -6,6 +6,7 @@
         Error,
         Ok,
         NotUniqName,
-        NotUniqInnerId
+        NotUniqInnerId,
+        AllWorkDaysMatch
     }
 }

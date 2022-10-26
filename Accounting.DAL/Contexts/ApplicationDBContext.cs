@@ -15,5 +15,6 @@ namespace Accounting.DAL.Contexts
         public DbSet<Group> Groups { get; set; }
         public DbSet<Accrual> Accruals { get; set; }
         public DbSet<Document> Documents { get; set; }
+        public DbSet<WorkDay> WorkDays { get; set; }
     }
 }

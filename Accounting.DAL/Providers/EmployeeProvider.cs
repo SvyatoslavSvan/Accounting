@@ -222,5 +222,18 @@ namespace Accounting.DAL.Providers
                 return new BaseResult<BetEmployee>(false, null, OperationStatuses.Error);
             }
         }
+
+        public async Task<BaseResult<IList<BetEmployee>>> GetBetEmployees()
+        {
+            try
+            {
+                return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(disableTracking: false), OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return new BaseResult<IList<BetEmployee>>(false, null, OperationStatuses.Error);
+            }
+        }
     }
 }

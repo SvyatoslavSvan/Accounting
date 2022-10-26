@@ -6,6 +6,19 @@ namespace Accounting.Domain.Models
     public class BetEmployee : EmployeeBase
     {
         public decimal Bet { get; private set; }
+
+        private List<WorkDay> _workDays;
+
+        public List<WorkDay> WorkDays
+        {
+            get => _workDays;
+
+            set 
+            { 
+                _workDays = value; 
+            }
+        }
+
         public BetEmployee(string name, decimal bet, string innerId) : base(name, innerId)
         {
             Bet = bet;
@@ -15,7 +28,7 @@ namespace Accounting.Domain.Models
         {
             Bet = bet;
         }
-
+        
         public override decimal CalculateSalary(DateTime from)
         {
             throw new NotImplementedException();
