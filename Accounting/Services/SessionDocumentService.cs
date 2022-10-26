@@ -10,9 +10,14 @@ namespace Accounting.Services
     {
 #nullable disable
         private readonly ISession _session;
+        private readonly ILogger<SessionDocument> _logger;
         private const string sessionDocumentKey = "sessionDocumentKey";
-        public SessionDocumentService(IServiceProvider provider) => _session = provider.GetRequiredService<IHttpContextAccessor>().HttpContext.Session;
-
+        public SessionDocumentService(IServiceProvider provider, ILogger<SessionDocument> logger)
+        {
+            _session = provider.GetRequiredService<IHttpContextAccessor>().HttpContext.Session;
+            _logger = logger;
+        }
+        
         public async Task<bool> AddEmployee(NotBetEmployee employee)
         {
             var sessionDocument = GetSessionDocument();
@@ -124,10 +129,18 @@ namespace Accounting.Services
                 await _session.CommitAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LogErrorMessage(ex);
                 return false;
             }
+        }
+
+        private void LogErrorMessage(Exception exception)
+        {
+            _logger.LogError(exception.Message);
+            _logger.LogError(exception.InnerException.Message ?? string.Empty);
+            _logger.LogError(exception.StackTrace);
         }
 
         private SessionAccrual MapToSessionAccrual(Accrual accrual)
