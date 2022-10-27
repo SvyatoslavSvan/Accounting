@@ -18,7 +18,7 @@ namespace Accounting.Controllers
             var createResult = await _workDayProvider.CreateNewWorkDays();
             if (createResult.Succed)
             {
-                var getEmployeesResult = await _employeeProvider.GetEmployeesWithWorkDaysByMonth(month == default(DateTime) ? DateTime.Now.Month : month.Month);
+                var getEmployeesResult = await _employeeProvider.GetEmployeesWithWorkDaysByDate(month == default(DateTime) ? DateTime.Now : month);
                 if (getEmployeesResult.Succed)
                 {
                     return View(getEmployeesResult.Data);

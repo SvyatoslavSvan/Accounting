@@ -3,6 +3,6 @@
     public class UpdateWorkDayViewModel
     {
         public Guid Id { get; set; }
-        public int Hours { get; set; }
+        public float Hours { get; set; }
     }
 }

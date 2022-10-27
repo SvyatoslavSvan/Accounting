@@ -3,12 +3,12 @@
     public class WorkDay
     {
         public WorkDay() { }
-        public WorkDay(DateTime date, int hours)
+        public WorkDay(DateTime date, float hours)
         {
             Date = date;
             Hours = hours;
         }
-        public WorkDay(DateTime date, int hours, BetEmployee employee)
+        public WorkDay(DateTime date, float hours, BetEmployee employee)
         {
             Date = date;
             Hours = hours;
@@ -17,23 +17,22 @@
 
         public Guid Id { get; private set; }
         public DateTime Date { get; private set; }
-        //public int Hours { get; private set; }
-        private int _hours;
-        public int Hours
+        public const float MinHoursValue = 0;
+        public const float MaxHoursValue = 8;
+        private float _hours;
+        public float Hours
         {
             get => _hours;
             set 
-            {
-                const int minValue = 0;
-                const int maxValue = 8;
-                if (value < minValue)
+            { 
+                if (value < MinHoursValue)
                 {
-                    _hours = minValue;
+                    _hours = MinHoursValue;
                     return;
                 }
-                if (value > maxValue)
+                if (value > MaxHoursValue)
                 {
-                    _hours = maxValue;
+                    _hours = MaxHoursValue;
                     return;
                 }
                 _hours = value;

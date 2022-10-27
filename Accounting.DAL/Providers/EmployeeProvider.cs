@@ -236,12 +236,12 @@ namespace Accounting.DAL.Providers
             }
         }
 
-        public async Task<BaseResult<IList<BetEmployee>>> GetEmployeesWithWorkDaysByMonth(int month)
+        public async Task<BaseResult<IList<BetEmployee>>> GetEmployeesWithWorkDaysByDate(DateTime date)
         {
             try
             {
                 return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x
-                .Include(x => x.WorkDays.Where(x => x.Date.Month == month))), OperationStatuses.Ok);
+                .Include(x => x.WorkDays.Where(x => x.Date.Month == date.Month && x.Date.Year == date.Year))), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {

@@ -27,8 +27,8 @@ namespace Accounting.DAL.Providers
 
         private List<WorkDay> GetWorkDays(BetEmployee employee)
         {
-            const int dontWork = 0;
-            const int workHours = 8;
+            const float dontWork = WorkDay.MinHoursValue;
+            const float workHours = WorkDay.MaxHoursValue;
             var workDays = new List<WorkDay>();
             for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
             {
