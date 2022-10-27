@@ -1,6 +1,4 @@
 ﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -8,16 +6,25 @@ namespace Accounting.Controllers
     public class TimesheetController : Controller
     {
         private readonly IWorkDayProvider _workDayProvider;
-        public TimesheetController(IWorkDayProvider workDayProvider)
+        private readonly IEmployeeProvider _employeeProvider;
+        public TimesheetController(IWorkDayProvider workDayProvider, IEmployeeProvider employeeProvider)
         {
             _workDayProvider = workDayProvider;
+            _employeeProvider = employeeProvider;
         }
 
-        public async Task<IActionResult> Timesheet()
+        public async Task<IActionResult> Timesheet(DateTime month)
         {
             var createResult = await _workDayProvider.CreateNewWorkDays();
-            var workDays = await _workDayProvider.GetAllFromThisMonth();
-            return View(workDays.Data);
+            if (createResult.Succed)
+            {
+                var getEmployeesResult = await _employeeProvider.GetEmployeesWithWorkDaysByMonth(month == default(DateTime) ? DateTime.Now.Month : month.Month);
+                if (getEmployeesResult.Succed)
+                {
+                    return View(getEmployeesResult.Data);
+                }
+            }
+            return BadRequest();
         }
 
         

@@ -1,0 +1,55 @@
+﻿@using Accounting.Extensions;
+@using Accounting.Domain.Models
+@model IList<BetEmployee>
+@{
+    var employeeToCountDays = Model.FirstOrDefault();
+    string getUpdateFormId(Guid id) => id.ToString() + "updateWorkDayForm";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 m-auto">
+            <form method="get" asp-action="Timesheet" asp-controller="Timesheet">
+                <label class="form-label">
+                    Данні за 
+                </label>
+                <input type="date" class="form-control" name="month"/>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="max-width: 100%; overflow: scroll" >
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Працівник</th>
+                        @foreach (var item in employeeToCountDays.WorkDays)
+                        {
+                            <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Name
+                            </td>
+                            @foreach (var workDay in item.WorkDays)
+                            {
+                                <td class="m-0">
+                                    <form id="@getUpdateFormId(workDay.Id)">
+                                        <input type="hidden" value="@workDay.Id" name="Id"/>
+                                        <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
+                                    </form>
+                                    
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+       
+    </div>
+</div>

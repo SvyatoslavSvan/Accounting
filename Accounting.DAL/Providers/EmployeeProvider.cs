@@ -227,7 +227,21 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(disableTracking: false), OperationStatuses.Ok);
+                return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(true), OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return new BaseResult<IList<BetEmployee>>(false, null, OperationStatuses.Error);
+            }
+        }
+
+        public async Task<BaseResult<IList<BetEmployee>>> GetEmployeesWithWorkDaysByMonth(int month)
+        {
+            try
+            {
+                return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x
+                .Include(x => x.WorkDays.Where(x => x.Date.Month == month))), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {

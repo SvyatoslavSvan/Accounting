@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -98,14 +99,28 @@ namespace Accounting.DAL.Providers
             throw new NotImplementedException();
         }
 
-        public Task<BaseResult<WorkDay>> GetById(Guid id)
+        public async Task<BaseResult<WorkDay>> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var workDay = await _unitOfWork.GetRepository<WorkDay>().GetFirstOrDefaultAsync(predicate: x => x.Id == id);
+                return new BaseResult<WorkDay>(true, workDay, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<WorkDay>(ex);
+            }
         }
 
-        public Task<BaseResult<bool>> Update(WorkDay entity)
+        public async Task<BaseResult<bool>> Update(WorkDay entity)
         {
-            throw new NotImplementedException();
+            _unitOfWork.GetRepository<WorkDay>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<IList<WorkDay>>> GetAllFromThisMonth()
