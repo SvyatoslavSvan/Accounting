@@ -7,15 +7,21 @@ namespace Accounting.Domain.Models
     {
 #nullable disable
         public List<Accrual> Accruals { get; private set; } 
-        public List<Document> Documents { get; private set; } 
-        public NotBetEmployee(string name, string innerId) : base(name, innerId)
-        {
-            
-        }
-        public NotBetEmployee(Guid id, Group group, string name, string innerId) : base(id, group ,name, innerId)
+        public List<Document> Documents { get; private set; }
+        public NotBetEmployee(string name, string innerId) : base(name, innerId, 0)
         {
 
         }
+        public NotBetEmployee(string name, string innerId, int premium) : base(name, innerId, premium)
+        {
+            
+        }
+
+        public NotBetEmployee(Guid id, Group group, string name, string innerId, int premium) : base(id, group ,name, innerId, premium)
+        {
+
+        }
+
         public void Update(UpdateEmployeeViewModel viewModel, Group group)
         {
             Name = viewModel.Name; 

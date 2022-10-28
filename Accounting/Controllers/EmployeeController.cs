@@ -36,12 +36,12 @@ namespace Accounting.Controllers
                 var employeeGroup = await _groupProvider.GetById(employeeViewModel.GroupId);
                 if (employeeViewModel.IsBet)
                 {
-                    employee = new BetEmployee(employeeViewModel.Name, (decimal)employeeViewModel.Bet, employeeViewModel.InnerId);
+                    employee = new BetEmployee(employeeViewModel.Name, (decimal)employeeViewModel.Bet, employeeViewModel.InnerId, employeeViewModel.Premium);
                     employee.AddToGroup(employeeGroup.Data);
                 }
                 else
                 {
-                    employee = new NotBetEmployee(employeeViewModel.Name, employeeViewModel.InnerId);
+                    employee = new NotBetEmployee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
                     employee.AddToGroup(employeeGroup.Data);
                 }
                 var createResult = await _employeeProvider.Create(employee);

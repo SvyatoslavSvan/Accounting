@@ -8,12 +8,28 @@
         public Group Group { get; protected set; }
         public Guid GroupId { get; protected set; }
         public string InnerId { get; protected set; }
-        public EmployeeBase(string name, string innerId)
+
+        private int _premium;
+
+        public int Premium
+        {
+            get => _premium;
+            set
+            {
+                if (value > 100)
+                    return;
+                if (value < 1)
+                    return;
+                _premium = value;
+            }
+        }
+
+        public EmployeeBase(string name, string innerId, int premium)
         {
             Name = name ?? throw new ArgumentNullException(nameof(Name));
             InnerId = innerId ?? throw new ArgumentNullException(nameof(InnerId));
         }
-        public EmployeeBase(Guid id , Group group, string name , string innerId)
+        public EmployeeBase(Guid id , Group group, string name , string innerId, int premium)
         {
             Id = id;
             Name = name ?? throw new ArgumentNullException(nameof(Name));

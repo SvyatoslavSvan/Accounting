@@ -8,6 +8,7 @@ namespace Accounting.Domain.ViewModels
         public string InnerId { get; set; } = null!;
         [Required(ErrorMessage = "Имя обязательно для ввода")]
         public string Name { get; set; } = null!;
+        public int Premium { get; set; }
         public decimal? Bet { get; set; }
         public bool IsBet { get; set; }
         [Required]

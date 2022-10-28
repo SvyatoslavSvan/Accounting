@@ -19,12 +19,12 @@ namespace Accounting.Domain.Models
             }
         }
 
-        public BetEmployee(string name, decimal bet, string innerId) : base(name, innerId)
+        public BetEmployee(string name, decimal bet, string innerId, int premium) : base(name, innerId, premium)
         {
             Bet = bet;
         }
 
-        public BetEmployee(Guid id, Group group, string name, string innerId, decimal bet) : base(id, group, name, innerId)
+        public BetEmployee(Guid id, Group group, string name, string innerId, decimal bet, int premium) : base(id, group, name, innerId, premium)
         {
             Bet = bet;
         }
