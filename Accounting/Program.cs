@@ -26,6 +26,7 @@ builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
 builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();
 builder.Services.AddTransient<IWorkDayProvider, WorkDayProvider>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
+builder.Services.AddTransient<IReportService, ReportService>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
