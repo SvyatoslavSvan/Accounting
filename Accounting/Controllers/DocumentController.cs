@@ -208,18 +208,19 @@ namespace Accounting.Controllers
             var getByIdResult = await _employeeProvider.getNotBetEmployee(accrualViewModel.EmployeeId);
             if (getByIdResult.Succed)
             {
-                var accrual = new Accrual(DateTime.Now, accrualViewModel.Ammount);
+                var accrual = new Accrual(DateTime.Now, accrualViewModel.Ammount, accrualViewModel.IsAdditional);
                 accrual.AddEmployee(getByIdResult.Data);
                 var createAccrualResult = await _accrualProvider.Create(accrual);
                 if (createAccrualResult.Succed)
                 {
                     var addAccrualToSessionReuslt = await _sessionDocumentService.AddAccrual(accrual);
                     if(addAccrualToSessionReuslt)
-                        return PartialView("AddedAccrual", new UpdateAccrualViewModel() { AccrualId = accrual.Id, Ammount = accrualViewModel.Ammount});
+                        return PartialView("AddedAccrual", new UpdateAccrualViewModel() { AccrualId = accrual.Id, Ammount = accrualViewModel.Ammount, IsAdditional = accrualViewModel.IsAdditional});
                 }
             }
             return BadRequest();
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteAccrual(Guid accrualId)
         {

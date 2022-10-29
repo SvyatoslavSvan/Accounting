@@ -18,5 +18,6 @@ namespace Accounting.Services.Interfaces
         public Task<bool> UpdateAccrual(decimal ammount, Guid accrualId);
         public Task<bool> DeleteAccrual(Guid accrualId);
         public Task<bool> LoadDocument(Document document);
+        
     }
 }

@@ -1,5 +1,5 @@
-﻿using Accounting.Domain.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
 namespace Accounting.Domain.ViewModels
 {
     public class CreateEmployeeViewModel

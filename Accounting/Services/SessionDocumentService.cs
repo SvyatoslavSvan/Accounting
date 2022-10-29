@@ -55,7 +55,7 @@ namespace Accounting.Services
 
         public List<Accrual> GetAccrualsByEmployeeId(Guid employeeId)
         {
-            var sessionAccruals = GetSessionDocument().Accruals.Where(x => x.EmployeeId == employeeId);
+            var sessionAccruals = GetSessionDocument().Accruals.Where(x => x.EmployeeId == employeeId); 
             if (sessionAccruals is not null)
                 return this.MapToListFromSessionAccrual(sessionAccruals.ToList());
             return null;
@@ -151,11 +151,12 @@ namespace Accounting.Services
                 Id = accrual.Id,
                 DateCreate = accrual.DateCreate,
                 EmployeeId = accrual.EmployeeId,
+                IsAdditional = accrual.IsAdditional
             };
             return sessionAccrual;
         }
         
-        private Accrual MapFromSessionAccrual(SessionAccrual sessionAccrual) => new Accrual(sessionAccrual.DateCreate, sessionAccrual.Ammount, sessionAccrual.Id);
+        private Accrual MapFromSessionAccrual(SessionAccrual sessionAccrual) => new Accrual(sessionAccrual.DateCreate, sessionAccrual.Ammount, sessionAccrual.Id, sessionAccrual.IsAdditional);
 
         private SessionNotBetEmployee MapToSessionEmployee(NotBetEmployee employee)
         {
