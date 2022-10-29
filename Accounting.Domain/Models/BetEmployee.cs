@@ -6,6 +6,14 @@ namespace Accounting.Domain.Models
     public class BetEmployee : EmployeeBase
     {
         public decimal Bet { get; private set; }
+#nullable disable
+        private ICollection<DeducationDocument> _deducationDocuments;
+
+        public ICollection<DeducationDocument> DeducationDocuments
+        {
+            get => _deducationDocuments;
+            set { _deducationDocuments = value; }
+        }
 
         private List<WorkDay> _workDays;
 

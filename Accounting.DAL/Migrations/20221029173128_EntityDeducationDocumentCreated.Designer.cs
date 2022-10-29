@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221029173128_EntityDeducationDocumentCreated")]
+    partial class EntityDeducationDocumentCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +63,9 @@ namespace Accounting.DAL.Migrations
                     b.Property<decimal>("Bet")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("DeducationDocumentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -74,6 +79,8 @@ namespace Accounting.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeducationDocumentId");
 
                     b.HasIndex("GroupId");
 
@@ -127,7 +134,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeducationDocuments");
+                    b.ToTable("DeducationDocument");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Document", b =>
@@ -167,6 +174,9 @@ namespace Accounting.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DeducationDocumentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -180,6 +190,8 @@ namespace Accounting.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeducationDocumentId");
 
                     b.HasIndex("GroupId");
 
@@ -206,36 +218,6 @@ namespace Accounting.DAL.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("WorkDays");
-                });
-
-            modelBuilder.Entity("BetEmployeeDeducationDocument", b =>
-                {
-                    b.Property<Guid>("BetEmployeesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DeducationDocumentsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BetEmployeesId", "DeducationDocumentsId");
-
-                    b.HasIndex("DeducationDocumentsId");
-
-                    b.ToTable("BetEmployeeDeducationDocument");
-                });
-
-            modelBuilder.Entity("DeducationDocumentNotBetEmployee", b =>
-                {
-                    b.Property<Guid>("DeducationDocumentsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("NotBetEmployeesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("DeducationDocumentsId", "NotBetEmployeesId");
-
-                    b.HasIndex("NotBetEmployeesId");
-
-                    b.ToTable("DeducationDocumentNotBetEmployee");
                 });
 
             modelBuilder.Entity("DocumentNotBetEmployee", b =>
@@ -272,6 +254,10 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.BetEmployee", b =>
                 {
+                    b.HasOne("Accounting.Domain.Models.DeducationDocument", null)
+                        .WithMany("BetEmployees")
+                        .HasForeignKey("DeducationDocumentId");
+
                     b.HasOne("Accounting.Domain.Models.Group", "Group")
                         .WithMany("BetEmployees")
                         .HasForeignKey("GroupId")
@@ -308,6 +294,10 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.NotBetEmployee", b =>
                 {
+                    b.HasOne("Accounting.Domain.Models.DeducationDocument", null)
+                        .WithMany("NotBetEmployees")
+                        .HasForeignKey("DeducationDocumentId");
+
                     b.HasOne("Accounting.Domain.Models.Group", "Group")
                         .WithMany("NotBetEmployees")
                         .HasForeignKey("GroupId")
@@ -326,36 +316,6 @@ namespace Accounting.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("BetEmployeeDeducationDocument", b =>
-                {
-                    b.HasOne("Accounting.Domain.Models.BetEmployee", null)
-                        .WithMany()
-                        .HasForeignKey("BetEmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Accounting.Domain.Models.DeducationDocument", null)
-                        .WithMany()
-                        .HasForeignKey("DeducationDocumentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DeducationDocumentNotBetEmployee", b =>
-                {
-                    b.HasOne("Accounting.Domain.Models.DeducationDocument", null)
-                        .WithMany()
-                        .HasForeignKey("DeducationDocumentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Accounting.Domain.Models.NotBetEmployee", null)
-                        .WithMany()
-                        .HasForeignKey("NotBetEmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DocumentNotBetEmployee", b =>
@@ -380,7 +340,11 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.DeducationDocument", b =>
                 {
+                    b.Navigation("BetEmployees");
+
                     b.Navigation("Deducations");
+
+                    b.Navigation("NotBetEmployees");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Document", b =>

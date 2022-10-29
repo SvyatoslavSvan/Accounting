@@ -21,6 +21,13 @@ namespace Accounting.Domain.Models
         {
 
         }
+        private ICollection<DeducationDocument> _deducationDocuments;
+
+        public ICollection<DeducationDocument> DeducationDocuments
+        {
+            get => _deducationDocuments;
+            set { _deducationDocuments = value; }
+        }
 
         public void Update(UpdateEmployeeViewModel viewModel, Group group)
         {
