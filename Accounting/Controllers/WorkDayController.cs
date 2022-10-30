@@ -26,7 +26,7 @@ namespace Accounting.Controllers
                 }
                 if (updateResult.OperationStatus == OperationStatuses.Error || workDay.OperationStatus == OperationStatuses.Error)
                 {
-                    return StatusCode(505);
+                    return StatusCode(500);
                 }
             }
             return BadRequest(ModelState);

@@ -1,24 +1,24 @@
-﻿
+﻿using Accounting.Domain.Models.Base;
+
 namespace Accounting.Domain.Models
 {
     public class Deducation
     {
 
 		public Deducation() { }
-		public Deducation(decimal ammount, bool isAdditional, NotBetEmployee employee)
+		public Deducation(decimal ammount, bool isAdditional, EmployeeBase employee)
 		{
 			Ammount = ammount;
 			IsAdditional = isAdditional;
-			NotBetEmployee = employee;
-		}
-
-		public Deducation(decimal ammount, bool isAdditional, BetEmployee employee)
-		{
-            Ammount = ammount;
-            IsAdditional = isAdditional;
-            BetEmployee = employee;
-        }
-
+			if (employee is NotBetEmployee notBetEmployee)
+			{
+				NotBetEmployee = notBetEmployee;
+			}
+			if(employee is BetEmployee betEmployee)
+			{
+				BetEmployee = betEmployee;
+			}
+		} 
         public Guid Id { get; private set; }
 
 		private decimal _ammount;
@@ -69,7 +69,7 @@ namespace Accounting.Domain.Models
 
 		private BetEmployee? _betEmployee;
 
-		public BetEmployee BetEmployee
+		public BetEmployee? BetEmployee
 		{
 			get => _betEmployee;
 			set 

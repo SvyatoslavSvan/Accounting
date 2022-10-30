@@ -1,0 +1,25 @@
+﻿@using Accounting.Domain.ViewModels
+@model UpdateDeducationlViewModel 
+@{
+    var updateAccrualFormId = Model.DeducationId + "updateAccrualForm";
+    var formTdId = Model.DeducationId + "tdForm";
+    var accrualLiId = Model.DeducationId + "litodelete";
+    var deleteAccrualFormId = Model.DeducationId + "deleteForm";
+    var ammountInputId = Model.DeducationId + "ammountInputId";
+}
+<li class="list-group-item" id="@accrualLiId">
+    <div class="d-flex justify-content-between">
+        <form id="@updateAccrualFormId">
+            <input type="hidden" name="AccrualId" value="@Model.DeducationId" />
+            @if (Model.IsAdditional)
+            {
+                <label class="form-label">Отп/больн</label>
+            }
+            <input type="text" name="Ammount" value="@Model.Ammount" onchange="onAmmountInputChanged('@updateAccrualFormId')" class="form-control-sm" id="@ammountInputId" />
+        </form>
+        <form id="@deleteAccrualFormId">
+            <input type="hidden" name="accrualId" value="@Model.DeducationId" />
+            <button class="btn btn-outline-danger" type="button" onclick="sendForm('@deleteAccrualFormId', '/Document/DeleteAccrual', '@accrualLiId')">Видалити</button>
+        </form>
+    </div>
+</li>

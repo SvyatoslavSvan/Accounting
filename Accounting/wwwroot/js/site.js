@@ -13,10 +13,21 @@
     });
 }
 
+function appendEmployee(elementToRemoveId, response) {
+    $('#addedEmployeesTbody').append(response);
+    $('#' + elementToRemoveId).remove();
+}
+function removeEmployee(elementToRemoveId, response) {
+    $('#' + elementToRemoveId).remove();
+    getSumOfAccruals();
+    $('#chooseEmployeeUl').append(response);
+}
 function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/AddEmployeeToDocument') {
-        $('#addedEmployeesTbody').append(response);
-        $('#' + elementToRemoveId).remove();
+        appendEmployee(elementToRemoveId, response);
+    }
+    if (url == '/DeducationDocument/AddEmployee') {
+        appendEmployee(elementToRemoveId, response);
     }
     if (url == '/Document/AddAccrualToEmployee') {
         /*$('#' + elementToRemoveId).append(response);*/
@@ -33,9 +44,10 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         getSumOfAccruals();
     }
     if (url == '/Document/DeleteEmployeeFromDocument') {
-        $('#' + elementToRemoveId).remove();
-        getSumOfAccruals();
-        $('#chooseEmployeeUl').append(response);
+        removeEmployee(elementToRemoveId, response);
+    }
+    if (url == '/DeducationDocument/DeleteEmployee') {
+        removeEmployee(elementToRemoveId, response);
     }
     if (url == '/Document/UpdateAccrual') {
         getSumOfAccruals();
@@ -83,6 +95,30 @@ function openCreateAccrualModal(employeeId) {
             console.log(response);
         }
     });
+}
+
+function openCreateDeducationModal(employeeId) {
+    $.ajax({
+        url: `/Deducation/CreateDeducation/${employeeId}`,
+        method: 'get',
+        success: function (response) {
+            appendCreatedDeducationResponse(response, false);
+        },
+        error: function (response) {
+            alert('Вадим лютин');
+            console.log(response);
+        }
+    });
+}
+
+function appendCreatedDeducationResponse(response, addAccrualToUl) {
+    if (!addAccrualToUl) {
+        $('#createDeducationModalBody').empty();
+        $('#createDeducationModalBody').append(response);
+    } else {
+        $('#DeducationUl').append(response);
+    }
+
 }
 
 function appendCreatedAccrualResponse(response, addAccrualToUl) {

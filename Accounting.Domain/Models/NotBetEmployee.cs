@@ -1,17 +1,16 @@
 ﻿using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
     public class NotBetEmployee : EmployeeBase
     {
 #nullable disable
+        [JsonConstructor]
+        public NotBetEmployee(Guid id, string name) : base(id, name) { }
         public List<Accrual> Accruals { get; private set; } 
         public List<Document> Documents { get; private set; }
-        public NotBetEmployee(string name, string innerId) : base(name, innerId, 0)
-        {
-
-        }
         public NotBetEmployee(string name, string innerId, int premium) : base(name, innerId, premium)
         {
             
@@ -21,12 +20,12 @@ namespace Accounting.Domain.Models
         {
 
         }
-        private ICollection<DeducationDocument> _deducationDocuments;
 
-        public ICollection<DeducationDocument> DeducationDocuments
+        public override void ToSerializable()
         {
-            get => _deducationDocuments;
-            set { _deducationDocuments = value; }
+            base.ToSerializable();
+            this.Accruals = null;
+            this.Documents = null;
         }
 
         public void Update(UpdateEmployeeViewModel viewModel, Group group)
@@ -35,6 +34,7 @@ namespace Accounting.Domain.Models
             Group = group;
             InnerId = viewModel.InnerId;
         }
+
         public override decimal CalculateSalary(DateTime from)
         {
             throw new NotImplementedException();

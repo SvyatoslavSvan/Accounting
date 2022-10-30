@@ -1,8 +1,11 @@
-﻿namespace Accounting.Domain.Models.Base
+﻿using Newtonsoft.Json;
+
+namespace Accounting.Domain.Models.Base
 {
 #nullable disable
     public abstract class EmployeeBase
     {
+        
         public Guid Id { get; protected set; }
         public string Name { get; protected set; }
         public Group Group { get; protected set; }
@@ -23,6 +26,12 @@
                 _premium = value;
             }
         }
+        [JsonConstructor]
+        public EmployeeBase(Guid id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
 
         public EmployeeBase(string name, string innerId, int premium)
         {
@@ -36,6 +45,29 @@
             InnerId = innerId ?? throw new ArgumentNullException(nameof(InnerId));
             Group = group;
         }
+
+        private ICollection<Deducation> _deducations;
+
+        public ICollection<Deducation> Deducations
+        {
+            get => _deducations;
+            set { _deducations = value; }
+        }
+        public virtual void ToSerializable()
+        {
+            this.Deducations = null;
+            this.Group = null;
+            this.DeducationDocuments = null;
+        }
+
+        private ICollection<DeducationDocument> _deducationDocuments;
+
+        public ICollection<DeducationDocument> DeducationDocuments
+        {
+            get => _deducationDocuments;
+            set { _deducationDocuments = value; }
+        }
+
         public abstract decimal CalculateSalary(DateTime from);
         public virtual void AddToGroup(Group group)
         {

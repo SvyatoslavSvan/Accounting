@@ -48,7 +48,7 @@ namespace Accounting.DAL.Providers
         }
 
         private void LogErrorMessage(Exception ex = null)
-        {
+        {   
             var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
             _logger.LogError(exception.Message);
             _logger.LogError(exception.InnerException.Message ?? "");

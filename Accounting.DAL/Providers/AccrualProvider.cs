@@ -1,5 +1,6 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
+using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
@@ -8,17 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Accounting.DAL.Providers
 {
-    public class AccrualProvider : IAccrualProvider
+    public class AccrualProvider : ProviderBase , IAccrualProvider
     {
 #nullable disable
-        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
-        private readonly ILogger<Accrual> _logger;
-        public AccrualProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
-
+       
+        public AccrualProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger) : base(unitOfWork, logger) { }
+      
         public async Task<BaseResult<bool>> Create(Accrual entity)
         {
             _unitOfWork.DbContext.Attach(entity.Employee);
@@ -29,20 +25,6 @@ namespace Accounting.DAL.Providers
                 return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
-        }
-
-        private BaseResult<T> HandleException<T>(Exception exception = null)
-        {
-            LogErrorMessage(exception);
-            return new BaseResult<T>(false, default(T), OperationStatuses.Error);
-        }
-
-        private void LogErrorMessage(Exception ex = null)
-        {
-            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(exception.Message);
-            _logger.LogError(exception.InnerException.Message ?? "");
-            _logger.LogError(exception.StackTrace);
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id)

@@ -1,0 +1,31 @@
+﻿@using Accounting.Domain.Models.Base
+
+@model EmployeeBase
+@{
+    var formId = Model.Id + "form";
+    var formTdId = Model.Id + "tdForm";
+    var trId = Model.Id + "tr";
+    var formToDeleteEmployee = Model.Id + "formToDelete";
+}
+<tr id="@trId">
+    <td>@Model.InnerId</td>
+    <td>@Model.Name</td>
+    <td>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccrualModal" onclick="openCreateDeducationModal('@Model.Id')">
+            Додати Утримання
+        </button>
+    </td>
+    <td>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <form id="@formToDeleteEmployee">
+                        <input type="hidden" name="employeeId" value="@Model.Id" />
+                        <button type="button" onclick="sendForm('@formToDeleteEmployee', '/DeducationDocument/DeleteEmployee', '@trId')" class="btn btn-info mx-auto">Видалити з документа</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>

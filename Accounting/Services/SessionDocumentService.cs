@@ -171,7 +171,7 @@ namespace Accounting.Services
 
         private NotBetEmployee MapFromSessionEmployee(SessionNotBetEmployee sessionEmployee)
         {
-            var employee = new NotBetEmployee(sessionEmployee.Name, sessionEmployee.InnerId);
+            var employee = new NotBetEmployee(sessionEmployee.Name, sessionEmployee.InnerId, 0);
             employee.SetId(sessionEmployee.Id);
             return employee;
         }

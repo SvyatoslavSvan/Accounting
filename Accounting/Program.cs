@@ -20,6 +20,9 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
 });
 builder.Logging.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger());
 builder.Services.AddUnitOfWork<ApplicationDBContext>();
+builder.Services.AddTransient<ISessionDeducationDocumentService, SessionDeducationDocumentService>();
+builder.Services.AddTransient<IDeducationDocumentProvider, DeducationDocumentProvider>();
+builder.Services.AddTransient<IDeducationProvider, DeducationProvider>();
 builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();

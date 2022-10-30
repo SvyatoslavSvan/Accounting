@@ -1,19 +1,15 @@
 ﻿using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
     public class BetEmployee : EmployeeBase
     {
+        [JsonConstructor]
+        public BetEmployee(Guid id, string name) : base(id, name) { }
         public decimal Bet { get; private set; }
 #nullable disable
-        private ICollection<DeducationDocument> _deducationDocuments;
-
-        public ICollection<DeducationDocument> DeducationDocuments
-        {
-            get => _deducationDocuments;
-            set { _deducationDocuments = value; }
-        }
 
         private List<WorkDay> _workDays;
 
@@ -25,6 +21,12 @@ namespace Accounting.Domain.Models
             { 
                 _workDays = value; 
             }
+        }
+
+        public override void ToSerializable()
+        {
+            base.ToSerializable();
+            this.WorkDays = null;
         }
 
         public BetEmployee(string name, decimal bet, string innerId, int premium) : base(name, innerId, premium)
@@ -41,6 +43,7 @@ namespace Accounting.Domain.Models
         {
             throw new NotImplementedException();
         }
+
         public void Update(UpdateEmployeeViewModel betEmployee, Group group)
         {
             Bet = (decimal)betEmployee.Bet;
