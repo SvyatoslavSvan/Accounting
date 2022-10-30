@@ -54,7 +54,7 @@ namespace Accounting.Domain.Models
 
 		private DeducationDocument? _document;
 
-		public DeducationDocument Document
+		public DeducationDocument? Document
 		{
 			get => _document;
 			set 
@@ -67,9 +67,9 @@ namespace Accounting.Domain.Models
 
 		public bool IsAdditional { get; set; }
 
-		private BetEmployee? _betEmployee;
+		private BetEmployee _betEmployee;
 
-		public BetEmployee? BetEmployee
+		public BetEmployee BetEmployee
 		{
 			get => _betEmployee;
 			set 

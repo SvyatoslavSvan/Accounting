@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221030200407_DeducationNavPropNullableDisable")]
+    partial class DeducationNavPropNullableDisable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +94,7 @@ namespace Accounting.DAL.Migrations
                     b.Property<Guid>("BetEmployeeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DocumentId")
+                    b.Property<Guid>("DocumentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsAdditional")
@@ -291,7 +293,9 @@ namespace Accounting.DAL.Migrations
 
                     b.HasOne("Accounting.Domain.Models.DeducationDocument", "Document")
                         .WithMany("Deducations")
-                        .HasForeignKey("DocumentId");
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Accounting.Domain.Models.NotBetEmployee", "NotBetEmployee")
                         .WithMany("Deducations")
