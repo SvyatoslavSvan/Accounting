@@ -2,86 +2,40 @@
 using Accounting.DAL.Interfaces;
 using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Calabonga.UnitOfWork;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml.Utils;
 
 namespace Accounting.DAL.Providers
 {
     public class DeducationProvider : ProviderBase , IDeducationProvider
     {
 #nullable disable
-        public DeducationProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Deducation> logger) : base(unitOfWork, logger) { }
+        public DeducationProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<DeducationBase> logger) : base(unitOfWork, logger) { }
 
-        public async Task<BaseResult<bool>> Create(Deducation entity)
+        public Task<BaseResult<bool>> Create(DeducationBase entity)
         {
-            if (entity.BetEmployee is not null)
-            {
-                _unitOfWork.DbContext.Attach(entity.BetEmployee);
-            }
-            if (entity.NotBetEmployee is not null)
-            {
-                _unitOfWork.DbContext.Attach(entity.NotBetEmployee);
-            }
-            await _unitOfWork.GetRepository<Deducation>().InsertAsync(entity);
-            await _unitOfWork.SaveChangesAsync();
-            if (!_unitOfWork.LastSaveChangesResult.IsOk)
-            {
-                return HandleException<bool>();
-            }
-            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+            throw new NotImplementedException();
         }
 
-        public async Task<BaseResult<bool>> Delete(Guid id)
+        public Task<BaseResult<bool>> Delete(Guid id)
         {
-            _unitOfWork.GetRepository<Deducation>().Delete(id);
-            await _unitOfWork.SaveChangesAsync();
-            if (!_unitOfWork.LastSaveChangesResult.IsOk)
-            {
-                return HandleException<bool>();
-            }
-            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+            throw new NotImplementedException();
         }
 
-        public async Task<BaseResult<List<Deducation>>> GetAll()
+        public Task<BaseResult<List<DeducationBase>>> GetAll()
         {
-            try
-            {
-                var Deducations = await _unitOfWork.GetRepository<Deducation>().GetAllAsync(true);
-                return new BaseResult<List<Deducation>>(true, Deducations.ToList(), OperationStatuses.Ok);
-            }
-            catch (Exception ex)
-            {
-                return HandleException<List<Deducation>>(ex);
-            }
+            throw new NotImplementedException();
         }
 
-        public async Task<BaseResult<Deducation>> GetById(Guid id)
+        public Task<BaseResult<DeducationBase>> GetById(Guid id)
         {
-            try
-            {
-                return new BaseResult<Deducation>(true, await _unitOfWork.GetRepository<Deducation>()
-                    .GetFirstOrDefaultAsync(predicate: x => x.Id == id), OperationStatuses.Ok);
-            }
-            catch (Exception ex)
-            {
-                return HandleException<Deducation>(ex);    
-            }
+            throw new NotImplementedException();
         }
 
-        public async Task<BaseResult<bool>> Update(Deducation entity)
+        public Task<BaseResult<bool>> Update(DeducationBase entity)
         {
-            _unitOfWork.DbContext.Attach(entity.BetEmployee);
-            _unitOfWork.DbContext.Attach(entity.NotBetEmployee);
-            _unitOfWork.GetRepository<Deducation>().Update(entity);
-            await _unitOfWork.SaveChangesAsync();
-            if (!_unitOfWork.LastSaveChangesResult.IsOk)
-            {
-                return HandleException<bool>();
-            }
-            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+            throw new NotImplementedException();
         }
-       
     }
 }

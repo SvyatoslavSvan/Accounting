@@ -1,6 +1,7 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,15 @@ namespace Accounting.Controllers
             var employee = _sessionDeducationDocumentService.GetEmployeeById(viewModel.EmployeeId);
             if (employee is not null)
             {
-                var deducation = new Deducation(viewModel.Ammount, viewModel.IsAdditional, employee);
+                DeducationBase deducation;
+                if (employee is BetEmployee betEmployee)
+                {
+                    deducation = new DeducationBetEmployee(viewModel.Ammount, viewModel.IsAdditional, betEmployee);
+                }
+                else
+                {
+                    deducation = new DeducationNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, employee as NotBetEmployee);
+                }
                 var createResult = await _deducationProvider.Create(deducation);
                 if (createResult.Succed)
                 {

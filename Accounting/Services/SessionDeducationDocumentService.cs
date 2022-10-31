@@ -42,7 +42,7 @@ namespace Accounting.Services
             document.RemoveEmployee(employee);
             return await Commit(document);
         }
-        public List<Deducation> GetDeducationsByEmployeeId(Guid employeeId) => GetDocument().Deducations.Where(x => x.BetEmployee?.Id == employeeId || x.NotBetEmployee?.Id == employeeId).ToList();
+        
 
         private async Task<bool> Commit(SessionDeducationDocument document)
         {
@@ -73,6 +73,11 @@ namespace Accounting.Services
             var document = GetDocument();
             var employee = document.GetEmployee(id);
             return employee;
+        }
+
+        public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -11,6 +11,14 @@ namespace Accounting.Domain.Models
         public NotBetEmployee(Guid id, string name) : base(id, name) { }
         public List<Accrual> Accruals { get; private set; } 
         public List<Document> Documents { get; private set; }
+
+        private ICollection<DeducationNotBetEmployee> _deducationNotBetEmployee;
+
+        public ICollection<DeducationNotBetEmployee> DeducationNotBetEmployee
+        {
+            get => _deducationNotBetEmployee;
+            set { _deducationNotBetEmployee = value; }
+        }
         public NotBetEmployee(string name, string innerId, int premium) : base(name, innerId, premium)
         {
             

@@ -5,8 +5,9 @@ namespace Accounting.Domain.SessionEntity
 {
     public class SessionDeducationDocument
     {
-        
-        public List<Deducation> Deducations { get; set; } = new List<Deducation>();
+
+        public List<DeducationBetEmployee> DeducationBetEmployees { get; set; } = new List<DeducationBetEmployee>();
+        public List<DeducationNotBetEmployee> DeducationNotBetEmployees { get; set; } = new List<DeducationNotBetEmployee>();
         public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
         public List<NotBetEmployee> NotBetEmployees { get; set; } = new List<NotBetEmployee>(); 
         public EmployeeBase GetEmployee(Guid id)

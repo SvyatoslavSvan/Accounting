@@ -46,16 +46,8 @@ namespace Accounting.Domain.Models.Base
             Group = group;
         }
 
-        private ICollection<Deducation> _deducations;
-
-        public ICollection<Deducation> Deducations
-        {
-            get => _deducations;
-            set { _deducations = value; }
-        }
         public virtual void ToSerializable()
         {
-            this.Deducations = null;
             this.Group = null;
             this.DeducationDocuments = null;
         }

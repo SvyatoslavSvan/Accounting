@@ -22,6 +22,13 @@ namespace Accounting.Domain.Models
                 _workDays = value; 
             }
         }
+        private ICollection<DeducationBetEmployee> _deducationBetEmployee;
+
+        public ICollection<DeducationBetEmployee> DeducationBetEmployee
+        {
+            get { return _deducationBetEmployee; }
+            set { _deducationBetEmployee = value; }
+        }
 
         public override void ToSerializable()
         {

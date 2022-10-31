@@ -9,6 +9,6 @@ namespace Accounting.Services.Interfaces
         public Task<bool> DeleteEmployee(EmployeeBase employee);
         public Task<bool> CreateSessionDeducationDocument();
         public EmployeeBase GetEmployeeById(Guid id);
-        public List<Deducation> GetDeducationsByEmployeeId(Guid employeeId);
+        public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId);
     }
 }
