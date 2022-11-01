@@ -29,6 +29,7 @@ namespace Accounting.Controllers
                 EmployeeId = id
             });
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateDeducation(CreateDeducationViewModel viewModel)
         {
@@ -45,12 +46,13 @@ namespace Accounting.Controllers
                     deducation = new DeducationNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, (NotBetEmployee)employee);
                 }
                 var createResult = await _deducationProvider.Create(deducation);
-                if (createResult.Succed)
+                if (createResult.Succed && await _sessionDeducationDocumentService.AddDeducation(deducation))
                 {
                     return PartialView("CreatedDeducation", new UpdateDeducationlViewModel()
                     {
                         Ammount = deducation.Ammount,
-                        DeducationId = deducation.Id
+                        DeducationId = deducation.Id,
+                        IsAdditional = deducation.IsAdditional
                     });
                 }
                 if (createResult.OperationStatus == OperationStatuses.Error)
@@ -64,5 +66,45 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDeducation(UpdateDeducationlViewModel viewModel)
+        {
+            var getDeducationResult = await _deducationProvider.GetById(viewModel.DeducationId);
+            if (getDeducationResult.Succed)
+            {
+                getDeducationResult.Data.Ammount = viewModel.Ammount;
+                var updateResult = await _deducationProvider.Update(getDeducationResult.Data);
+                if (updateResult.Succed)
+                {
+                    if (await _sessionDeducationDocumentService.UpdateDeducation(viewModel))
+                    {
+                        return Ok(getDeducationResult.Data.Ammount);
+                    }
+                }
+                if (updateResult.OperationStatus == OperationStatuses.Error)
+                {
+                    return StatusCode(500);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteDeducation(Guid deducationId)
+        {
+            var deleteResult = await _deducationProvider.Delete(deducationId);
+            if (deleteResult.Succed)
+            {
+                await _sessionDeducationDocumentService.DeleteDeducation(deducationId);
+                return Ok();
+            }
+            if (deleteResult.OperationStatus == OperationStatuses.Error)
+            {
+                return StatusCode(500);
+            }
+            return BadRequest();
+        }
+
     }
 }

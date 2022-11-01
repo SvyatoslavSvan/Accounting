@@ -1,6 +1,7 @@
 ﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.SessionEntity;
+using Accounting.Domain.ViewModels;
 using Accounting.Extensions;
 using Accounting.Services.Interfaces;
 
@@ -24,7 +25,6 @@ namespace Accounting.Services
         public async Task<bool> AddEmployee(EmployeeBase employee)
         {
             var document = GetDocument();
-            employee.ToSerializable();
             if (employee is BetEmployee betEmployee)
             {
                 document.BetEmployees.Add(betEmployee);
@@ -48,6 +48,7 @@ namespace Accounting.Services
         {
             try
             {
+                document.ToSerializable();
                 _session.SetJson(_DeducationDocumentKey, document);
                 await _session.CommitAsync();
                 return true;
@@ -62,7 +63,7 @@ namespace Accounting.Services
         private void LogErrorMessage(Exception exception)
         {
             _logger.LogError(exception.Message);
-            _logger.LogError(exception.InnerException.Message ?? string.Empty);
+            _logger.LogError(exception?.InnerException?.Message ?? string.Empty);
             _logger.LogError(exception.StackTrace);
         }
 
@@ -76,5 +77,26 @@ namespace Accounting.Services
         }
 
         public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId) => GetDocument().getDeducationsByEmployeeId(employeeId);
+
+        public async Task DeleteDeducation(Guid deducationId)
+        {
+            var document = GetDocument();
+            document.RemoveDeducation(deducationId);
+            await Commit(document);
+        }
+
+        public async Task<bool> UpdateDeducation(UpdateDeducationlViewModel viewModel)
+        {
+            var document = GetDocument();
+            document.UpdateDeducation(viewModel.Ammount, viewModel.DeducationId);
+            return await Commit(document);
+        }
+
+        public async Task<bool> AddDeducation(DeducationBase deducation)
+        {
+            var document = GetDocument();
+            document.AddDeducation(deducation);
+            return await Commit(document);
+        }
     }
 }

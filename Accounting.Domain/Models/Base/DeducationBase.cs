@@ -1,6 +1,8 @@
-﻿namespace Accounting.Domain.Models.Base
+﻿using Accounting.Domain.Interfaces;
+
+namespace Accounting.Domain.Models.Base
 {
-    public abstract class DeducationBase
+    public abstract class DeducationBase : IJsonSerializable
     {
         public DeducationBase() { }
         public DeducationBase(decimal ammount,bool isAdditional)
@@ -40,6 +42,11 @@
                     return;
                 _document = value;
             }
+        }
+
+        public virtual void ToSerializable()
+        {
+            _document = null;
         }
     }
 }

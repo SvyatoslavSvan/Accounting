@@ -17,11 +17,17 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Create(DeducationBase entity)
         {
             if (entity is DeducationBetEmployee deducationBetEmployee)
+            {
+                _unitOfWork.DbContext.Attach(deducationBetEmployee.Employee);
                 await _unitOfWork.GetRepository<DeducationBetEmployee>().InsertAsync(deducationBetEmployee);
+            }
             if (entity is DeducationNotBetEmployee deducationNotBetEmployee)
+            {
+                _unitOfWork.DbContext.Attach(deducationNotBetEmployee.Employee);
                 await _unitOfWork.GetRepository<DeducationNotBetEmployee>().InsertAsync(deducationNotBetEmployee);
+            }
             await _unitOfWork.SaveChangesAsync();
-            if (_unitOfWork.LastSaveChangesResult.IsOk)
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 return HandleException<bool>();
             }
@@ -40,7 +46,7 @@ namespace Accounting.DAL.Providers
                 _unitOfWork.GetRepository<DeducationBetEmployee>().Delete(id);
             }
             await _unitOfWork.SaveChangesAsync();
-            if (_unitOfWork.LastSaveChangesResult.IsOk)
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 return HandleException<bool>();   
             }
@@ -89,9 +95,15 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Update(DeducationBase entity)
         {
             if (entity is DeducationBetEmployee deducationBetEmployee)
+            {
+                _unitOfWork.DbContext.Attach(deducationBetEmployee.Employee);
                 _unitOfWork.GetRepository<DeducationBetEmployee>().Update(deducationBetEmployee);
+            }
             if(entity is DeducationNotBetEmployee deducationNotBetEmployee)
+            {
+                _unitOfWork.DbContext.Attach(deducationNotBetEmployee);
                 _unitOfWork.GetRepository<DeducationNotBetEmployee>().Update(deducationNotBetEmployee);
+            }
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {

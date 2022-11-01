@@ -1,5 +1,6 @@
 ﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using Accounting.Domain.ViewModels;
 
 namespace Accounting.Services.Interfaces
 {
@@ -10,5 +11,8 @@ namespace Accounting.Services.Interfaces
         public Task<bool> CreateSessionDeducationDocument();
         public EmployeeBase GetEmployeeById(Guid id);
         public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId);
+        public Task DeleteDeducation(Guid deducationId);
+        public Task<bool> UpdateDeducation(UpdateDeducationlViewModel viewModel);
+        Task<bool> AddDeducation(DeducationBase deducation);
     }
 }

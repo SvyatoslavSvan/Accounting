@@ -1,9 +1,11 @@
-﻿using Accounting.Domain.Models;
+﻿using Accounting.Domain.Interfaces;
+using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using System.Runtime.Serialization;
 
 namespace Accounting.Domain.SessionEntity
 {
-    public class SessionDeducationDocument
+    public class SessionDeducationDocument : IJsonSerializable
     {
 
         public List<DeducationBetEmployee> DeducationBetEmployees { get; set; } = new List<DeducationBetEmployee>();
@@ -27,6 +29,16 @@ namespace Accounting.Domain.SessionEntity
             deducations.AddRange(DeducationBetEmployees.Where(x => x.EmployeeId == id));
             return deducations;
         }
+
+        public void RemoveDeducation(Guid id)
+        {
+            var removedBetDeducation = BetEmployees.RemoveAll(x => x.Id == id);
+            if (removedBetDeducation > 0)
+            {
+                NotBetEmployees.RemoveAll(x => x.Id == id);
+            }
+        }
+
         public void RemoveEmployee(EmployeeBase employee)
         {
             if (employee is BetEmployee)
@@ -38,6 +50,39 @@ namespace Accounting.Domain.SessionEntity
             {
                 NotBetEmployees.RemoveAll(x => x.Id == employee.Id);
             }
+        }
+
+        public void UpdateDeducation(decimal ammount, Guid deducationId)
+        {
+            var deducationBetEmployee = DeducationBetEmployees.FirstOrDefault(x => x.Id == deducationId);
+            if (deducationBetEmployee == null)
+            {
+                var deducationNotBetEmployee = DeducationNotBetEmployees.FirstOrDefault(x => x.Id == deducationId);
+                deducationNotBetEmployee.Ammount = ammount;
+                return;
+            }
+            deducationBetEmployee.Ammount = ammount;
+        }
+
+        public void AddDeducation(DeducationBase deducation)
+        {
+            if (deducation is DeducationBetEmployee deducationBetEmployee)
+            {
+                DeducationBetEmployees.Add(deducationBetEmployee);
+                return;
+            }
+            if (deducation is DeducationNotBetEmployee deducationNotBetEmployee)
+            {
+                DeducationNotBetEmployees.Add(deducationNotBetEmployee);
+            }
+        }
+
+        public void ToSerializable()
+        {
+            DeducationNotBetEmployees.ForEach(x => x.ToSerializable());
+            DeducationBetEmployees.ForEach(x => x.ToSerializable());
+            BetEmployees.ForEach(x => x.ToSerializable());
+            NotBetEmployees.ForEach(x => x.ToSerializable());
         }
     }
 }

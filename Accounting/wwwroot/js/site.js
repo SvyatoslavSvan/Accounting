@@ -29,6 +29,16 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/DeducationDocument/AddEmployee') {
         appendEmployee(elementToRemoveId, response);
     }
+    if (url == '/Deducation/CreateDeducation') {
+        appendCreatedAccrualResponse(response, true);
+    }
+    if (url == '/Deducation/DeleteDeducation') {
+        $('#' + elementToRemoveId).remove();
+    }
+    if (url == '/Deducation/UpdateDeducation') {
+        var ammountInput = document.getElementById(elementToRemoveId);
+        ammountInput.value = response;
+    }
     if (url == '/Document/AddAccrualToEmployee') {
         /*$('#' + elementToRemoveId).append(response);*/
         appendCreatedAccrualResponse(response, true);

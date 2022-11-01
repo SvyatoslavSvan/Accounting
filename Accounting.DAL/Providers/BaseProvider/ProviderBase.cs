@@ -17,9 +17,9 @@ namespace Accounting.DAL.Providers.BaseProvider
         private void LogErrorMessage(Exception ex = null)
         {
             var excpetion = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(excpetion.Message);
-            _logger.LogError(excpetion.InnerException.Message ?? string.Empty);
-            _logger.LogError(excpetion.StackTrace);
+            _logger.LogError(excpetion?.Message);
+            _logger.LogError(excpetion?.InnerException?.Message ?? string.Empty);
+            _logger.LogError(excpetion?.StackTrace);
         }
 
         protected BaseResult<T> HandleException<T>(Exception ex = null)
