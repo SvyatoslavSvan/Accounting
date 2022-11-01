@@ -20,6 +20,13 @@ namespace Accounting.Domain.SessionEntity
             }
             return employee;
         }
+        public List<DeducationBase> getDeducationsByEmployeeId(Guid id)
+        {
+            var deducations = new List<DeducationBase>();
+            deducations.AddRange(DeducationNotBetEmployees.Where(x => x.EmployeeId == id));
+            deducations.AddRange(DeducationBetEmployees.Where(x => x.EmployeeId == id));
+            return deducations;
+        }
         public void RemoveEmployee(EmployeeBase employee)
         {
             if (employee is BetEmployee)

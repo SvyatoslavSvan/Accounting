@@ -75,9 +75,6 @@ namespace Accounting.Services
             return employee;
         }
 
-        public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId)
-        {
-            throw new NotImplementedException();
-        }
+        public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId) => GetDocument().getDeducationsByEmployeeId(employeeId);
     }
 }

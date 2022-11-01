@@ -42,7 +42,7 @@ namespace Accounting.Controllers
                 }
                 else
                 {
-                    deducation = new DeducationNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, employee as NotBetEmployee);
+                    deducation = new DeducationNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, (NotBetEmployee)employee);
                 }
                 var createResult = await _deducationProvider.Create(deducation);
                 if (createResult.Succed)
