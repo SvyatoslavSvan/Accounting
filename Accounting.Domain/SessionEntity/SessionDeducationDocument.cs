@@ -1,13 +1,12 @@
 ﻿using Accounting.Domain.Interfaces;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
-using System.Runtime.Serialization;
 
 namespace Accounting.Domain.SessionEntity
 {
     public class SessionDeducationDocument : IJsonSerializable
     {
-
+        public Guid Id { get; set; } = Guid.Empty;
         public List<DeducationBetEmployee> DeducationBetEmployees { get; set; } = new List<DeducationBetEmployee>();
         public List<DeducationNotBetEmployee> DeducationNotBetEmployees { get; set; } = new List<DeducationNotBetEmployee>();
         public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
@@ -32,10 +31,10 @@ namespace Accounting.Domain.SessionEntity
 
         public void RemoveDeducation(Guid id)
         {
-            var removedBetDeducation = BetEmployees.RemoveAll(x => x.Id == id);
-            if (removedBetDeducation > 0)
+            var removedBetDeducation = DeducationBetEmployees.RemoveAll(x => x.Id == id);
+            if (removedBetDeducation == 0)
             {
-                NotBetEmployees.RemoveAll(x => x.Id == id);
+                DeducationNotBetEmployees.RemoveAll(x => x.Id == id);
             }
         }
 
@@ -44,11 +43,13 @@ namespace Accounting.Domain.SessionEntity
             if (employee is BetEmployee)
             {
                 BetEmployees.RemoveAll(x => x.Id == employee.Id);
+                DeducationBetEmployees.RemoveAll(x => x.EmployeeId == employee.Id);
                 return;
             }
             if (employee is NotBetEmployee)
             {
                 NotBetEmployees.RemoveAll(x => x.Id == employee.Id);
+                DeducationNotBetEmployees.RemoveAll(x => x.EmployeeId == employee.Id);
             }
         }
 

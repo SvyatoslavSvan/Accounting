@@ -29,7 +29,7 @@ namespace Accounting.Services
             {
                 document.BetEmployees.Add(betEmployee);
             }
-            if(employee is NotBetEmployee notBetEmployee)
+            if (employee is NotBetEmployee notBetEmployee)
             {
                 document.NotBetEmployees.Add(notBetEmployee);
             }
@@ -42,7 +42,7 @@ namespace Accounting.Services
             document.RemoveEmployee(employee);
             return await Commit(document);
         }
-        
+
 
         private async Task<bool> Commit(SessionDeducationDocument document)
         {
@@ -98,5 +98,15 @@ namespace Accounting.Services
             document.AddDeducation(deducation);
             return await Commit(document);
         }
+
+        public decimal GetSum()
+        {
+            var document = GetDocument();
+            var sum = document.DeducationBetEmployees.Sum(x => x.Ammount);
+            sum += document.DeducationNotBetEmployees.Sum(x => x.Ammount);
+            return sum;
+        }
+
+        public SessionDeducationDocument GetDocumentFromSession() => GetDocument();
     }
 }

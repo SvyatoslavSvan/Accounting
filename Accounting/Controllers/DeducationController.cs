@@ -23,7 +23,7 @@ namespace Accounting.Controllers
         [HttpGet]
         public IActionResult CreateDeducation(Guid id)
         {
-            return PartialView(new CreateDeducationViewModel()
+            return PartialView(new CreateDeducationDocumentViewModel()
             {
                 Deducations = _sessionDeducationDocumentService.GetDeducationsByEmployeeId(id),
                 EmployeeId = id
@@ -31,7 +31,7 @@ namespace Accounting.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDeducation(CreateDeducationViewModel viewModel)
+        public async Task<IActionResult> CreateDeducation(CreateDeducationDocumentViewModel viewModel)
         {
             var employee = _sessionDeducationDocumentService.GetEmployeeById(viewModel.EmployeeId);
             if (employee is not null)

@@ -1,5 +1,5 @@
-﻿using Accounting.Domain.Models;
-using Accounting.Domain.Models.Base;
+﻿using Accounting.Domain.Models.Base;
+using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 
 namespace Accounting.Services.Interfaces
@@ -13,6 +13,8 @@ namespace Accounting.Services.Interfaces
         public List<DeducationBase> GetDeducationsByEmployeeId(Guid employeeId);
         public Task DeleteDeducation(Guid deducationId);
         public Task<bool> UpdateDeducation(UpdateDeducationlViewModel viewModel);
-        Task<bool> AddDeducation(DeducationBase deducation);
+        public Task<bool> AddDeducation(DeducationBase deducation);
+        public decimal GetSum();
+        public SessionDeducationDocument GetDocumentFromSession();
     }
 }

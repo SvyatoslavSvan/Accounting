@@ -10,12 +10,12 @@
 <li class="list-group-item" id="@accrualLiId">
     <div class="d-flex justify-content-between">
         <form id="@updateAccrualFormId">
-            <input type="hidden" name="deducationId" value="@Model.DeducationId" />
+            <input type="hidden" name="DeducationId" value="@Model.DeducationId" />
             @if (Model.IsAdditional)
             {
-                <label class="form-label">Отп/больн</label>
+                <label class="form-label">Карточка</label>
             }
-            <input type="text" name="Ammount" value="@Model.Ammount" onchange="onAmmountInputChanged('@updateAccrualFormId')" class="form-control-sm" id="@ammountInputId" />
+            <input type="text" name="Ammount" value="@Model.Ammount" onchange="sendForm('@updateAccrualFormId', '/Deducation/UpdateDeducation', '@ammountInputId')" class="form-control-sm" id="@ammountInputId" />
         </form>
         <form id="@deleteAccrualFormId">
             <input type="hidden" name="deducationId" value="@Model.DeducationId" />

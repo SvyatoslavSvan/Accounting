@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Models.Base;
+using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
@@ -8,6 +9,12 @@ namespace Accounting.Domain.Models
         {
             base.ToSerializable();
             Employee = null;
+        }
+        [JsonConstructor]
+        public DeducationBetEmployee(Guid id, decimal ammount, bool isAdditional, Guid employeeId) : base(ammount, isAdditional)
+        {
+            Id = id;
+            EmployeeId = employeeId;
         }
         public DeducationBetEmployee() {}
         public DeducationBetEmployee(decimal ammount,bool isAdditional, BetEmployee employee) : base(ammount, isAdditional) => Employee = employee;        

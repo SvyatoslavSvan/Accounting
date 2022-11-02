@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Accounting.Domain.ViewModels
 {
-    public class CreateDeducationViewModel
+    public class CreateDeducationDocumentViewModel
     {
         [BindNever]
         public List<DeducationBase> Deducations { get; set; }

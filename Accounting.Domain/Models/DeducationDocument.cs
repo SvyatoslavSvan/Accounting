@@ -3,7 +3,7 @@
     public class DeducationDocument
     {
         public DeducationDocument() { }
-        public DeducationDocument(string name, DateTime dateCreate, ICollection<DeducationBetEmployee> deducationsBetEmployee, 
+        public DeducationDocument(Guid id,string name, DateTime dateCreate, ICollection<DeducationBetEmployee> deducationsBetEmployee, 
             ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, ICollection<DeducationNotBetEmployee> deducationNotBetEmployees)
         {
             Name = name;

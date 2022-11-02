@@ -6,6 +6,7 @@ using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Calabonga.UnitOfWork;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml.Utils;
 
 namespace Accounting.DAL.Providers
 {
@@ -49,6 +50,27 @@ namespace Accounting.DAL.Providers
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 return HandleException<bool>();   
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
+
+        public async Task<BaseResult<bool>> DeleteDeducations(List<DeducationBase> deducationBases)
+        {
+            var deducationsBetEmployee = new List<DeducationBetEmployee>();
+            var deducationsNotBetEmployee = new List<DeducationNotBetEmployee>();
+            deducationBases.ForEach(x =>
+            {
+                if (x is DeducationBetEmployee xBet)
+                    deducationsBetEmployee.Add(xBet);
+                if (x is DeducationNotBetEmployee xNotBet)
+                    deducationsNotBetEmployee.Add(xNotBet);
+            });
+            _unitOfWork.GetRepository<DeducationBetEmployee>().Delete(deducationsBetEmployee);
+            _unitOfWork.GetRepository<DeducationNotBetEmployee>().Delete(deducationsNotBetEmployee);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }

@@ -13,9 +13,22 @@ namespace Accounting.DAL.Providers
         public DeducationDocumentProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<DeducationDocument> logger) : base(unitOfWork, logger) {}
         public async Task<BaseResult<bool>> Create(DeducationDocument entity)
         {
-            _unitOfWork.DbContext.Attach(entity.DeducationsNotBetEmployee);
-            _unitOfWork.DbContext.Attach(entity.BetEmployees);
-            _unitOfWork.DbContext.Attach(entity.NotBetEmployees);
+            if (entity.DeducationsNotBetEmployee.Count() > 0)
+            {
+                _unitOfWork.DbContext.AttachRange(entity.DeducationsNotBetEmployee);
+            }
+            if (entity.DeducationsBetEmployee.Count() > 0)
+            {
+                _unitOfWork.DbContext.AttachRange(entity.DeducationsBetEmployee);
+            }
+            if (entity.BetEmployees.Count() > 0)
+            {
+                _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
+            }
+            if (entity.NotBetEmployees.Count() > 0)
+            {
+                _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
+            }
             await _unitOfWork.GetRepository<DeducationDocument>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

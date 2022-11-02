@@ -31,13 +31,16 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     }
     if (url == '/Deducation/CreateDeducation') {
         appendCreatedAccrualResponse(response, true);
+        getSumOfDeducations();
     }
     if (url == '/Deducation/DeleteDeducation') {
         $('#' + elementToRemoveId).remove();
+        getSumOfDeducations();
     }
     if (url == '/Deducation/UpdateDeducation') {
         var ammountInput = document.getElementById(elementToRemoveId);
         ammountInput.value = response;
+        getSumOfDeducations();
     }
     if (url == '/Document/AddAccrualToEmployee') {
         /*$('#' + elementToRemoveId).append(response);*/
@@ -57,7 +60,10 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         removeEmployee(elementToRemoveId, response);
     }
     if (url == '/DeducationDocument/DeleteEmployee') {
-        removeEmployee(elementToRemoveId, response);
+        getSumOfDeducations();
+        $('#' + elementToRemoveId).remove();
+        $('#chooseEmployeeUl').append(response);
+        
     }
     if (url == '/Document/UpdateAccrual') {
         getSumOfAccruals();
@@ -89,6 +95,19 @@ function getSumOfAccruals() {
         },
         error: function (response) {
             
+        }
+    });
+}
+
+function getSumOfDeducations() {
+    $.ajax({
+        url: '/DeducationDocument/GetSumOfDeducations',
+        method: 'get',
+        success: function (response) {
+            $('#sumAccrual').html(response);
+        },
+        error: function (response) {
+
         }
     });
 }
@@ -144,7 +163,6 @@ function appendCreatedAccrualResponse(response, addAccrualToUl) {
 function onAmmountInputChanged(updateAccrualFormId) {
     sendForm(updateAccrualFormId, '/Document/UpdateAccrual');
 }
-
 function insertFoundDocuments(response, TbodyId) {
     $('#' + TbodyId).html(response);
 }
