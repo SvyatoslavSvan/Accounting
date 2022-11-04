@@ -4,31 +4,22 @@ using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Accounting.DAL.Providers
 {
     public class DeducationDocumentProvider : ProviderBase , IDeducationDocumentProvider
     {
+#nullable disable
         public DeducationDocumentProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<DeducationDocument> logger) : base(unitOfWork, logger) {}
+
         public async Task<BaseResult<bool>> Create(DeducationDocument entity)
         {
-            if (entity.DeducationsNotBetEmployee.Count() > 0)
-            {
-                _unitOfWork.DbContext.AttachRange(entity.DeducationsNotBetEmployee);
-            }
-            if (entity.DeducationsBetEmployee.Count() > 0)
-            {
-                _unitOfWork.DbContext.AttachRange(entity.DeducationsBetEmployee);
-            }
-            if (entity.BetEmployees.Count() > 0)
-            {
-                _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
-            }
-            if (entity.NotBetEmployees.Count() > 0)
-            {
-                _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
-            }
+            _unitOfWork.DbContext.AttachRange(entity.DeducationsNotBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.DeducationsBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
             await _unitOfWork.GetRepository<DeducationDocument>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -67,7 +58,11 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                return new BaseResult<DeducationDocument>(true, await _unitOfWork.GetRepository<DeducationDocument>().GetFirstOrDefaultAsync(), OperationStatuses.Ok);
+                return new BaseResult<DeducationDocument>(true, await _unitOfWork.GetRepository<DeducationDocument>()
+                    .GetFirstOrDefaultAsync(disableTracking: false,
+                    predicate: x => x.Id == id, 
+                    include: x => x.Include(x => x.BetEmployees).Include(x => x.NotBetEmployees).Include(x => x.DeducationsBetEmployee).Include(x => x.DeducationsNotBetEmployee)), 
+                    OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
@@ -77,9 +72,10 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Update(DeducationDocument entity)
         {
-            _unitOfWork.DbContext.Attach(entity.DeducationsNotBetEmployee);
-            _unitOfWork.DbContext.Attach(entity.BetEmployees);
-            _unitOfWork.DbContext.Attach(entity.NotBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.DeducationsBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.DeducationsNotBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
             _unitOfWork.GetRepository<DeducationDocument>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

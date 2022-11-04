@@ -1,6 +1,8 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
+using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +23,58 @@ namespace Accounting.Controllers
             _deducationDocumentProvider = deducationDocumentProvider;
             _sessionDeducationDocumentService = deducationDocumentService;
             _deducationProvider = deducationProvider;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var getDocumentResult = await _deducationDocumentProvider.GetById(id);
+            if (getDocumentResult.Succed)
+            {
+                if (await _sessionDeducationDocumentService.LoadDocument(getDocumentResult.Data))
+                {
+                    var employeesInDocument = new List<EmployeeBase>(getDocumentResult.Data.NotBetEmployees);
+                    employeesInDocument.AddRange(getDocumentResult.Data.BetEmployees);
+                    var employeesAddToDocument = await _employeeProvider.GetAll();
+                    employeesInDocument.ForEach(x =>
+                    {
+                        employeesAddToDocument.Data.RemoveAll(y => y.Id == x.Id);
+                    });
+                    return View(new UpdateDeducationDocumentViewModel()
+                    {
+                        Name = getDocumentResult.Data.Name,
+                        DateCreate = getDocumentResult.Data.DateCreate,
+                        EmployeesAddToDocument = employeesAddToDocument.Data,
+                        EmployeesInDocument = employeesInDocument
+                    });
+                }
+            }
+            return StatusCode(500);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdateDeducationDocumentViewModel viewModel)
+        {
+            var document = await UpdateDocument(viewModel, _sessionDeducationDocumentService.GetDocumentFromSession());
+            var updateResult = await _deducationDocumentProvider.Update(document);
+            if (updateResult.Succed)
+            {
+                return RedirectToAction("Documents", "Document");
+            }
+            return StatusCode(500);
+        }
+
+        [NonAction]
+        private async Task<DeducationDocument> UpdateDocument(UpdateDeducationDocumentViewModel viewModel, SessionDeducationDocument document)
+        {
+            var getDocumentResult = await _deducationDocumentProvider.GetById(document.Id);
+            getDocumentResult.Data.Name = viewModel.Name;
+            getDocumentResult.Data.DateCreate = viewModel.DateCreate;
+            getDocumentResult.Data.DeducationsNotBetEmployee = document.DeducationNotBetEmployees;
+            getDocumentResult.Data.DeducationsBetEmployee = document.DeducationBetEmployees;
+            getDocumentResult.Data.BetEmployees = document.BetEmployees;
+            getDocumentResult.Data.NotBetEmployees = document.NotBetEmployees;
+            return getDocumentResult.Data;
         }
 
         [HttpPost]

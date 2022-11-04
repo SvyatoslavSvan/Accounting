@@ -1,4 +1,5 @@
-﻿using Accounting.Domain.Models.Base;
+﻿using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Accounting.Domain.SessionEntity;
 using Accounting.Domain.ViewModels;
 
@@ -16,5 +17,6 @@ namespace Accounting.Services.Interfaces
         public Task<bool> AddDeducation(DeducationBase deducation);
         public decimal GetSum();
         public SessionDeducationDocument GetDocumentFromSession();
+        public Task<bool> LoadDocument(DeducationDocument document);
     }
 }

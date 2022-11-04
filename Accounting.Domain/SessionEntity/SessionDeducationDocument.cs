@@ -6,11 +6,11 @@ namespace Accounting.Domain.SessionEntity
 {
     public class SessionDeducationDocument : IJsonSerializable
     {
-        public Guid Id { get; set; } = Guid.Empty;
-        public List<DeducationBetEmployee> DeducationBetEmployees { get; set; } = new List<DeducationBetEmployee>();
-        public List<DeducationNotBetEmployee> DeducationNotBetEmployees { get; set; } = new List<DeducationNotBetEmployee>();
-        public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
-        public List<NotBetEmployee> NotBetEmployees { get; set; } = new List<NotBetEmployee>(); 
+        public Guid Id { get; set; } 
+        public List<DeducationBetEmployee> DeducationBetEmployees { get; set; } 
+        public List<DeducationNotBetEmployee> DeducationNotBetEmployees { get; set; } 
+        public List<BetEmployee> BetEmployees { get; set; } 
+        public List<NotBetEmployee> NotBetEmployees { get; set; }  
         public EmployeeBase GetEmployee(Guid id)
         {
             EmployeeBase employee;

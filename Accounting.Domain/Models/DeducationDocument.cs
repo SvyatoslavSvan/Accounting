@@ -1,4 +1,6 @@
-﻿namespace Accounting.Domain.Models
+﻿using Accounting.Domain.Models.Base;
+
+namespace Accounting.Domain.Models
 {
     public class DeducationDocument
     {
@@ -23,7 +25,9 @@
         {
             get => _deducationsBetEmployee;
             set 
-            { _deducationsBetEmployee = value ?? throw new ArgumentNullException(); }
+            {
+                UpdateDeducationsRange(value, DeducationsBetEmployee);
+            }
         }
 
         private ICollection<DeducationNotBetEmployee> _deducationsNotBetEmployee = null!;
@@ -32,7 +36,9 @@
         {
             get => _deducationsNotBetEmployee;
             set
-            { _deducationsNotBetEmployee = value ?? throw new ArgumentNullException(nameof(DeducationsNotBetEmployee)); }
+            {
+                UpdateDeducationsRange(value, DeducationsNotBetEmployee);
+            }
         }
 
         private ICollection<NotBetEmployee> _notBetEmployees = null!;
@@ -42,17 +48,70 @@
             get => _notBetEmployees;
             set 
             {
-                _notBetEmployees = value ?? throw new ArgumentNullException(nameof(NotBetEmployees)); 
+                UpdateEmployeesRange(value, NotBetEmployees); 
             }
         }
+
         private ICollection<BetEmployee> _betEmployees = null!;
 
         public ICollection<BetEmployee> BetEmployees
         {
             get => _betEmployees;
-            set { _betEmployees = value ?? throw new ArgumentNullException(nameof(BetEmployees)); }
+            set
+            {
+                UpdateEmployeesRange(value, BetEmployees);
+            }
         }
 
+        private void UpdateEmployeesRange<T>(ICollection<T> newRange, ICollection<T> oldRange) where T : EmployeeBase
+        {
+            foreach (var item in newRange)
+            {
+                var containsInThis = oldRange.Contains(oldRange.FirstOrDefault(x => x.Id == item.Id));
+                if (!containsInThis)
+                {
+                    oldRange.Add(item);
+                }
+            }
+            var elementsToRemove = new List<Guid>();
+            foreach (var thisEmployee in oldRange)
+            {
+                var containsInUpdate = newRange.Contains(newRange.FirstOrDefault(x => x.Id == thisEmployee.Id));
+                if (!containsInUpdate)
+                {
+                    elementsToRemove.Add(thisEmployee.Id);
+                }
+            }
+            foreach (var item in elementsToRemove)
+            {
+                oldRange.Remove(oldRange.FirstOrDefault(x => x.Id == item));
+            }
+        }
+
+        private void UpdateDeducationsRange<T>(ICollection<T> newRange, ICollection<T> oldRange) where T : DeducationBase
+        {
+            foreach (var item in newRange)
+            {
+                var containsInThis = oldRange.Contains(oldRange.FirstOrDefault(x => x.Id == item.Id));
+                if (!containsInThis)
+                {
+                    oldRange.Add(item);
+                }
+            }
+            var elementsToRemove = new List<Guid>();
+            foreach (var thisEmployee in oldRange)
+            {
+                var containsInUpdate = newRange.Contains(newRange.FirstOrDefault(x => x.Id == thisEmployee.Id));
+                if (!containsInUpdate)
+                {
+                    elementsToRemove.Add(thisEmployee.Id);
+                }
+            }
+            foreach (var item in elementsToRemove)
+            {
+                oldRange.Remove(oldRange.FirstOrDefault(x => x.Id == item));
+            }
+        }
 
     }
 }

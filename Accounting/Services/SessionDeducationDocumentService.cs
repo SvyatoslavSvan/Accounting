@@ -108,5 +108,14 @@ namespace Accounting.Services
         }
 
         public SessionDeducationDocument GetDocumentFromSession() => GetDocument();
+
+        public async Task<bool> LoadDocument(DeducationDocument document) => await Commit(new SessionDeducationDocument()
+        {
+            BetEmployees = document.BetEmployees.ToList(),
+            NotBetEmployees = document.NotBetEmployees.ToList(),
+            DeducationBetEmployees = document.DeducationsBetEmployee.ToList(),
+            DeducationNotBetEmployees = document.DeducationsNotBetEmployee.ToList(),
+            Id = document.Id,
+        });
     }
 }
