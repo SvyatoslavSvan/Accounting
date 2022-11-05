@@ -84,7 +84,11 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         document.getElementById('createEmployee').reset();
         $('#' + elementToRemoveId).append(response);
     }
+    if (url == '/DeducationDocument/GetSearch') {
+        insertFoundDocuments(response, elementToRemoveId);
+    }
 }
+
 
 function getSumOfAccruals() {
     $.ajax({

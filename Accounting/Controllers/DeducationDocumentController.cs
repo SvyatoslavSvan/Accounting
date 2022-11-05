@@ -2,9 +2,11 @@
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
-using Accounting.Domain.SessionEntity;
+using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
+using Accouting.Domain.Managers.Interfaces;
+using Accouting.Domain.Managers.Interfaces.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -12,23 +14,53 @@ namespace Accounting.Controllers
     public class DeducationDocumentController : Controller
     {
         private readonly IEmployeeProvider _employeeProvider;
-        private readonly IDeducationDocumentProvider _deducationDocumentProvider;
         private readonly ISessionDeducationDocumentService _sessionDeducationDocumentService;
         private readonly IDeducationProvider _deducationProvider;
+        private readonly IDeducationDocumentManager _documentManager;
 
-        public DeducationDocumentController(IEmployeeProvider employeeProvider, 
-            IDeducationDocumentProvider deducationDocumentProvider, ISessionDeducationDocumentService deducationDocumentService, IDeducationProvider deducationProvider)
+        public DeducationDocumentController(IEmployeeProvider employeeProvider,
+            IDeducationDocumentManager deducationDocumentManager, ISessionDeducationDocumentService deducationDocumentService, IDeducationProvider deducationProvider)
         {
             _employeeProvider = employeeProvider;
-            _deducationDocumentProvider = deducationDocumentProvider;
+            _documentManager = deducationDocumentManager;
             _sessionDeducationDocumentService = deducationDocumentService;
             _deducationProvider = deducationProvider;
         }
 
         [HttpGet]
+        public async Task<IActionResult> DeducationDocuments()
+        {
+            var getDocumentsResult = await _documentManager.GetAll();
+            if (getDocumentsResult.Succed)
+            {
+                return View(getDocumentsResult.Data);
+            }
+            if (getDocumentsResult.OperationStatus == OperationStatuses.Error)
+            {
+                return StatusCode(500);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSearch(DeducationDocumentSearchRequest request)
+        {
+            var getDocumentsResult = await _documentManager.GetSearch(request);
+            if (getDocumentsResult.Succed)
+            {
+                return PartialView(getDocumentsResult.Data);
+            }
+            if (getDocumentsResult.OperationStatus == OperationStatuses.Error)
+            {
+                return StatusCode(500);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var getDocumentResult = await _deducationDocumentProvider.GetById(id);
+            var getDocumentResult = await _documentManager.GetById(id);
             if (getDocumentResult.Succed)
             {
                 if (await _sessionDeducationDocumentService.LoadDocument(getDocumentResult.Data))
@@ -55,27 +87,17 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(UpdateDeducationDocumentViewModel viewModel)
         {
-            var document = await UpdateDocument(viewModel, _sessionDeducationDocumentService.GetDocumentFromSession());
-            var updateResult = await _deducationDocumentProvider.Update(document);
+            var sessionDocument = _sessionDeducationDocumentService.GetDocumentFromSession();
+            var document = new DeducationDocument(sessionDocument.Id, viewModel.Name, viewModel.DateCreate, 
+                sessionDocument.DeducationBetEmployees, sessionDocument.NotBetEmployees, 
+                sessionDocument.BetEmployees, sessionDocument.DeducationNotBetEmployees);
+            var updateResult = await _documentManager.Update(document);
             if (updateResult.Succed)
             {
                 return RedirectToAction("Documents", "Document");
             }
             return StatusCode(500);
-        }
-
-        [NonAction]
-        private async Task<DeducationDocument> UpdateDocument(UpdateDeducationDocumentViewModel viewModel, SessionDeducationDocument document)
-        {
-            var getDocumentResult = await _deducationDocumentProvider.GetById(document.Id);
-            getDocumentResult.Data.Name = viewModel.Name;
-            getDocumentResult.Data.DateCreate = viewModel.DateCreate;
-            getDocumentResult.Data.DeducationsNotBetEmployee = document.DeducationNotBetEmployees;
-            getDocumentResult.Data.DeducationsBetEmployee = document.DeducationBetEmployees;
-            getDocumentResult.Data.BetEmployees = document.BetEmployees;
-            getDocumentResult.Data.NotBetEmployees = document.NotBetEmployees;
-            return getDocumentResult.Data;
-        }
+        } 
 
         [HttpPost]
         public async Task<IActionResult> Create(DocumentViewModel viewModel)
@@ -83,10 +105,10 @@ namespace Accounting.Controllers
             var sessionDocument = _sessionDeducationDocumentService.GetDocumentFromSession();
             var document = new DeducationDocument(Guid.Empty, viewModel.Name, viewModel.DateCreate,
                 sessionDocument.DeducationBetEmployees, sessionDocument.NotBetEmployees, sessionDocument.BetEmployees, sessionDocument.DeducationNotBetEmployees);
-            var createResult = await _deducationDocumentProvider.Create(document);
+            var createResult = await _documentManager.Create(document);
             if (createResult.Succed)
             {
-                return RedirectToAction("Document", "Documents");
+                return RedirectToAction("Documents", "Document");
             }
             return BadRequest();
         }

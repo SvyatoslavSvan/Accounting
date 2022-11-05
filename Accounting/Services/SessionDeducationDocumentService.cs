@@ -19,7 +19,13 @@ namespace Accounting.Services
         }
         public async Task<bool> CreateSessionDeducationDocument()
         {
-            return await Commit(new SessionDeducationDocument());
+            return await Commit(new SessionDeducationDocument()
+            {
+                BetEmployees = new List<BetEmployee>(),
+                NotBetEmployees = new List<NotBetEmployee>(),
+                DeducationBetEmployees = new List<DeducationBetEmployee>(),
+                DeducationNotBetEmployees = new List<DeducationNotBetEmployee>()
+            }) ;
         }
 
         public async Task<bool> AddEmployee(EmployeeBase employee)

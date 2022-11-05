@@ -1,5 +1,6 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
+using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.PredicatesBuilder;
@@ -11,15 +12,11 @@ using System.Linq.Expressions;
 namespace Accounting.DAL.Providers
 {
 #nullable disable
-    public class DocumentProvider : IDocumentProvider
+    public class DocumentProvider : ProviderBase,IDocumentProvider
     {
-        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
-        private readonly ILogger<Document> _logger;
-        public DocumentProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Document> logger)
-        { 
-            _unitOfWork = unitOfWork;
-            _logger = logger;   
-        }
+
+        public DocumentProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Document> logger) : base(unitOfWork, logger) { }
+       
 
         public async Task<BaseResult<bool>> Create(Document entity)
         {
@@ -34,20 +31,6 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        private BaseResult<T> HandleException<T>(Exception exception = null)
-        {
-            LogErrorMessage(exception);
-            return new BaseResult<T>(false, default(T), OperationStatuses.Error);
-        }
-
-        private void LogErrorMessage(Exception ex = null)
-        {
-            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(exception.Message);
-            _logger.LogError(exception.InnerException.Message ?? string.Empty);
-            _logger.LogError(exception.StackTrace);
-        }
-
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
@@ -59,11 +42,13 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<Document>>> GetAll()
+        public async Task<BaseResult<List<Document>>> GetAll(Expression<Func<Document, bool>> predicate = null)
         {
             try
             {
-                var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(orderBy: x => x.OrderBy(x => x.DateCreate), disableTracking: false);
+                var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(
+                  orderBy: x => x.OrderBy(x => x.DateCreate)
+                 ,disableTracking: false, predicate: predicate);
                 return new BaseResult<List<Document>>(true, documents.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)

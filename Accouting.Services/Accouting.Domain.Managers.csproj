@@ -10,8 +10,4 @@
     <ProjectReference Include="..\Accounting.DAL\Accounting.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Implementations\" />
-  </ItemGroup>
-
 </Project>

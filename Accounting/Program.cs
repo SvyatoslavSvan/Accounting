@@ -5,6 +5,8 @@ using Accounting.DAL.Providers;
 using Accounting.Domain.Models;
 using Accounting.Services;
 using Accounting.Services.Interfaces;
+using Accouting.Domain.Managers.Implementations;
+using Accouting.Domain.Managers.Interfaces;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -30,6 +32,7 @@ builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();
 builder.Services.AddTransient<IWorkDayProvider, WorkDayProvider>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddTransient<IReportService, ReportService>();
+builder.Services.AddScoped<IDeducationDocumentManager, DeducationDocumentManager>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

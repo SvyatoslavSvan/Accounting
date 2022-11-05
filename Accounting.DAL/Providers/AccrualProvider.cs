@@ -6,6 +6,7 @@ using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
@@ -61,11 +62,12 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<Accrual>>> GetAll()
+        public async Task<BaseResult<List<Accrual>>> GetAll(Expression<Func<Accrual, bool>> predicate = null)
         {
             try
             {
-                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false, include: x => x.Include(x => x.Employee));
+                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false, 
+                    include: x => x.Include(x => x.Employee), predicate: predicate);
                 return new BaseResult<List<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)

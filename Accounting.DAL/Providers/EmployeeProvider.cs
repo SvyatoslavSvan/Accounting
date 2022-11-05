@@ -1,5 +1,6 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
+using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
@@ -10,17 +11,13 @@ using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
-    public class EmployeeProvider : IEmployeeProvider
+    public class EmployeeProvider : ProviderBase,IEmployeeProvider
     {
 #nullable disable
         
-        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
-        private readonly ILogger<EmployeeBase> _logger;
-        public EmployeeProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<EmployeeBase> logger)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
+        
+        public EmployeeProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<EmployeeBase> logger) : base(unitOfWork, logger) { }
+       
 
         public async Task<BaseResult<bool>> Create(EmployeeBase entity)
         {
@@ -39,21 +36,14 @@ namespace Accounting.DAL.Providers
                 await _unitOfWork.SaveChangesAsync();
                 if (!_unitOfWork.LastSaveChangesResult.IsOk)
                 {
-                    LogErrorMessage();
-                    return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                    return HandleException<bool>();
                 }
                 return new BaseResult<bool>(true, true, OperationStatuses.Ok);
             }
             return new BaseResult<bool>(false, false, OperationStatuses.NotUniqInnerId);
         }
 
-        private void LogErrorMessage(Exception ex = null)
-        {   
-            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(exception.Message);
-            _logger.LogError(exception.InnerException.Message ?? "");
-            _logger.LogError(exception.StackTrace);
-        }
+        
 
         private async Task<bool> IsUniqInnerId(EmployeeBase entity) => await CheckInnerId(entity);
 
@@ -69,7 +59,7 @@ namespace Accounting.DAL.Providers
         private async Task<int> CountOfEmployee<TRepository>(Expression<Func<TRepository, bool>> predicate) where TRepository : EmployeeBase => await _unitOfWork.GetRepository<TRepository>()
             .CountAsync(predicate: predicate);
 
-        public async Task<BaseResult<List<EmployeeBase>>> GetAll()
+        public async Task<BaseResult<List<EmployeeBase>>> GetAll(Expression<Func<EmployeeBase, bool>> predicate = null)
         {
             try
             { 
@@ -81,8 +71,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<List<EmployeeBase>>(false, null, OperationStatuses.Error);
+                return HandleException<List<EmployeeBase>>(ex);
             }
         }
 
@@ -102,8 +91,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<EmployeeBase>(false, null, OperationStatuses.Error);
+                return HandleException<EmployeeBase>(ex);
             }
         }
 
@@ -122,8 +110,7 @@ namespace Accounting.DAL.Providers
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                LogErrorMessage();
-                return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
@@ -146,8 +133,7 @@ namespace Accounting.DAL.Providers
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                LogErrorMessage();
-                return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
@@ -174,8 +160,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<NotBetEmployee>(false, null, OperationStatuses.Error);
+                return HandleException<NotBetEmployee>(ex);
             }
         }
 
@@ -188,8 +173,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null, OperationStatuses.Error);
+                return HandleException<IEnumerable<NotBetEmployee>>(ex);
             }
         }
 
@@ -202,8 +186,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<IEnumerable<NotBetEmployee>>(false, null, OperationStatuses.Error);
+                return HandleException<IEnumerable<NotBetEmployee>>(ex);
             }
         }
 
@@ -218,8 +201,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<BetEmployee>(false, null, OperationStatuses.Error);
+                return HandleException<BetEmployee>(ex);
             }
         }
 
@@ -231,8 +213,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<IList<BetEmployee>>(false, null, OperationStatuses.Error);
+                return HandleException<IList<BetEmployee>>(ex);
             }
         }
 
@@ -245,8 +226,7 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<IList<BetEmployee>>(false, null, OperationStatuses.Error);
+                return HandleException<IList<BetEmployee>>(ex);
             }
         }
     }

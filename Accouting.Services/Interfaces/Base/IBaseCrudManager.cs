@@ -1,8 +1,8 @@
 ﻿using Accounting.DAL.Result.Provider.Base;
 
-namespace Accouting.Domain.Services.Interfaces.Base
+namespace Accouting.Domain.Managers.Interfaces.Base
 {
-    public interface IBaseService<T> 
+    public interface IBaseCrudManager<T> 
     {
         public Task<BaseResult<T>> Create(T model);
         public Task<BaseResult<T>> Update(T model);

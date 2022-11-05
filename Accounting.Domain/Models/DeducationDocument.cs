@@ -10,10 +10,11 @@ namespace Accounting.Domain.Models
         {
             Name = name;
             DateCreate = dateCreate;
-            DeducationsBetEmployee = deducationsBetEmployee;
-            NotBetEmployees = notBetEmployees;
-            BetEmployees = betEmployees;
-            DeducationsNotBetEmployee = deducationNotBetEmployees;
+            _deducationsBetEmployee = deducationsBetEmployee;
+            _notBetEmployees = notBetEmployees;
+            _betEmployees = betEmployees;
+            _deducationsNotBetEmployee = deducationNotBetEmployees;
+            Id = id;
         }
         public Guid Id { get; private set; }
         public DateTime DateCreate { get; set; }

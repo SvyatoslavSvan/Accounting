@@ -6,7 +6,7 @@ using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Calabonga.UnitOfWork;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml.Utils;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
@@ -75,12 +75,13 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<DeducationBase>>> GetAll()
+        public async Task<BaseResult<List<DeducationBase>>> GetAll(Expression<Func<DeducationBase, bool>> predicate = null)
         {
             try
             {
                 var deducations = new List<DeducationBase>();
-                deducations.AddRange(await _unitOfWork.GetRepository<DeducationBetEmployee>().GetAllAsync(true));
+                deducations.AddRange(await _unitOfWork.GetRepository<DeducationBetEmployee>().GetAllAsync(
+                    disableTracking: true));
                 deducations.AddRange(await _unitOfWork.GetRepository<DeducationNotBetEmployee>().GetAllAsync(true));
                 return new BaseResult<List<DeducationBase>>(true, deducations, OperationStatuses.Ok);
             }

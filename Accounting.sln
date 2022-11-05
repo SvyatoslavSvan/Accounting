@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{ECFDD76C-DA8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{6C24838B-2E4C-462E-B4AF-37F4BE16DF01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accouting.Domain.Services", "Accouting.Services\Accouting.Domain.Services.csproj", "{91533C26-0EF2-4E61-BE95-9A1B370EB594}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accouting.Domain.Managers", "Accouting.Services\Accouting.Domain.Managers.csproj", "{91533C26-0EF2-4E61-BE95-9A1B370EB594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

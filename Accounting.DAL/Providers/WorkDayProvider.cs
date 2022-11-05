@@ -1,24 +1,24 @@
 ﻿using Accounting.DAL.Contexts;
 using Accounting.DAL.Interfaces;
+using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
-    public class WorkDayProvider : IWorkDayProvider
+    public class WorkDayProvider : ProviderBase,IWorkDayProvider
     {
 #nullable disable
-        private readonly IUnitOfWork<ApplicationDBContext> _unitOfWork;
-        private readonly ILogger<WorkDay> _logger;
-        public WorkDayProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<WorkDay> logger)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
+
+        public WorkDayProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<WorkDay> logger) : base(unitOfWork, logger) { }
+        
 
         public Task<BaseResult<bool>> Create(WorkDay entity)
         {
@@ -54,7 +54,9 @@ namespace Accounting.DAL.Providers
             }
             return workDays;
         }
+
         private async Task<bool> IsNeededToCreateNewDays() => await _unitOfWork.GetRepository<WorkDay>().CountAsync(predicate: x => x.Date.Month == DateTime.Now.Month) == 0 ? true : false;
+
         public async Task<BaseResult<bool>> CreateNewWorkDays()
         {
             if (await IsNeededToCreateNewDays())
@@ -81,20 +83,7 @@ namespace Accounting.DAL.Providers
             throw new NotImplementedException();
         }
 
-        private void LogErrorMessage(Exception ex = null)
-        {
-            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(exception.Message);
-            _logger.LogError(exception.InnerException.Message ?? string.Empty);
-            _logger.LogError(exception.StackTrace);
-        }
-        public BaseResult<T> HandleException<T>(Exception exception = null)
-        {
-            LogErrorMessage(exception);
-            return new BaseResult<T>(false, default(T), OperationStatuses.Error);
-        }
-
-        public Task<BaseResult<List<WorkDay>>> GetAll()
+        public Task<BaseResult<List<WorkDay>>> GetAll(Expression<Func<WorkDay, bool>> predicate = null)
         {
             throw new NotImplementedException();
         }

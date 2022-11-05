@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Accounting.DAL\Accounting.DAL.csproj" />
+    <ProjectReference Include="..\Accouting.Services\Accouting.Domain.Managers.csproj" />
   </ItemGroup>
 
 </Project>

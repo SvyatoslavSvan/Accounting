@@ -1,23 +1,23 @@
-﻿using Accounting.DAL.Interfaces.Base;
+﻿using Accounting.DAL.Contexts;
+using Accounting.DAL.Interfaces.Base;
+using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
 #nullable disable
-    public class GroupProvider : IBaseProvider<Group>
+    public class GroupProvider : ProviderBase, IBaseProvider<Group>
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<Group> _logger;
 
-        public GroupProvider(IUnitOfWork unitOfWork, ILogger<Group> logger)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger; 
-        }
+        public GroupProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Group> logger) : base(unitOfWork, logger) { }
+        
 
         public async Task<BaseResult<bool>> Create(Group entity)
         {
@@ -28,8 +28,7 @@ namespace Accounting.DAL.Providers
                 await _unitOfWork.SaveChangesAsync();
                 if (!_unitOfWork.LastSaveChangesResult.IsOk)
                 {
-                    LogErrorMessage();
-                    return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                    return HandleException<bool>();
                 }
                 return new BaseResult<bool>(true, true, OperationStatuses.Ok);
             }
@@ -52,24 +51,22 @@ namespace Accounting.DAL.Providers
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<Group>(false, null, OperationStatuses.Error);
+                return HandleException<Group>(ex);
             }
             
         }
 
-        public async Task<BaseResult<List<Group>>> GetAll()
+        public async Task<BaseResult<List<Group>>> GetAll(Expression<Func<Group, bool>> predicate)
         {  
             try
             {
                 var Groups = await _unitOfWork.GetRepository<Group>().GetAllAsync(
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees));
+                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees), predicate: predicate);
                 return new BaseResult<List<Group>>(true, Groups.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                LogErrorMessage(ex);
-                return new BaseResult<List<Group>>(false, null, OperationStatuses.Error);
+                return HandleException<List<Group>>(ex);
             }
         }
 
@@ -79,8 +76,7 @@ namespace Accounting.DAL.Providers
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                LogErrorMessage();
-                return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
@@ -91,18 +87,11 @@ namespace Accounting.DAL.Providers
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
-                LogErrorMessage();
-                return new BaseResult<bool>(false, false, OperationStatuses.Error);
+                return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
         private async Task<bool> IsUniqName(string name) => await _unitOfWork.GetRepository<Group>().CountAsync(predicate: x=> x.Name == name) == 0 ? true : false;
-        private void LogErrorMessage(Exception ex = null)
-        {
-            var exception = ex ?? _unitOfWork.LastSaveChangesResult.Exception;
-            _logger.LogError(exception.Message);
-            _logger.LogError(exception.StackTrace);
-        }
     }
 }
