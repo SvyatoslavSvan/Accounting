@@ -1,25 +1,25 @@
-﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Result.Provider.Base;
+﻿using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.ViewModels;
+using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
 {
     public class WorkDayController : Controller
     {
-        private readonly IWorkDayProvider _workDayProvider;
-        public WorkDayController(IWorkDayProvider workDayProvider)
+        private readonly IWorkDayManager _workDayManager;
+        public WorkDayController(IWorkDayManager workDayProvider)
         {
-            _workDayProvider = workDayProvider;
+            _workDayManager = workDayProvider;
         }
 
         public async Task<IActionResult> Update(UpdateWorkDayViewModel viewModel)
         {
-            var workDay = await _workDayProvider.GetById(viewModel.Id);
+            var workDay = await _workDayManager.GetById(viewModel.Id);
             if (workDay.Succed)
             {
                 workDay.Data.Hours = viewModel.Hours;
-                var updateResult = await _workDayProvider.Update(workDay.Data);
+                var updateResult = await _workDayManager.Update(workDay.Data);
                 if (updateResult.Succed)
                 {
                     return Ok();

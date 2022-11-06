@@ -6,10 +6,11 @@ using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
-    public class WorkDayProvider : ProviderBase,IWorkDayProvider
+    public class WorkDayProvider : ProviderBase , IWorkDayProvider
     {
 #nullable disable
 
@@ -108,12 +109,27 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<IList<WorkDay>>> GetAllFromThisMonth()
+        public Task<int> Count(Expression<Func<WorkDay, bool>> predicate) => _unitOfWork.GetRepository<WorkDay>().CountAsync(predicate: predicate);
+
+        public async Task<BaseResult<bool>> CreateRange(IList<WorkDay> workDays)
+        {
+            foreach (var item in workDays)
+                _unitOfWork.DbContext.Attach(item.Employee);
+            await _unitOfWork.GetRepository<WorkDay>().InsertAsync(workDays);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
+
+        public async Task<BaseResult<IList<WorkDay>>> GetAllByPredicate(Expression<Func<WorkDay, bool>> predicate)
         {
             try
             {
-                return new BaseResult<IList<WorkDay>>(true, await 
-                    _unitOfWork.GetRepository<WorkDay>().GetAllAsync(predicate: x => x.Date.Month == DateTime.Now.Month, include: x => x.Include(x => x.Employee)), OperationStatuses.Ok);
+                return new BaseResult<IList<WorkDay>>(true, await
+                    _unitOfWork.GetRepository<WorkDay>().GetAllAsync(predicate: predicate), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {

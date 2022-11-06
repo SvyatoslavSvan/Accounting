@@ -40,7 +40,7 @@ namespace Accouting.Domain.Managers.Implementations
             x => x.Include(x => x.Group).Include(x => x.WorkDays.Where(x => x.Date.Month == date.Month && x.Date.Year == date.Year)
             ));
 
-        public async Task<BaseResult<NotBetEmployee>> GetNotBetEmployee(Guid id) => await _provider.getNotBetEmployee(id);
+        public async Task<BaseResult<NotBetEmployee>> GetNotBetEmployee(Guid id) => await _provider.GetNotBetEmployee(id);
 
         public async Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployees() => await _provider.GetNotBetEmployees();
 

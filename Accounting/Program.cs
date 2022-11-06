@@ -37,6 +37,8 @@ builder.Services.AddScoped<IDeducationManager, DeducationManager>();
 builder.Services.AddScoped<IDocumentManager, DocumentManager>(); 
 builder.Services.AddScoped<IAccrualManager, AccrualManager>();
 builder.Services.AddScoped<IEmployeeManager, EmployeeManager>();
+builder.Services.AddScoped<IWorkDayManager, WorkDayManager>();
+builder.Services.AddScoped<IGroupManager, GroupManager>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
