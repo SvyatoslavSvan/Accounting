@@ -1,8 +1,8 @@
-﻿using Accounting.DAL.Interfaces;
-using Accounting.DAL.Interfaces.Base;
+﻿using Accounting.DAL.Interfaces.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
+using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -10,17 +10,17 @@ namespace Accounting.Controllers
     public class EmployeeController : Controller
     {
 #nullable disable
-        private readonly IEmployeeProvider _employeeProvider;
+        private readonly IEmployeeManager _employeeManager;
         private readonly IBaseProvider<Group> _groupProvider;
-        public EmployeeController(IEmployeeProvider employeeProvider, IBaseProvider<Group> groupProvider)
+        public EmployeeController(IEmployeeManager employeeProvider, IBaseProvider<Group> groupProvider)
         {
-            _employeeProvider = employeeProvider;
+            _employeeManager = employeeProvider;
             _groupProvider = groupProvider;
         }
         [HttpGet]
         public async Task<IActionResult> Employees()
         {
-            var getAllResult = await _employeeProvider.GetAll();
+            var getAllResult = await _employeeManager.GetAll();
             if (getAllResult.Succed)
             {
                 return View(getAllResult.Data);
@@ -44,7 +44,7 @@ namespace Accounting.Controllers
                     employee = new NotBetEmployee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
                     employee.AddToGroup(employeeGroup.Data);
                 }
-                var createResult = await _employeeProvider.Create(employee);
+                var createResult = await _employeeManager.Create(employee);
                 if (createResult.Succed)
                 {
                     return PartialView("createdEmployee" ,employee);
@@ -60,7 +60,7 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleteResult = await _employeeProvider.Delete(id);
+            var deleteResult = await _employeeManager.Delete(id);
             if (deleteResult.Succed)
             {
                 return RedirectToAction(nameof(Employees));
@@ -75,7 +75,7 @@ namespace Accounting.Controllers
         public async Task<IActionResult> Update(Guid id)
         {
             var updateViewModel = new UpdateEmployeeViewModel();
-            var getByIdResult = await _employeeProvider.GetById(id);
+            var getByIdResult = await _employeeManager.GetById(id);
             if (getByIdResult.Data is BetEmployee betEmployee)
             {
                 updateViewModel.Bet = betEmployee.Bet;
@@ -104,21 +104,21 @@ namespace Accounting.Controllers
                 {
                     if (viewModel.IsBet)
                     {
-                        var getEmployeeToUpdateResult = await _employeeProvider.GetBetEmployee(viewModel.Id);
+                        var getEmployeeToUpdateResult = await _employeeManager.GetBetEmployee(viewModel.Id);
                         if (getEmployeeToUpdateResult.Succed)
                         {
                             getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
-                            await _employeeProvider.Update(getEmployeeToUpdateResult.Data);
+                            await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                             return RedirectToAction(nameof(Employees));
                         }
                     }
                     else
                     {
-                        var getEmployeeToUpdateResult = await _employeeProvider.getNotBetEmployee(viewModel.Id);
+                        var getEmployeeToUpdateResult = await _employeeManager.GetNotBetEmployee(viewModel.Id);
                         if (getEmployeeToUpdateResult.Succed)
                         {
                             getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
-                            await _employeeProvider.Update(getEmployeeToUpdateResult.Data);
+                            await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                         }
                         return RedirectToAction(nameof(Employees));
                     }

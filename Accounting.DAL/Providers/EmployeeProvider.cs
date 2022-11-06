@@ -6,6 +6,7 @@ using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
@@ -149,7 +150,7 @@ namespace Accounting.DAL.Providers
 
         private void DeleteEmployee<TRepository>(Guid id) where TRepository : EmployeeBase => _unitOfWork.GetRepository<TRepository>().Delete(id);
 
-        public async Task<BaseResult<NotBetEmployee>> getNotBetEmployee(Guid id)
+        public async Task<BaseResult<NotBetEmployee>> GetNotBetEmployee(Guid id)
         {
             try
             {
@@ -223,6 +224,23 @@ namespace Accounting.DAL.Providers
             {
                 return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x
                 .Include(x => x.WorkDays.Where(x => x.Date.Month == date.Month && x.Date.Year == date.Year))), OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<BetEmployee>>(ex);
+            }
+        }
+
+        public Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<bool, BetEmployee>> betEmployeePredicate, Expression<Func<bool, NotBetEmployee>> notBetEmployeePredicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<BaseResult<IList<BetEmployee>>> GetBetEmployeesWithInclude(Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>> include)
+        {
+            try
+            {
+                return new BaseResult<IList<BetEmployee>>(true, await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: include), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {

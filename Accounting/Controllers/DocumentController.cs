@@ -13,13 +13,13 @@ namespace Accounting.Controllers
     public class DocumentController : Controller
     {
         private readonly IDocumentManager _documentManager;
-        private readonly IEmployeeProvider _employeeProvider;
+        private readonly IEmployeeManager _employeeManager;
         private readonly IAccrualManager _accrualManager;
         private readonly ISessionDocumentService _sessionDocumentService;
 
-        public DocumentController(IEmployeeProvider employeeProvider, IAccrualManager accrualManager, ISessionDocumentService sessionDocumentService, IDocumentManager documentManager)
+        public DocumentController(IEmployeeManager employeeProvider, IAccrualManager accrualManager, ISessionDocumentService sessionDocumentService, IDocumentManager documentManager)
         {
-            _employeeProvider = employeeProvider;
+            _employeeManager = employeeProvider;
             _accrualManager = accrualManager;
             _sessionDocumentService = sessionDocumentService;
             _documentManager = documentManager;
@@ -66,7 +66,7 @@ namespace Accounting.Controllers
         [NonAction]
         private async Task<List<NotBetEmployee>> GetEmployeesExcludeByDocumentIdAsync(Guid id)
         {
-            var getEmployeesResult = await _employeeProvider.GetNotBetEmployeesIncludeDocument();
+            var getEmployeesResult = await _employeeManager.GetNotBetEmployeesIncludeDocument();
             var employees = getEmployeesResult.Data.ToList();
             var employeesWithoutDocument = employees.Where(x => x.Documents == null).ToList();
             employees.RemoveAll(x => x.Documents == null);
@@ -141,7 +141,7 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployeeToDocument(Guid employeeId)
         {
-            var getByIdResult = await _employeeProvider.getNotBetEmployee(employeeId);
+            var getByIdResult = await _employeeManager.GetNotBetEmployee(employeeId);
             if (getByIdResult.Succed)
             {
                 var addEmployeeToDocumentResult = await _sessionDocumentService.AddEmployee(getByIdResult.Data);
@@ -171,7 +171,7 @@ namespace Accounting.Controllers
         public async Task<IActionResult> DeleteEmployeeFromDocument(Guid EmployeeId)
         {
             var deleteEmployeeFromSessionResult = await _sessionDocumentService.DeleteEmployee(EmployeeId);
-            var employeeToAdd = await _employeeProvider.getNotBetEmployee(EmployeeId);
+            var employeeToAdd = await _employeeManager.GetNotBetEmployee(EmployeeId);
             if (employeeToAdd.Succed)
             {
                 var tiedToEmployeeAccruals = _sessionDocumentService.GetAccrualsByEmployeeId(employeeToAdd.Data.Id);
@@ -205,7 +205,7 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAccrualToEmployee(AccrualViewModel accrualViewModel)
         {
-            var getByIdResult = await _employeeProvider.getNotBetEmployee(accrualViewModel.EmployeeId);
+            var getByIdResult = await _employeeManager.GetNotBetEmployee(accrualViewModel.EmployeeId);
             if (getByIdResult.Succed)
             {
                 var accrual = new Accrual(DateTime.Now, accrualViewModel.Ammount, accrualViewModel.IsAdditional);
