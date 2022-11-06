@@ -11,11 +11,11 @@ namespace Accounting.Controllers
     {
 #nullable disable
         private readonly IEmployeeManager _employeeManager;
-        private readonly IBaseProvider<Group> _groupProvider;
-        public EmployeeController(IEmployeeManager employeeProvider, IBaseProvider<Group> groupProvider)
+        private readonly IGroupManager _groupManager;
+        public EmployeeController(IEmployeeManager employeeProvider, IGroupManager groupProvider)
         {
             _employeeManager = employeeProvider;
-            _groupProvider = groupProvider;
+            _groupManager = groupProvider;
         }
         [HttpGet]
         public async Task<IActionResult> Employees()
@@ -33,7 +33,7 @@ namespace Accounting.Controllers
             if (ModelState.IsValid)
             {
                 EmployeeBase employee;
-                var employeeGroup = await _groupProvider.GetById(employeeViewModel.GroupId);
+                var employeeGroup = await _groupManager.GetById(employeeViewModel.GroupId);
                 if (employeeViewModel.IsBet)
                 {
                     employee = new BetEmployee(employeeViewModel.Name, (decimal)employeeViewModel.Bet, employeeViewModel.InnerId, employeeViewModel.Premium);
@@ -99,7 +99,7 @@ namespace Accounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                var getGroupResult = await _groupProvider.GetById(viewModel.GroupId);
+                var getGroupResult = await _groupManager.GetById(viewModel.GroupId);
                 if (getGroupResult.Succed)
                 {
                     if (viewModel.IsBet)

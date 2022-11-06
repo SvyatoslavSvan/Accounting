@@ -17,7 +17,12 @@ namespace Accouting.Domain.Managers.Implementations
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id) => await _deducationProvider.Delete(id);
-       
+
+        public async Task<BaseResult<IList<DeducationBase>>> DeleteDeducations(List<DeducationBase> deducations)
+        {
+            var deleteResult = await _deducationProvider.DeleteDeducations(deducations);
+            return new BaseResult<IList<DeducationBase>>(deleteResult.Succed, deducations, OperationStatuses.Ok);
+        }
 
         public async Task<BaseResult<IList<DeducationBase>>> GetAll()
         {

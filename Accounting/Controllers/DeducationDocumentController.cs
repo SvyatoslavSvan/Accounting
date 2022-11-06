@@ -12,18 +12,18 @@ namespace Accounting.Controllers
 {
     public class DeducationDocumentController : Controller
     {
-        private readonly IEmployeeProvider _employeeProvider;
+        private readonly IEmployeeManager _employeeManager;
         private readonly ISessionDeducationDocumentService _sessionDeducationDocumentService;
-        private readonly IDeducationProvider _deducationProvider;
+        private readonly IDeducationManager _deducationManager;
         private readonly IDeducationDocumentManager _documentManager;
 
-        public DeducationDocumentController(IEmployeeProvider employeeProvider,
-            IDeducationDocumentManager deducationDocumentManager, ISessionDeducationDocumentService deducationDocumentService, IDeducationProvider deducationProvider)
+        public DeducationDocumentController(IEmployeeManager employeeManager,
+            IDeducationDocumentManager deducationDocumentManager, ISessionDeducationDocumentService deducationDocumentService, IDeducationManager deducationManager)
         {
-            _employeeProvider = employeeProvider;
+            _employeeManager = employeeManager;
             _documentManager = deducationDocumentManager;
             _sessionDeducationDocumentService = deducationDocumentService;
-            _deducationProvider = deducationProvider;
+            _deducationManager = deducationManager;
         }
 
         [HttpGet]
@@ -66,16 +66,16 @@ namespace Accounting.Controllers
                 {
                     var employeesInDocument = new List<EmployeeBase>(getDocumentResult.Data.NotBetEmployees);
                     employeesInDocument.AddRange(getDocumentResult.Data.BetEmployees);
-                    var employeesAddToDocument = await _employeeProvider.GetAll();
+                    var employeesAddToDocument = await _employeeManager.GetAll();
                     employeesInDocument.ForEach(x =>
                     {
-                        employeesAddToDocument.Data.RemoveAll(y => y.Id == x.Id);
+                        employeesAddToDocument.Data.Remove(employeesAddToDocument.Data.First(y => y.Id == x.Id));
                     });
                     return View(new UpdateDeducationDocumentViewModel()
                     {
                         Name = getDocumentResult.Data.Name,
                         DateCreate = getDocumentResult.Data.DateCreate,
-                        EmployeesAddToDocument = employeesAddToDocument.Data,
+                        EmployeesAddToDocument = employeesAddToDocument.Data.ToList(),
                         EmployeesInDocument = employeesInDocument
                     });
                 }
@@ -125,8 +125,8 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteEmployee(Guid employeeId)
         {
-            var getEmployeeResult = await _employeeProvider.GetById(employeeId);
-            var deleteDeducationsResult = await _deducationProvider.DeleteDeducations(_sessionDeducationDocumentService.GetDeducationsByEmployeeId(employeeId));
+            var getEmployeeResult = await _employeeManager.GetById(employeeId);
+            var deleteDeducationsResult = await _deducationManager.DeleteDeducations(_sessionDeducationDocumentService.GetDeducationsByEmployeeId(employeeId));
             if (await _sessionDeducationDocumentService.DeleteEmployee(getEmployeeResult.Data) && getEmployeeResult.Succed && deleteDeducationsResult.Succed)
             {
                 return PartialView("RemovedEmployeeFromDocument", getEmployeeResult.Data);
@@ -141,7 +141,7 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(Guid employeeId)
         {
-            var getEmployeeResult = await _employeeProvider.GetById(employeeId);
+            var getEmployeeResult = await _employeeManager.GetById(employeeId);
             if (getEmployeeResult.Succed)
             {
                 if (await _sessionDeducationDocumentService.AddEmployee(getEmployeeResult.Data))
