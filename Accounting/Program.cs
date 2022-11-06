@@ -33,6 +33,9 @@ builder.Services.AddTransient<IWorkDayProvider, WorkDayProvider>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddTransient<IReportService, ReportService>();
 builder.Services.AddScoped<IDeducationDocumentManager, DeducationDocumentManager>();
+builder.Services.AddScoped<IDeducationManager, DeducationManager>();
+builder.Services.AddScoped<IDocumentManager, DocumentManager>(); 
+builder.Services.AddScoped<IAccrualManager, AccrualManager>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

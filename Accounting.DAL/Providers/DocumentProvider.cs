@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 namespace Accounting.DAL.Providers
 {
 #nullable disable
-    public class DocumentProvider : ProviderBase,IDocumentProvider
+    public class DocumentProvider : ProviderBase , IDocumentProvider
     {
 
         public DocumentProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Document> logger) : base(unitOfWork, logger) { }
@@ -34,6 +34,8 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
+            var accrualRepository = _unitOfWork.GetRepository<Accrual>();
+            accrualRepository.Delete(await accrualRepository.GetAllAsync(predicate: x => x.Document.Id == id));
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -42,18 +44,34 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<Document>>> GetAll(Expression<Func<Document, bool>> predicate = null)
+        public async Task<BaseResult<List<Document>>> GetAll()
         {
             try
             {
                 var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(
                   orderBy: x => x.OrderBy(x => x.DateCreate)
-                 ,disableTracking: false, predicate: predicate);
+                 ,disableTracking: false);
                 return new BaseResult<List<Document>>(true, documents.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
                 return HandleException<List<Document>>(ex);
+            }
+        }
+
+        public async Task<BaseResult<IList<Document>>> GetAllByPredicate(Expression<Func<Document, bool>> predicate)
+        {
+            try
+            {
+                var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(
+                  orderBy: x => x.OrderBy(x => x.DateCreate)
+                 , disableTracking: false,
+                  predicate: predicate);
+                return new BaseResult<IList<Document>>(true, documents, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<Document>>(ex);
             }
         }
 

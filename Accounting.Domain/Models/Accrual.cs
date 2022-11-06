@@ -19,7 +19,23 @@
             IsAdditional = isAdditional;
         }
         public bool IsAdditional { get; private set; }
-        public decimal Ammount { get; private set; }
+        private decimal _ammount;
+
+        public decimal Ammount
+        {
+            get => _ammount;
+            set 
+            {
+                const decimal minValue = 0;
+                if (value < minValue)
+                {
+                    value = minValue;
+                    return;
+                }
+                _ammount = value; 
+            }
+        }
+
         public DateTime DateCreate { get; private set; }
         public Guid EmployeeId { get; private set; }
         public NotBetEmployee Employee { get; private set; }

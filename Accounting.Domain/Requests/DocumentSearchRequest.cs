@@ -1,6 +1,6 @@
 ﻿namespace Accounting.Domain.Requests
 {
-    public class DeducationDocumentSearchRequest
+    public class DocumentSearchRequest
     {
         public DateTime DateCreate { get; set; }
         public DateTime From { get; set; }

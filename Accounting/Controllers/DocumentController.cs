@@ -1,7 +1,10 @@
 ﻿using Accounting.DAL.Interfaces;
+using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
+using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -9,23 +12,23 @@ namespace Accounting.Controllers
 #nullable disable
     public class DocumentController : Controller
     {
-        private readonly IDocumentProvider _documentProvider;
+        private readonly IDocumentManager _documentManager;
         private readonly IEmployeeProvider _employeeProvider;
-        private readonly IAccrualProvider _accrualProvider;
+        private readonly IAccrualManager _accrualManager;
         private readonly ISessionDocumentService _sessionDocumentService;
 
-        public DocumentController(IDocumentProvider documentProvider, IEmployeeProvider employeeProvider, IAccrualProvider accrualProvider, ISessionDocumentService sessionDocumentService)
+        public DocumentController(IEmployeeProvider employeeProvider, IAccrualManager accrualManager, ISessionDocumentService sessionDocumentService, IDocumentManager documentManager)
         {
-            _documentProvider = documentProvider;
             _employeeProvider = employeeProvider;
-            _accrualProvider = accrualProvider;
+            _accrualManager = accrualManager;
             _sessionDocumentService = sessionDocumentService;
+            _documentManager = documentManager;
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var getDocumentToUpdateResult = await _documentProvider.GetById(id);
+            var getDocumentToUpdateResult = await _documentManager.GetById(id);
             if (getDocumentToUpdateResult.Succed)
             {
                 var loadToSessionResult = await _sessionDocumentService.LoadDocument(getDocumentToUpdateResult.Data);
@@ -38,14 +41,14 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(UpdateDocumentViewModel viewModel)
         {
-            var getDocumentToUpdateResult = await _documentProvider.GetById(viewModel.Id);
-            if (getDocumentToUpdateResult.Succed)
+            var updateResult = await _documentManager.Update(_sessionDocumentService.GetDocument(viewModel));
+            if (updateResult.Succed)
             {
-                var documentFromSession = _sessionDocumentService.GetDocument(viewModel);
-                getDocumentToUpdateResult.Data.Update(documentFromSession);
-                var updateResult = await _documentProvider.Update(getDocumentToUpdateResult.Data);
-                if (updateResult.Succed)
-                    return RedirectToAction(nameof(Documents));
+                return RedirectToAction(nameof(Documents));
+            }
+            if (updateResult.OperationStatus == OperationStatuses.Error)
+            {
+                return StatusCode(500);
             }
             return BadRequest();
         }
@@ -75,15 +78,15 @@ namespace Accounting.Controllers
         [HttpGet]
         public async Task<IActionResult> Documents()
         {
-            var getAllResult = await _documentProvider.GetAll();
+            var getAllResult = await _documentManager.GetAll();
             if (getAllResult.Succed)
                 return View(getAllResult.Data);
             return View("NotFound");
         }
         [HttpGet]
-        public async Task<IActionResult> GetSearch(DateTime from = new DateTime(), DateTime to = new DateTime(), DateTime dateCreate = new DateTime(), string name = "")
+        public async Task<IActionResult> GetSearch(DocumentSearchRequest request)
         {
-            var getBySearchResult = await _documentProvider.GetBySearchDocuments(from, to, name, dateCreate);
+            var getBySearchResult = await _documentManager.GetSearch(request);
             if (getBySearchResult.Succed)
                 return PartialView(getBySearchResult.Data);
             return BadRequest();
@@ -92,7 +95,7 @@ namespace Accounting.Controllers
         [HttpGet]
         public async Task<IActionResult> Document(Guid id)
         {
-            var getByIdResult = await _documentProvider.GetById(id);
+            var getByIdResult = await _documentManager.GetById(id);
             if (getByIdResult.Succed)
                 return View(getByIdResult);
             return BadRequest();
@@ -101,13 +104,9 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid documentId)
         {
-            var deleteAccrualsTiedToDocumentResult = await _accrualProvider.DeleteRangeByDocumentId(documentId);
-            if (deleteAccrualsTiedToDocumentResult.Succed)
-            {
-                var deleteResult = await _documentProvider.Delete(documentId);
+            var deleteResult = await _documentManager.Delete(documentId);
                 if (deleteResult.Succed)
                     return Ok();
-            }
             return BadRequest();
         }
 
@@ -118,6 +117,7 @@ namespace Accounting.Controllers
                 return View(new DocumentViewModel() { DateCreate = DateTime.Now });
             return BadRequest();
         }
+
         [HttpGet]
         public IActionResult GetSumOfAccruals() => PartialView(_sessionDocumentService.SumOfAccruals());
 
@@ -127,7 +127,7 @@ namespace Accounting.Controllers
             if (ModelState.IsValid)
             {
                 var document = _sessionDocumentService.GetDocument(documentViewModel);
-                var createResult = await _documentProvider.Create(document);
+                var createResult = await _documentManager.Create(document);
                 if (createResult.Succed)
                 {
                     await _sessionDocumentService.Clear();
@@ -156,10 +156,10 @@ namespace Accounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                var getAccrualToUpdateResult = await _accrualProvider.GetById(updateAccrualViewModel.AccrualId);
+                var getAccrualToUpdateResult = await _accrualManager.GetById(updateAccrualViewModel.AccrualId);
                 if (getAccrualToUpdateResult.Succed)
-                    getAccrualToUpdateResult.Data.SetAmmount(updateAccrualViewModel.Ammount);
-                var updateAccrualResult = await _accrualProvider.Update(getAccrualToUpdateResult.Data);
+                    getAccrualToUpdateResult.Data.Ammount = updateAccrualViewModel.Ammount;
+                var updateAccrualResult = await _accrualManager.Update(getAccrualToUpdateResult.Data);
                 if (updateAccrualResult.Succed)
                     if (await _sessionDocumentService.UpdateAccrual(updateAccrualViewModel.Ammount, updateAccrualViewModel.AccrualId))
                         return Ok(updateAccrualViewModel.Ammount);
@@ -179,7 +179,7 @@ namespace Accounting.Controllers
                 {
                     if (await _sessionDocumentService.DeleteAccrualsByEmployeeId(employeeToAdd.Data.Id))
                     {
-                        if (_accrualProvider.DeleteRange(tiedToEmployeeAccruals).GetAwaiter().GetResult().Succed)
+                        if (_accrualManager.DeleteRange(tiedToEmployeeAccruals).GetAwaiter().GetResult().Succed)
                         {
                             if (deleteEmployeeFromSessionResult)
                                 return PartialView("RemovedEmployeeFromDocument", employeeToAdd.Data);
@@ -210,7 +210,7 @@ namespace Accounting.Controllers
             {
                 var accrual = new Accrual(DateTime.Now, accrualViewModel.Ammount, accrualViewModel.IsAdditional);
                 accrual.AddEmployee(getByIdResult.Data);
-                var createAccrualResult = await _accrualProvider.Create(accrual);
+                var createAccrualResult = await _accrualManager.Create(accrual);
                 if (createAccrualResult.Succed)
                 {
                     var addAccrualToSessionReuslt = await _sessionDocumentService.AddAccrual(accrual);
@@ -226,7 +226,7 @@ namespace Accounting.Controllers
         {
             if (await _sessionDocumentService.DeleteAccrual(accrualId))
             {
-                var deleteAccrualResult = await _accrualProvider.Delete(accrualId);
+                var deleteAccrualResult = await _accrualManager.Delete(accrualId);
                 if (deleteAccrualResult.Succed)
                     return Ok();
             }

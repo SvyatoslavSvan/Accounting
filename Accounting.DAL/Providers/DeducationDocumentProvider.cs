@@ -41,11 +41,11 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<DeducationDocument>>> GetAll(Expression<Func<DeducationDocument, bool>> predicate = null)
+        public async Task<BaseResult<List<DeducationDocument>>> GetAll()
         {
             try
             {
-                var deducationDocuments = await _unitOfWork.GetRepository<DeducationDocument>().GetAllAsync(disableTracking: true, predicate: predicate);
+                var deducationDocuments = await _unitOfWork.GetRepository<DeducationDocument>().GetAllAsync(disableTracking: true);
                 return new BaseResult<List<DeducationDocument>>(true, deducationDocuments.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
@@ -53,6 +53,19 @@ namespace Accounting.DAL.Providers
                 return HandleException<List<DeducationDocument>>(ex);
             }
             
+        }
+
+        public async Task<BaseResult<IList<DeducationDocument>>> GetAllByPredicate(Expression<Func<DeducationDocument, bool>> predicate)
+        {
+            try
+            {
+                var deducationDocuments = await _unitOfWork.GetRepository<DeducationDocument>().GetAllAsync(disableTracking: true, predicate: predicate);
+                return new BaseResult<IList<DeducationDocument>>(true, deducationDocuments, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<DeducationDocument>>(ex);
+            }
         }
 
         public async Task<BaseResult<DeducationDocument>> GetById(Guid id)

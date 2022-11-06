@@ -39,7 +39,7 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals)
+        public async Task<BaseResult<bool>> DeleteRange(IList<Accrual> accruals)
         {
             _unitOfWork.GetRepository<Accrual>().Delete(accruals);
             await _unitOfWork.SaveChangesAsync();
@@ -62,12 +62,12 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<Accrual>>> GetAll(Expression<Func<Accrual, bool>> predicate = null)
+        public async Task<BaseResult<List<Accrual>>> GetAll()
         {
             try
             {
                 var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false, 
-                    include: x => x.Include(x => x.Employee), predicate: predicate);
+                    include: x => x.Include(x => x.Employee));
                 return new BaseResult<List<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
@@ -76,6 +76,21 @@ namespace Accounting.DAL.Providers
             }
         }
 
+        public async Task<BaseResult<IList<Accrual>>> GetAllByPredicate(Expression<Func<Accrual, bool>> predicate)
+        {
+            try
+            {
+                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false,
+                    include: x => x.Include(x => x.Employee),
+                    predicate: predicate
+                    );
+                return new BaseResult<IList<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<Accrual>>(ex);
+            }
+        }
 
         public async Task<BaseResult<Accrual>> GetById(Guid id)
         {

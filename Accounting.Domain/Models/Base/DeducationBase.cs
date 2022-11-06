@@ -10,7 +10,12 @@ namespace Accounting.Domain.Models.Base
             Ammount = ammount;
             IsAdditional = isAdditional;
         }
-        
+        public DeducationBase(Guid id,decimal ammount, bool isAdditional)
+        {
+            Ammount = ammount;
+            IsAdditional = isAdditional;
+            Id = id;
+        }
         public Guid Id { get; protected set; }
         public bool IsAdditional { get; set; }
 

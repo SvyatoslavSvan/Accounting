@@ -6,7 +6,6 @@ using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
 using Accouting.Domain.Managers.Interfaces;
-using Accouting.Domain.Managers.Interfaces.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
@@ -43,7 +42,7 @@ namespace Accounting.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSearch(DeducationDocumentSearchRequest request)
+        public async Task<IActionResult> GetSearch(DocumentSearchRequest request)
         {
             var getDocumentsResult = await _documentManager.GetSearch(request);
             if (getDocumentsResult.Succed)

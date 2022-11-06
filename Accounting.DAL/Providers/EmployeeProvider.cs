@@ -59,7 +59,7 @@ namespace Accounting.DAL.Providers
         private async Task<int> CountOfEmployee<TRepository>(Expression<Func<TRepository, bool>> predicate) where TRepository : EmployeeBase => await _unitOfWork.GetRepository<TRepository>()
             .CountAsync(predicate: predicate);
 
-        public async Task<BaseResult<List<EmployeeBase>>> GetAll(Expression<Func<EmployeeBase, bool>> predicate = null)
+        public async Task<BaseResult<List<EmployeeBase>>> GetAll()
         {
             try
             { 

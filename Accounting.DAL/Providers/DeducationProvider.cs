@@ -75,7 +75,7 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<DeducationBase>>> GetAll(Expression<Func<DeducationBase, bool>> predicate = null)
+        public async Task<BaseResult<List<DeducationBase>>> GetAll()
         {
             try
             {

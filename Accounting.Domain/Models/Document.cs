@@ -12,8 +12,8 @@
         }
         public Document(List<NotBetEmployee> employees, List<Accrual> accruals, string name, DateTime dateCreate)
         {
-            Employees = employees;
-            Accruals = accruals;
+            _employees = employees;
+            _accruals = accruals;
             Name = name;
             DateCreate = dateCreate;
         }
@@ -21,8 +21,8 @@
         public Document(Guid id,List<NotBetEmployee> employees, List<Accrual> accruals, string name, DateTime dateCreate)
         {
             Id = id;
-            Employees = employees;
-            Accruals = accruals;
+            _employees = employees;
+            _accruals = accruals;
             Name = name;
             DateCreate = dateCreate;
         }
@@ -38,10 +38,10 @@
         {
             foreach (var item in accruals)
             {
-                var contains = Accruals.Contains(Accruals.FirstOrDefault(x => x.Id == item.Id));
+                var contains = _accruals.Contains(_accruals.FirstOrDefault(x => x.Id == item.Id));
                 if (!contains)
                 {
-                    var elements = Accruals.RemoveAll(x => x.Id == item.Id);
+                    var elements = _accruals.RemoveAll(x => x.Id == item.Id);
                     if (elements == 0)
                     {
                         Accruals.Add(item);
@@ -49,7 +49,7 @@
                 }
             }
             var elementsToRemove = new List<Guid>();
-            foreach (var thisAccrual in Accruals)
+            foreach (var thisAccrual in _accruals)
             {
                 var containsInUpdate = accruals.Contains(accruals.FirstOrDefault(x => x.Id == thisAccrual.Id));
                 if (!containsInUpdate)
@@ -58,25 +58,25 @@
                 }
             }
             foreach (var item in elementsToRemove)
-                Accruals.RemoveAll(x => x.Id == item);
+                _accruals.RemoveAll(x => x.Id == item);
         }
 
         private void UpdateEmployees(List<NotBetEmployee> employees)
         {
             foreach (var item in employees)
             {
-                var containsInThis = Employees.Contains(Employees.FirstOrDefault(x => x.Id == item.Id));
+                var containsInThis = _employees.Contains(_employees.FirstOrDefault(x => x.Id == item.Id));
                 if (!containsInThis)
                 {
-                    var elements = Employees.RemoveAll(x => x.Id == item.Id);
+                    var elements = _employees.RemoveAll(x => x.Id == item.Id);
                     if (elements == 0)
                     {
-                        Employees.Add(item);
+                        _employees.Add(item);
                     }
                 }
             }
             var elementsToRemove = new List<Guid>();
-            foreach (var thisEmployee in Employees)
+            foreach (var thisEmployee in _employees)
             {
                 var containsInUpdate = employees.Contains(employees.FirstOrDefault(x => x.Id == thisEmployee.Id));
                 if (!containsInUpdate)
@@ -86,14 +86,34 @@
             }
             foreach (var item in elementsToRemove)
             {
-                Employees.RemoveAll(x => x.Id == item);
+                _employees.RemoveAll(x => x.Id == item);
             }
         }
 
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public List<NotBetEmployee> Employees { get; private set; }
-        public List<Accrual> Accruals { get; private set; }
-        public DateTime DateCreate { get; private set; }  
+        public string Name { get; set; }
+        private List<NotBetEmployee> _employees;
+
+        public List<NotBetEmployee> Employees
+        {
+            get => _employees;
+            set 
+            {
+                UpdateEmployees(value); 
+            }
+        }
+        private List<Accrual> _accruals;
+
+        public List<Accrual> Accruals
+        {
+            get => _accruals;
+            set 
+            {
+                UpdateAccruals(value); 
+            }
+        }
+
+
+        public DateTime DateCreate { get; set; }  
     }
 }

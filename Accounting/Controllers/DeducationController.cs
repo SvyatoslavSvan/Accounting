@@ -4,22 +4,21 @@ using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
 using Accounting.Services.Interfaces;
+using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Accounting.Controllers
 {
     public class DeducationController : Controller
     {
-        private readonly IEmployeeProvider _employeeProvider;
-        private readonly IDeducationProvider _deducationProvider;
         private readonly ISessionDeducationDocumentService _sessionDeducationDocumentService;
-        public DeducationController(IEmployeeProvider employeeProvider,
-            IDeducationProvider deducationProvider, ISessionDeducationDocumentService deducationDocumentService)
+        private readonly IDeducationManager _deducationManager;
+        public DeducationController(ISessionDeducationDocumentService deducationDocumentService, IDeducationManager deducationManager)
         {
-            _employeeProvider = employeeProvider;
-            _deducationProvider = deducationProvider;
+            _deducationManager = deducationManager;
             _sessionDeducationDocumentService = deducationDocumentService;
         }
+
         [HttpGet]
         public IActionResult CreateDeducation(Guid id)
         {
@@ -45,7 +44,7 @@ namespace Accounting.Controllers
                 {
                     deducation = new DeducationNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, (NotBetEmployee)employee);
                 }
-                var createResult = await _deducationProvider.Create(deducation);
+                var createResult = await _deducationManager.Create(deducation);
                 if (createResult.Succed && await _sessionDeducationDocumentService.AddDeducation(deducation))
                 {
                     return PartialView("CreatedDeducation", new UpdateDeducationlViewModel()
@@ -70,11 +69,11 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateDeducation(UpdateDeducationlViewModel viewModel)
         {
-            var getDeducationResult = await _deducationProvider.GetById(viewModel.DeducationId);
+            var getDeducationResult = await _deducationManager.GetById(viewModel.DeducationId);
             if (getDeducationResult.Succed)
             {
                 getDeducationResult.Data.Ammount = viewModel.Ammount;
-                var updateResult = await _deducationProvider.Update(getDeducationResult.Data);
+                var updateResult = await _deducationManager.Update(getDeducationResult.Data);
                 if (updateResult.Succed)
                 {
                     if (await _sessionDeducationDocumentService.UpdateDeducation(viewModel))
@@ -93,7 +92,7 @@ namespace Accounting.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteDeducation(Guid deducationId)
         {
-            var deleteResult = await _deducationProvider.Delete(deducationId);
+            var deleteResult = await _deducationManager.Delete(deducationId);
             if (deleteResult.Succed)
             {
                 await _sessionDeducationDocumentService.DeleteDeducation(deducationId);

@@ -5,8 +5,8 @@ using Accouting.Domain.Managers.Interfaces.Base;
 
 namespace Accouting.Domain.Managers.Interfaces
 {
-    public interface IDeducationDocumentManager : IBaseCrudManager<DeducationDocument>
+    public interface IDocumentManager : IBaseCrudManager<Document>
     {
-        public Task<BaseResult<IList<DeducationDocument>>> GetSearch(DocumentSearchRequest request);
+        public Task<BaseResult<IList<Document>>> GetSearch(DocumentSearchRequest request);
     }
 }

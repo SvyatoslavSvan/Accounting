@@ -4,12 +4,8 @@ using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph;
-using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
@@ -83,7 +79,7 @@ namespace Accounting.DAL.Providers
             throw new NotImplementedException();
         }
 
-        public Task<BaseResult<List<WorkDay>>> GetAll(Expression<Func<WorkDay, bool>> predicate = null)
+        public Task<BaseResult<List<WorkDay>>> GetAll()
         {
             throw new NotImplementedException();
         }

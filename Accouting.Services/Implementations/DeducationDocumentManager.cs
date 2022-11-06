@@ -5,7 +5,6 @@ using Accounting.Domain.Requests;
 using Accouting.Domain.Managers.Interfaces;
 using Calabonga.PredicatesBuilder;
 using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -16,7 +15,6 @@ namespace Accouting.Domain.Managers.Implementations
         public DeducationDocumentManager(IDeducationDocumentProvider deducationDocumentProvider)
         {
             _deducationDocumentProvider = deducationDocumentProvider;
-
         }
 
         public async Task<BaseResult<DeducationDocument>> Create(DeducationDocument model)
@@ -25,16 +23,13 @@ namespace Accouting.Domain.Managers.Implementations
             return new BaseResult<DeducationDocument>(createResult.Succed, model, createResult.OperationStatus);
         }
 
-        public async Task<BaseResult<DeducationDocument>> Delete(DeducationDocument model)
+        public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            var deleteDeducationsResult = await _deducationDocumentProvider.Delete(model.Id);
-            return new BaseResult<DeducationDocument>(true, model, deleteDeducationsResult.OperationStatus);
+            var deleteDeducationsResult = await _deducationDocumentProvider.Delete(id);
+            return new BaseResult<bool>(deleteDeducationsResult.Succed,deleteDeducationsResult.Data, deleteDeducationsResult.OperationStatus);
         }
 
-        public Task<BaseResult<bool>> Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<BaseResult<IList<DeducationDocument>>> GetAll()
         {
@@ -53,14 +48,14 @@ namespace Accouting.Domain.Managers.Implementations
             return new BaseResult<DeducationDocument>(document.Succed, document.Data, document.OperationStatus);
         }
 
-        public async Task<BaseResult<IList<DeducationDocument>>> GetSearch(DeducationDocumentSearchRequest request)
+        public async Task<BaseResult<IList<DeducationDocument>>> GetSearch(DocumentSearchRequest request)
         {
             var predicate = BuildSearchPredicate(request);
-            var getSearchResult = await _deducationDocumentProvider.GetAll(predicate);
+            var getSearchResult = await _deducationDocumentProvider.GetAllByPredicate(predicate);
             return new BaseResult<IList<DeducationDocument>>(getSearchResult.Succed, getSearchResult.Data, getSearchResult.OperationStatus);
         }
 
-        private Expression<Func<DeducationDocument, bool>> BuildSearchPredicate(DeducationDocumentSearchRequest request)
+        private Expression<Func<DeducationDocument, bool>> BuildSearchPredicate(DocumentSearchRequest request)
         {
             var predicate = PredicateBuilder.True<DeducationDocument>();
             if (request.From != default(DateTime))

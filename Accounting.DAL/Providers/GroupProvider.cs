@@ -56,12 +56,12 @@ namespace Accounting.DAL.Providers
             
         }
 
-        public async Task<BaseResult<List<Group>>> GetAll(Expression<Func<Group, bool>> predicate)
+        public async Task<BaseResult<List<Group>>> GetAll()
         {  
             try
             {
                 var Groups = await _unitOfWork.GetRepository<Group>().GetAllAsync(
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees), predicate: predicate);
+                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees));
                 return new BaseResult<List<Group>>(true, Groups.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
