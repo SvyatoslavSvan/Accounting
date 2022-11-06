@@ -1,5 +1,4 @@
 ﻿using Accounting.Domain.Models.Base;
-using Accounting.Domain.ViewModels;
 using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
@@ -66,12 +65,6 @@ namespace Accounting.Domain.Models
             throw new NotImplementedException();
         }
 
-        //public void Update(UpdateEmployeeViewModel betEmployee, Group group)
-        //{
-        //    Bet = (decimal)betEmployee.Bet;
-        //    Name = betEmployee.Name; 
-        //    InnerId = betEmployee.InnerId;
-        //    Group = group;
-        //}
+        
     }
 }

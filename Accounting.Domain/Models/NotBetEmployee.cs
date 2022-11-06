@@ -1,5 +1,4 @@
 ﻿using Accounting.Domain.Models.Base;
-using Accounting.Domain.ViewModels;
 using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
