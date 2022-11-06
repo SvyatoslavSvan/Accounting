@@ -8,7 +8,22 @@ namespace Accounting.Domain.Models
     {
         [JsonConstructor]
         public BetEmployee(Guid id, string name) : base(id, name) { }
-        public decimal Bet { get; private set; }
+        private decimal _bet;
+
+        public decimal Bet
+        {
+            get => _bet;
+            set 
+            {
+                const int minValue = 0;
+                if (value < minValue)
+                {
+                    _bet = value;
+                    return;
+                }
+                _bet = value; 
+            }
+        }
 #nullable disable
 
         private List<WorkDay> _workDays;
@@ -51,12 +66,12 @@ namespace Accounting.Domain.Models
             throw new NotImplementedException();
         }
 
-        public void Update(UpdateEmployeeViewModel betEmployee, Group group)
-        {
-            Bet = (decimal)betEmployee.Bet;
-            Name = betEmployee.Name; 
-            InnerId = betEmployee.InnerId;
-            Group = group;
-        }
+        //public void Update(UpdateEmployeeViewModel betEmployee, Group group)
+        //{
+        //    Bet = (decimal)betEmployee.Bet;
+        //    Name = betEmployee.Name; 
+        //    InnerId = betEmployee.InnerId;
+        //    Group = group;
+        //}
     }
 }

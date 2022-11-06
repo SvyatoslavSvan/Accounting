@@ -26,13 +26,6 @@
             Name = name;
             DateCreate = dateCreate;
         }
-        public void Update(Document document)
-        {
-            Name = document.Name;
-            DateCreate = document.DateCreate;
-            UpdateAccruals(document.Accruals);
-            UpdateEmployees(document.Employees);
-        }
 
         private void UpdateAccruals(List<Accrual> accruals)
         {

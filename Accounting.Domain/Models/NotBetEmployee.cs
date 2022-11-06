@@ -36,13 +36,6 @@ namespace Accounting.Domain.Models
             this.Documents = null;
         }
 
-        public void Update(UpdateEmployeeViewModel viewModel, Group group)
-        {
-            Name = viewModel.Name; 
-            Group = group;
-            InnerId = viewModel.InnerId;
-        }
-
         public override decimal CalculateSalary(DateTime from)
         {
             throw new NotImplementedException();

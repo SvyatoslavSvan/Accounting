@@ -107,7 +107,10 @@ namespace Accounting.Controllers
                         var getEmployeeToUpdateResult = await _employeeManager.GetBetEmployee(viewModel.Id);
                         if (getEmployeeToUpdateResult.Succed)
                         {
-                            getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.AddToGroup(getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.Name = viewModel.Name;
+                            getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
+                            getEmployeeToUpdateResult.Data.Bet = (decimal)viewModel.Bet;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                             return RedirectToAction(nameof(Employees));
                         }
@@ -117,7 +120,9 @@ namespace Accounting.Controllers
                         var getEmployeeToUpdateResult = await _employeeManager.GetNotBetEmployee(viewModel.Id);
                         if (getEmployeeToUpdateResult.Succed)
                         {
-                            getEmployeeToUpdateResult.Data.Update(viewModel, getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.AddToGroup(getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.Name = viewModel.Name;
+                            getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                         }
                         return RedirectToAction(nameof(Employees));

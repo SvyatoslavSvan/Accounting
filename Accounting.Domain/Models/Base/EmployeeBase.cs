@@ -7,11 +7,33 @@ namespace Accounting.Domain.Models.Base
     {
         
         public Guid Id { get; protected set; }
-        public string Name { get; protected set; }
+        private string _name;
+
+        public string Name
+        {
+            get => _name;
+            set 
+            {
+                if (string.IsNullOrEmpty(value))
+                    return;
+                _name = value; 
+            }
+        }
+
         public Group Group { get; protected set; }
         public Guid GroupId { get; protected set; }
-        public string InnerId { get; protected set; }
+        private string _innerId;
 
+        public string InnerId
+        {
+            get => _innerId;
+            set 
+            {
+                if (string.IsNullOrEmpty(value))
+                    return;
+                _innerId = value; 
+            }
+        }
         private int _premium;
 
         public int Premium
@@ -61,6 +83,7 @@ namespace Accounting.Domain.Models.Base
         }
 
         public abstract decimal CalculateSalary(DateTime from);
+
         public virtual void AddToGroup(Group group)
         {
             if(group is null)
@@ -68,6 +91,7 @@ namespace Accounting.Domain.Models.Base
             Group = group;
             GroupId = group.Id;
         }
+
         public void SetId(Guid id)
         {
             if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Name))
@@ -75,7 +99,7 @@ namespace Accounting.Domain.Models.Base
             if (this.Id == Guid.Empty)
                 this.Id = id;
         }
-       
-        
+
+
     }
 }

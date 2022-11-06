@@ -1,6 +1,6 @@
 ﻿namespace Accounting.Domain.Interfaces
 {
-    internal interface IJsonSerializable
+    public interface IJsonSerializable
     {
         public void ToSerializable();
     }
