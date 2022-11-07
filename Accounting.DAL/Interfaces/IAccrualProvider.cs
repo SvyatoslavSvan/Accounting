@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 
 namespace Accounting.DAL.Interfaces
 {
-    public interface IAccrualProvider : IBaseProvider<Accrual>
+    public interface IAccrualProvider : IBaseProvider<AccrualNotBetEmployee>
     {
-        public Task<BaseResult<bool>> DeleteRange(IList<Accrual> accruals);
+        public Task<BaseResult<bool>> DeleteRange(IList<AccrualNotBetEmployee> accruals);
         public Task<BaseResult<bool>> DeleteRangeByDocumentId(Guid documentId);
-        public Task<BaseResult<IList<Accrual>>> GetAllByPredicate(Expression<Func<Accrual, bool>> predicate);
+        public Task<BaseResult<IList<AccrualNotBetEmployee>>> GetAllByPredicate(Expression<Func<AccrualNotBetEmployee, bool>> predicate);
     }
 }

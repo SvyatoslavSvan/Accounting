@@ -14,7 +14,8 @@ namespace Accounting.DAL.Contexts
         public DbSet<NotBetEmployee> NotBetEmployees { get; set; }
         public DbSet<BetEmployee> BetEmployees { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<Accrual> Accruals { get; set; }
+        public DbSet<AccrualNotBetEmployee> AccrualsNotBetEmployee { get; set; }
+        public DbSet<AccrualBetEmployee> AccrualsBetEmployee { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<WorkDay> WorkDays { get; set; }
         public DbSet<DeducationBetEmployee> DeducationBetEmployees { get; set; }

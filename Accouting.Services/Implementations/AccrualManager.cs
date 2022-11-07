@@ -14,10 +14,10 @@ namespace Accouting.Domain.Managers.Implementations
             _provider = provider;
         }
 
-        public async Task<BaseResult<Accrual>> Create(Accrual model)
+        public async Task<BaseResult<AccrualNotBetEmployee>> Create(AccrualNotBetEmployee model)
         {
             var createResult = await _provider.Create(model);
-            return new BaseResult<Accrual>(createResult.Succed, model, createResult.OperationStatus);
+            return new BaseResult<AccrualNotBetEmployee>(createResult.Succed, model, createResult.OperationStatus);
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id) => await _provider.Delete(id);
@@ -33,21 +33,21 @@ namespace Accouting.Domain.Managers.Implementations
             return new BaseResult<bool>(false, false, getDocumentsToDeleteResult.OperationStatus); 
         }
 
-        public async Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals) => await _provider.DeleteRange(accruals);
+        public async Task<BaseResult<bool>> DeleteRange(List<AccrualNotBetEmployee> accruals) => await _provider.DeleteRange(accruals);
 
 
-        public async Task<BaseResult<IList<Accrual>>> GetAll()
+        public async Task<BaseResult<IList<AccrualNotBetEmployee>>> GetAll()
         {
             var getAllResult = await _provider.GetAll();
-            return new BaseResult<IList<Accrual>>(getAllResult.Succed, getAllResult.Data, getAllResult.OperationStatus);
+            return new BaseResult<IList<AccrualNotBetEmployee>>(getAllResult.Succed, getAllResult.Data, getAllResult.OperationStatus);
         }
 
-        public async Task<BaseResult<Accrual>> GetById(Guid id) => await _provider.GetById(id);
+        public async Task<BaseResult<AccrualNotBetEmployee>> GetById(Guid id) => await _provider.GetById(id);
 
-        public async Task<BaseResult<Accrual>> Update(Accrual model)
+        public async Task<BaseResult<AccrualNotBetEmployee>> Update(AccrualNotBetEmployee model)
         {
             var updateResult = await _provider.Update(model);
-            return new BaseResult<Accrual>(updateResult.Succed, model, updateResult.OperationStatus);
+            return new BaseResult<AccrualNotBetEmployee>(updateResult.Succed, model, updateResult.OperationStatus);
         }
     }
 }

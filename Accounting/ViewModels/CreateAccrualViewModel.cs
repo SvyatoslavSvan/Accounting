@@ -5,7 +5,7 @@ namespace Accounting.Domain.ViewModels
     public class CreateAccrualViewModel
     {
 #nullable disable
-        public List<Accrual> Accruals { get; set; }
+        public List<AccrualNotBetEmployee> Accruals { get; set; }
         public Guid EmployeeId { get; set; }
     }
 }

@@ -14,12 +14,12 @@ namespace Accounting.DAL.Providers
     {
 #nullable disable
        
-        public AccrualProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Accrual> logger) : base(unitOfWork, logger) { }
+        public AccrualProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<AccrualNotBetEmployee> logger) : base(unitOfWork, logger) { }
       
-        public async Task<BaseResult<bool>> Create(Accrual entity)
+        public async Task<BaseResult<bool>> Create(AccrualNotBetEmployee entity)
         {
             _unitOfWork.DbContext.Attach(entity.Employee);
-            await _unitOfWork.GetRepository<Accrual>().InsertAsync(entity);
+            await _unitOfWork.GetRepository<AccrualNotBetEmployee>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -30,7 +30,7 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            _unitOfWork.GetRepository<Accrual>().Delete(id); 
+            _unitOfWork.GetRepository<AccrualNotBetEmployee>().Delete(id); 
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -39,9 +39,9 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<bool>> DeleteRange(IList<Accrual> accruals)
+        public async Task<BaseResult<bool>> DeleteRange(IList<AccrualNotBetEmployee> accruals)
         {
-            _unitOfWork.GetRepository<Accrual>().Delete(accruals);
+            _unitOfWork.GetRepository<AccrualNotBetEmployee>().Delete(accruals);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -52,8 +52,8 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> DeleteRangeByDocumentId(Guid documentId)
         {
-            var accrualsToDelete = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(predicate: x => x.Document.Id == documentId);
-            _unitOfWork.GetRepository<Accrual>().Delete(accrualsToDelete);
+            var accrualsToDelete = await _unitOfWork.GetRepository<AccrualNotBetEmployee>().GetAllAsync(predicate: x => x.Document.Id == documentId);
+            _unitOfWork.GetRepository<AccrualNotBetEmployee>().Delete(accrualsToDelete);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -62,52 +62,52 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<Accrual>>> GetAll()
+        public async Task<BaseResult<List<AccrualNotBetEmployee>>> GetAll()
         {
             try
             {
-                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false, 
+                var accruals = await _unitOfWork.GetRepository<AccrualNotBetEmployee>().GetAllAsync(disableTracking: false, 
                     include: x => x.Include(x => x.Employee));
-                return new BaseResult<List<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
+                return new BaseResult<List<AccrualNotBetEmployee>>(true, accruals.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<List<Accrual>>(ex);
+                return HandleException<List<AccrualNotBetEmployee>>(ex);
             }
         }
 
-        public async Task<BaseResult<IList<Accrual>>> GetAllByPredicate(Expression<Func<Accrual, bool>> predicate)
+        public async Task<BaseResult<IList<AccrualNotBetEmployee>>> GetAllByPredicate(Expression<Func<AccrualNotBetEmployee, bool>> predicate)
         {
             try
             {
-                var accruals = await _unitOfWork.GetRepository<Accrual>().GetAllAsync(disableTracking: false,
+                var accruals = await _unitOfWork.GetRepository<AccrualNotBetEmployee>().GetAllAsync(disableTracking: false,
                     include: x => x.Include(x => x.Employee),
                     predicate: predicate
                     );
-                return new BaseResult<IList<Accrual>>(true, accruals.ToList(), OperationStatuses.Ok);
+                return new BaseResult<IList<AccrualNotBetEmployee>>(true, accruals.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<IList<Accrual>>(ex);
+                return HandleException<IList<AccrualNotBetEmployee>>(ex);
             }
         }
 
-        public async Task<BaseResult<Accrual>> GetById(Guid id)
+        public async Task<BaseResult<AccrualNotBetEmployee>> GetById(Guid id)
         {
             try
             {
-                return new BaseResult<Accrual>(true, await _unitOfWork.GetRepository<Accrual>().
+                return new BaseResult<AccrualNotBetEmployee>(true, await _unitOfWork.GetRepository<AccrualNotBetEmployee>().
                     GetFirstOrDefaultAsync(predicate: x => x.Id == id, include: x => x.Include(x => x.Employee), disableTracking: false), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<Accrual>(ex);
+                return HandleException<AccrualNotBetEmployee>(ex);
             }
         }
 
-        public async Task<BaseResult<bool>> Update(Accrual entity)
+        public async Task<BaseResult<bool>> Update(AccrualNotBetEmployee entity)
         {
-            _unitOfWork.GetRepository<Accrual>().Update(entity);
+            _unitOfWork.GetRepository<AccrualNotBetEmployee>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {

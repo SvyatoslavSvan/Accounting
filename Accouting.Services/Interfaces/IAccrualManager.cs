@@ -4,9 +4,9 @@ using Accouting.Domain.Managers.Interfaces.Base;
 
 namespace Accouting.Domain.Managers.Interfaces
 {
-    public interface IAccrualManager : IBaseCrudManager<Accrual>
+    public interface IAccrualManager : IBaseCrudManager<AccrualNotBetEmployee>
     {
-        public Task<BaseResult<bool>> DeleteRange(List<Accrual> accruals);
+        public Task<BaseResult<bool>> DeleteRange(List<AccrualNotBetEmployee> accruals);
         public Task<BaseResult<bool>> DeleteByDocumentId(Guid id);
     }
 }

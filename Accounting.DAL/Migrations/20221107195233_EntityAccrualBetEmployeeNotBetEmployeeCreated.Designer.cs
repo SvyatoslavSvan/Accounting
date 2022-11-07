@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221107195233_EntityAccrualBetEmployeeNotBetEmployeeCreated")]
+    partial class EntityAccrualBetEmployeeNotBetEmployeeCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +51,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("AccrualsBetEmployee", (string)null);
+                    b.ToTable("AccrualsBetEmployee");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.AccrualNotBetEmployee", b =>
@@ -76,7 +78,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("AccrualsNotBetEmployee", (string)null);
+                    b.ToTable("AccrualsNotBetEmployee");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.BetEmployee", b =>
@@ -104,7 +106,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("BetEmployees", (string)null);
+                    b.ToTable("BetEmployees");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.DeducationBetEmployee", b =>
@@ -131,7 +133,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("DeducationBetEmployees", (string)null);
+                    b.ToTable("DeducationBetEmployees");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.DeducationDocument", b =>
@@ -149,7 +151,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeducationDocuments", (string)null);
+                    b.ToTable("DeducationDocuments");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.DeducationNotBetEmployee", b =>
@@ -176,7 +178,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("DeducationNotBetEmployees", (string)null);
+                    b.ToTable("DeducationNotBetEmployees");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Document", b =>
@@ -193,7 +195,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.Group", b =>
@@ -207,7 +209,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.NotBetEmployee", b =>
@@ -232,7 +234,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("NotBetEmployees", (string)null);
+                    b.ToTable("NotBetEmployees");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.WorkDay", b =>
@@ -254,7 +256,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("WorkDays", (string)null);
+                    b.ToTable("WorkDays");
                 });
 
             modelBuilder.Entity("BetEmployeeDeducationDocument", b =>
@@ -269,7 +271,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("DeducationDocumentsId");
 
-                    b.ToTable("BetEmployeeDeducationDocument", (string)null);
+                    b.ToTable("BetEmployeeDeducationDocument");
                 });
 
             modelBuilder.Entity("DeducationDocumentNotBetEmployee", b =>
@@ -284,7 +286,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("NotBetEmployeesId");
 
-                    b.ToTable("DeducationDocumentNotBetEmployee", (string)null);
+                    b.ToTable("DeducationDocumentNotBetEmployee");
                 });
 
             modelBuilder.Entity("DocumentNotBetEmployee", b =>
@@ -299,7 +301,7 @@ namespace Accounting.DAL.Migrations
 
                     b.HasIndex("EmployeesId");
 
-                    b.ToTable("DocumentNotBetEmployee", (string)null);
+                    b.ToTable("DocumentNotBetEmployee");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.AccrualBetEmployee", b =>

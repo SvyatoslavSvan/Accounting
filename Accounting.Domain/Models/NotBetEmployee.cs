@@ -8,7 +8,7 @@ namespace Accounting.Domain.Models
 #nullable disable
         [JsonConstructor]
         public NotBetEmployee(Guid id, string name) : base(id, name) { }
-        public List<Accrual> Accruals { get; private set; } 
+        public List<AccrualNotBetEmployee> Accruals { get; private set; } 
         public List<Document> Documents { get; private set; }
 
         private ICollection<DeducationNotBetEmployee> _deducationNotBetEmployee;

@@ -30,7 +30,6 @@ builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
 builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();
 builder.Services.AddTransient<IWorkDayProvider, WorkDayProvider>();
-builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddScoped<IDeducationDocumentManager, DeducationDocumentManager>();
 builder.Services.AddScoped<IDeducationManager, DeducationManager>();
 builder.Services.AddScoped<IDocumentManager, DocumentManager>(); 
