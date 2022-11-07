@@ -14,7 +14,11 @@ namespace Accounting.DAL.Interfaces
         public Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployeesIncludeDocument();
         public Task<BaseResult<BetEmployee>> GetBetEmployee(Guid id);
         public Task<BaseResult<IList<BetEmployee>>> GetBetEmployees();
-        public Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<bool, BetEmployee>> betEmployeePredicate, Expression<Func<bool, NotBetEmployee>> notBetEmployeePredicate);
+        public Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(
+            Expression<Func<BetEmployee, bool>> betEmployeePredicate = null, 
+            Expression<Func<NotBetEmployee, bool>> notBetEmployeePredicate = null,
+            Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>>? includeBetEmployee = null, 
+            Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>>? includeNotBetEmployee = null);
         public Task<BaseResult<IList<BetEmployee>>> GetBetEmployeesWithInclude(Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>>? include);
         
     }

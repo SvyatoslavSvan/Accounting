@@ -231,11 +231,6 @@ namespace Accounting.DAL.Providers
             }
         }
 
-        public Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<bool, BetEmployee>> betEmployeePredicate, Expression<Func<bool, NotBetEmployee>> notBetEmployeePredicate)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<BaseResult<IList<BetEmployee>>> GetBetEmployeesWithInclude(Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>> include)
         {
             try
@@ -245,6 +240,23 @@ namespace Accounting.DAL.Providers
             catch (Exception ex)
             {
                 return HandleException<IList<BetEmployee>>(ex);
+            }
+        }
+
+        public async Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<BetEmployee, bool>> betEmployeePredicate = null, 
+            Expression<Func<NotBetEmployee, bool>> notBetEmployeePredicate = null, Func<IQueryable<BetEmployee>, 
+                IIncludableQueryable<BetEmployee, object>> includeBetEmployee = null, Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>> includeNotBetEmployee = null)
+        {
+            try
+            {
+                var employees = new List<EmployeeBase>();
+                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(predicate: betEmployeePredicate, include: includeBetEmployee));
+                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(predicate: notBetEmployeePredicate, include: includeNotBetEmployee));
+                return new BaseResult<IList<EmployeeBase>>(true, employees, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<EmployeeBase>>(ex);
             }
         }
     }

@@ -64,6 +64,6 @@ namespace Accouting.Domain.Managers.Implementations
             oldDocument.Accruals = newDocument.Accruals;
             oldDocument.Name = newDocument.Name;
             oldDocument.DateCreate = newDocument.DateCreate;
-        }
+        }     
     }
 }

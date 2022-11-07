@@ -13,5 +13,6 @@ namespace Accouting.Domain.Managers.Interfaces
         public Task<BaseResult<BetEmployee>> GetBetEmployee(Guid id);
         public Task<BaseResult<IList<BetEmployee>>> GetBetEmployees();
         public Task<BaseResult<IList<BetEmployee>>> GetEmployeesWithWorkDaysByDate(DateTime date);
+        public Task<BaseResult<IList<EmployeeBase>>> GetEmployeeWithSalaryPropertiesByPeriod(DateTime from, DateTime to); 
     }
 }
