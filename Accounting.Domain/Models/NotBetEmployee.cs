@@ -1,5 +1,6 @@
 ﻿using Accounting.Domain.Models.Base;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace Accounting.Domain.Models
 {
@@ -8,8 +9,14 @@ namespace Accounting.Domain.Models
 #nullable disable
         [JsonConstructor]
         public NotBetEmployee(Guid id, string name) : base(id, name) { }
-        public List<AccrualNotBetEmployee> Accruals { get; private set; } 
-        public List<Document> Documents { get; private set; }
+        private ICollection<AccrualNotBetEmployee> _accruals;
+
+        public ICollection<AccrualNotBetEmployee> Accruals
+        {
+            get { return _accruals; }
+            set { _accruals = value; }
+        }
+
 
         private ICollection<DeducationNotBetEmployee> _deducationNotBetEmployee;
 
@@ -35,7 +42,7 @@ namespace Accounting.Domain.Models
             this.Documents = null;
         }
 
-        public override decimal CalculateSalary(DateTime from)
+        public override Salary CalculateSalary()
         {
             throw new NotImplementedException();
         }

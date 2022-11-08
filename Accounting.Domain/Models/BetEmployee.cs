@@ -41,7 +41,14 @@ namespace Accounting.Domain.Models
         public ICollection<DeducationBetEmployee> DeducationBetEmployee
         {
             get { return _deducationBetEmployee; }
-            set { _deducationBetEmployee = value; }
+            set { _deducationBetEmployee = value ?? throw new ArgumentNullException(); }
+        }
+        private ICollection<AccrualBetEmployee> _accruals;
+
+        public ICollection<AccrualBetEmployee> Accruals
+        {
+            get { return _accruals; }
+            set { _accruals = value ?? throw new ArgumentNullException(); }
         }
 
         public override void ToSerializable()
@@ -60,7 +67,7 @@ namespace Accounting.Domain.Models
             Bet = bet;
         }
         
-        public override decimal CalculateSalary(DateTime from)
+        public override Salary CalculateSalary()
         {
             throw new NotImplementedException();
         }

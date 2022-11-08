@@ -79,10 +79,18 @@ namespace Accounting.Domain.Models.Base
         public ICollection<DeducationDocument> DeducationDocuments
         {
             get => _deducationDocuments;
-            set { _deducationDocuments = value; }
+            set { _deducationDocuments = value ?? throw new ArgumentNullException(); }
+        }
+        private ICollection<Document> _documents;
+
+        public ICollection<Document> Documents
+        {
+            get => _documents;
+            set => _documents = value ?? throw new ArgumentNullException(); 
         }
 
-        public abstract decimal CalculateSalary(DateTime from);
+
+        public abstract Salary CalculateSalary();
 
         public virtual void AddToGroup(Group group)
         {

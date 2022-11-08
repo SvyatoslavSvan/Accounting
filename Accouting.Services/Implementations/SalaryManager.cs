@@ -13,40 +13,27 @@ namespace Accouting.Domain.Managers.Implementations
             _employeeManager = employeeManager;
         }
 
-        public async Task<IList<Salary>> CalculateSalaries(DateTime from, DateTime to)
-        {
-            var employees = await _employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to);
-            throw new NotImplementedException();
-            
-        }
+        public async Task<IList<Salary>> CalculateSalaries(DateTime from, DateTime to) => GetSalaries(_employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to).Result.Data);
+
 
         private IList<Salary> GetSalaries(IList<EmployeeBase> employees)
         {
             var salaries = new List<Salary>();
             foreach (var item in employees)
             {
-                salaries.Add(GetSalary(item));
+                salaries.Add(item.CalculateSalary());
             }
-            throw new NotImplementedException();
+            return salaries;
         }
 
-        private Salary GetSalary(EmployeeBase item)
-        {
-            if (item is BetEmployee betEmployee)
-            {
-                var payment = GetBetPayment(betEmployee.WorkDays, betEmployee.Bet);
-            }
-            throw new NotImplementedException();
-        }
-
-        private decimal GetBetPayment(IList<WorkDay> workDays, decimal bet)
-        {
-            decimal payment = 0;
-            var payForHour = (bet / workDays.Count()) / 8;
-            foreach (var item in workDays)
-                payment += (decimal)item.Hours * payForHour;
-            return payment;
-        }
+        //private decimal GetBetPayment(IList<WorkDay> workDays, decimal bet)
+        //{
+        //    decimal payment = 0;
+        //    var payForHour = (bet / workDays.Count()) / 8;
+        //    foreach (var item in workDays)
+        //        payment += (decimal)item.Hours * payForHour;
+        //    return payment;
+        //}
 
     }
 }
