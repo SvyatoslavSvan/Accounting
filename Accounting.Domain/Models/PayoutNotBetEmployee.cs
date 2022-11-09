@@ -2,13 +2,13 @@
 
 namespace Accounting.Domain.Models
 {
-    public class AccrualNotBetEmployee : AccrualBase
+    public class PayoutNotBetEmployee : PayoutBase
     {
 #nullable disable
-        public AccrualNotBetEmployee() { }
-        public AccrualNotBetEmployee(decimal ammount, bool isAdditional) : base(ammount, isAdditional) { } 
+        public PayoutNotBetEmployee() { }
+        public PayoutNotBetEmployee(decimal ammount, bool isAdditional) : base(ammount, isAdditional) { } 
         
-        public AccrualNotBetEmployee(decimal ammount, Guid id, bool isAdditional) : base(ammount, id, isAdditional) { }
+        public PayoutNotBetEmployee(decimal ammount, Guid id, bool isAdditional) : base(ammount, id, isAdditional) { }
 
         public Guid EmployeeId { get; private set; }
         private NotBetEmployee _employee = null!;   

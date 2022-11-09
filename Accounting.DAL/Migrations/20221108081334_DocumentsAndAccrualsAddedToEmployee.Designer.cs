@@ -24,7 +24,7 @@ namespace Accounting.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Accounting.Domain.Models.AccrualBetEmployee", b =>
+            modelBuilder.Entity("Accounting.Domain.Models.PayoutBetEmployee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace Accounting.DAL.Migrations
                     b.ToTable("AccrualsBetEmployee");
                 });
 
-            modelBuilder.Entity("Accounting.Domain.Models.AccrualNotBetEmployee", b =>
+            modelBuilder.Entity("Accounting.Domain.Models.PayoutNotBetEmployee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,7 +319,7 @@ namespace Accounting.DAL.Migrations
                     b.ToTable("DocumentNotBetEmployee");
                 });
 
-            modelBuilder.Entity("Accounting.Domain.Models.AccrualBetEmployee", b =>
+            modelBuilder.Entity("Accounting.Domain.Models.PayoutBetEmployee", b =>
                 {
                     b.HasOne("Accounting.Domain.Models.BetEmployee", "BetEmployee")
                         .WithMany("Accruals")
@@ -338,7 +338,7 @@ namespace Accounting.DAL.Migrations
                     b.Navigation("Document");
                 });
 
-            modelBuilder.Entity("Accounting.Domain.Models.AccrualNotBetEmployee", b =>
+            modelBuilder.Entity("Accounting.Domain.Models.PayoutNotBetEmployee", b =>
                 {
                     b.HasOne("Accounting.Domain.Models.Document", "Document")
                         .WithMany("AccrualsNotBetEmployee")

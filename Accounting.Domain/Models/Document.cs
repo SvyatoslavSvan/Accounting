@@ -1,4 +1,6 @@
-﻿namespace Accounting.Domain.Models
+﻿using Accounting.Domain.Enums;
+
+namespace Accounting.Domain.Models
 {
     public class Document
     {
@@ -10,7 +12,7 @@
             Name = name;
             DateCreate = dateCreate;
         }
-        public Document(List<NotBetEmployee> employees, List<AccrualNotBetEmployee> accruals, string name, DateTime dateCreate)
+        public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
         {
             _notBetEmployees = employees;
             _accrualsNotBetEmployee = accruals;
@@ -18,7 +20,7 @@
             DateCreate = dateCreate;
         }
 
-        public Document(Guid id,List<NotBetEmployee> employees, List<AccrualNotBetEmployee> accruals, string name, DateTime dateCreate)
+        public Document(Guid id,List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
         {
             Id = id;
             _notBetEmployees = employees;
@@ -27,62 +29,7 @@
             DateCreate = dateCreate;
         }
 
-        //private void UpdateAccruals(List<AccrualNotBetEmployee> accruals)
-        //{
-        //    foreach (var item in accruals)
-        //    {
-        //        var contains = _accrualsNotBetEmployee.Contains(_accrualsNotBetEmployee.FirstOrDefault(x => x.Id == item.Id));
-        //        if (!contains)
-        //        {
-        //            var elements = _accrualsNotBetEmployee.RemoveAll(x => x.Id == item.Id);
-        //            if (elements == 0)
-        //            {
-        //                AccrualsNotBetEmployee.Add(item);
-        //            }
-        //        }
-        //    }
-        //    var elementsToRemove = new List<Guid>();
-        //    foreach (var thisAccrual in _accrualsNotBetEmployee)
-        //    {
-        //        var containsInUpdate = accruals.Contains(accruals.FirstOrDefault(x => x.Id == thisAccrual.Id));
-        //        if (!containsInUpdate)
-        //        {
-        //            elementsToRemove.Add(thisAccrual.Id);
-        //        }
-        //    }
-        //    foreach (var item in elementsToRemove)
-        //        _accrualsNotBetEmployee.RemoveAll(x => x.Id == item);
-        //}
-
-        //private void UpdateEmployees(List<NotBetEmployee> employees)
-        //{
-        //    foreach (var item in employees)
-        //    {
-        //        var containsInThis = _employees.Contains(_employees.FirstOrDefault(x => x.Id == item.Id));
-        //        if (!containsInThis)
-        //        {
-        //            var elements = _employees.RemoveAll(x => x.Id == item.Id);
-        //            if (elements == 0)
-        //            {
-        //                _employees.Add(item);
-        //            }
-        //        }
-        //    }
-        //    var elementsToRemove = new List<Guid>();
-        //    foreach (var thisEmployee in _employees)
-        //    {
-        //        var containsInUpdate = employees.Contains(employees.FirstOrDefault(x => x.Id == thisEmployee.Id));
-        //        if (!containsInUpdate)
-        //        { 
-        //            elementsToRemove.Add(thisEmployee.Id);
-        //        }
-        //    }
-        //    foreach (var item in elementsToRemove)
-        //    {
-        //        _employees.RemoveAll(x => x.Id == item);
-        //    }
-        //}
-
+        public DocumentType DocumentType { get; private set; }
         public Guid Id { get; private set; }
         public string Name { get; set; }
         private ICollection<NotBetEmployee> _notBetEmployees;
@@ -92,7 +39,7 @@
             get => _notBetEmployees;
             set 
             {
-                //UpdateEmployees(value); 
+                _notBetEmployees = value ?? throw new ArgumentNullException(); 
             }
         }
         private ICollection<BetEmployee> _betEmployees;
@@ -104,9 +51,9 @@
         }
 
 
-        private ICollection<AccrualNotBetEmployee> _accrualsNotBetEmployee;
+        private ICollection<PayoutNotBetEmployee> _accrualsNotBetEmployee;
 
-        public ICollection<AccrualNotBetEmployee> AccrualsNotBetEmployee
+        public ICollection<PayoutNotBetEmployee> AccrualsNotBetEmployee
         {
             get => _accrualsNotBetEmployee;
             set 
@@ -115,9 +62,9 @@
             }
         }
 
-        private ICollection<AccrualBetEmployee> _accrualBetEmployee;    
+        private ICollection<PayoutBetEmployee> _accrualBetEmployee;    
 
-        public ICollection<AccrualBetEmployee> AccrualsBetEmplyee
+        public ICollection<PayoutBetEmployee> AccrualsBetEmplyee
         {
             get => _accrualBetEmployee;
             set { _accrualBetEmployee = value ?? throw new ArgumentNullException(); }

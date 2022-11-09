@@ -2,7 +2,7 @@
 
 namespace Accounting.Domain.Models
 {
-    public class AccrualBetEmployee : AccrualBase
+    public class PayoutBetEmployee : PayoutBase
     {
         public Guid EmployeeId { get; private set; }
 		private BetEmployee _betEmployee = null!;	

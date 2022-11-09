@@ -37,8 +37,7 @@ namespace Accouting.Domain.Managers.Implementations
         public async Task<BaseResult<EmployeeBase>> GetById(Guid id) => await _provider.GetById(id);
 
         public async Task<BaseResult<IList<EmployeeBase>>> GetEmployeeWithSalaryPropertiesByPeriod(DateTime from, DateTime to) => await _provider.GetAllByPredicate(
-                includeBetEmployee: x => x.Include(x => x.WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date))
-            .Include(x => x.DeducationDocuments.Where(x => x.DateCreate.Date >= from.Date && x.DateCreate.Date <= to.Date)), 
+                includeBetEmployee: x => x.Include(x => x.WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date)), 
             includeNotBetEmployee: x => x.Include(x => x.Documents.Where(x => x.DateCreate.Date >= from.Date && x.DateCreate.Date <= to.Date)));
 
         public async Task<BaseResult<IList<BetEmployee>>> GetEmployeesWithWorkDaysByDate(DateTime date) => await _provider.GetBetEmployeesWithInclude(

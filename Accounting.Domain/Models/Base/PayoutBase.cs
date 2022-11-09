@@ -1,15 +1,15 @@
 ﻿namespace Accounting.Domain.Models.Base
 {
-    public abstract class AccrualBase
+    public abstract class PayoutBase
     {
-        public AccrualBase() {}
-        public AccrualBase(decimal ammount, bool isAdditional)
+        public PayoutBase() {}
+        public PayoutBase(decimal ammount, bool isAdditional)
         {
             Ammount = ammount;
             IsAdditional = isAdditional;
         }
 
-        public AccrualBase(decimal ammount, Guid id, bool isAdditional)
+        public PayoutBase(decimal ammount, Guid id, bool isAdditional)
         {
             Ammount = ammount;
             Id = id;

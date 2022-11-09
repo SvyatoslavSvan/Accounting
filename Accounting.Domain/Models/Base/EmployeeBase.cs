@@ -71,16 +71,8 @@ namespace Accounting.Domain.Models.Base
         public virtual void ToSerializable()
         {
             this.Group = null;
-            this.DeducationDocuments = null;
         }
 
-        private ICollection<DeducationDocument> _deducationDocuments;
-
-        public ICollection<DeducationDocument> DeducationDocuments
-        {
-            get => _deducationDocuments;
-            set { _deducationDocuments = value ?? throw new ArgumentNullException(); }
-        }
         private ICollection<Document> _documents;
 
         public ICollection<Document> Documents

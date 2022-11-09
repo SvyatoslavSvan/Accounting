@@ -9,22 +9,14 @@ namespace Accounting.Domain.Models
 #nullable disable
         [JsonConstructor]
         public NotBetEmployee(Guid id, string name) : base(id, name) { }
-        private ICollection<AccrualNotBetEmployee> _accruals;
+        private ICollection<PayoutNotBetEmployee> _accruals;
 
-        public ICollection<AccrualNotBetEmployee> Accruals
+        public ICollection<PayoutNotBetEmployee> Accruals
         {
             get { return _accruals; }
             set { _accruals = value; }
         }
 
-
-        private ICollection<DeducationNotBetEmployee> _deducationNotBetEmployee;
-
-        public ICollection<DeducationNotBetEmployee> DeducationNotBetEmployee
-        {
-            get => _deducationNotBetEmployee;
-            set { _deducationNotBetEmployee = value; }
-        }
         public NotBetEmployee(string name, string innerId, int premium) : base(name, innerId, premium)
         {
             

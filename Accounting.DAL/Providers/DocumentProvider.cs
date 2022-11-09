@@ -34,7 +34,7 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
-            var accrualRepository = _unitOfWork.GetRepository<AccrualNotBetEmployee>();
+            var accrualRepository = _unitOfWork.GetRepository<PayoutNotBetEmployee>();
             accrualRepository.Delete(await accrualRepository.GetAllAsync(predicate: x => x.Document.Id == id));
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

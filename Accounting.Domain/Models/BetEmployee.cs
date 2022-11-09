@@ -36,16 +36,10 @@ namespace Accounting.Domain.Models
                 _workDays = value; 
             }
         }
-        private ICollection<DeducationBetEmployee> _deducationBetEmployee;
+        
+        private ICollection<PayoutBetEmployee> _accruals;
 
-        public ICollection<DeducationBetEmployee> DeducationBetEmployee
-        {
-            get { return _deducationBetEmployee; }
-            set { _deducationBetEmployee = value ?? throw new ArgumentNullException(); }
-        }
-        private ICollection<AccrualBetEmployee> _accruals;
-
-        public ICollection<AccrualBetEmployee> Accruals
+        public ICollection<PayoutBetEmployee> Accruals
         {
             get { return _accruals; }
             set { _accruals = value ?? throw new ArgumentNullException(); }
