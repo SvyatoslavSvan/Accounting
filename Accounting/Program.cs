@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Providers;
 using Accounting.Domain.Models;
+using Accounting.Services;
 using Accouting.Domain.Managers.Implementations;
 using Accouting.Domain.Managers.Interfaces;
 using Calabonga.UnitOfWork;
@@ -20,17 +21,18 @@ builder.Services.AddDbContext<ApplicationDBContext>(opts =>
 });
 builder.Logging.AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger());
 builder.Services.AddUnitOfWork<ApplicationDBContext>();
-builder.Services.AddScoped<IAccrualProvider, AccrualProvider>();
+builder.Services.AddScoped<IPayoutProvider, PayoutProvider>();
 builder.Services.AddScoped<IEmployeeProvider, EmployeeProvider>();
 builder.Services.AddScoped<IBaseProvider<Group>, GroupProvider>();
 builder.Services.AddTransient<IDocumentProvider, DocumentProvider>();
 builder.Services.AddTransient<IWorkDayProvider, WorkDayProvider>();
 builder.Services.AddScoped<IDocumentManager, DocumentManager>(); 
-builder.Services.AddScoped<IAccrualManager, AccrualManager>();
+builder.Services.AddScoped<IPayoutManager, PayoutManager>();
 builder.Services.AddScoped<IEmployeeManager, EmployeeManager>();
 builder.Services.AddScoped<IWorkDayManager, WorkDayManager>();
 builder.Services.AddScoped<IGroupManager, GroupManager>();
 builder.Services.AddScoped<IReportManager, ReportManager>();
+builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

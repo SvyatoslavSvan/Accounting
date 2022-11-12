@@ -21,7 +21,7 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Create(Document entity)
         {
             _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.AccrualsNotBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
             await _unitOfWork.GetRepository<Document>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -80,7 +80,7 @@ namespace Accounting.DAL.Providers
             try
             {
                 var document = await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, 
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.AccrualsNotBetEmployee), disableTracking: false);
+                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.PayoutsNotBetEmployees), disableTracking: false);
                 if (document is null)
                     return new BaseResult<Document>(false, null, OperationStatuses.NotFound);
                 return new BaseResult<Document>(true, document, OperationStatuses.Ok);
@@ -108,7 +108,7 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Update(Document entity)
         {
-            _unitOfWork.DbContext.AttachRange(entity.AccrualsNotBetEmployee);
+            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
             _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
             _unitOfWork.GetRepository<Document>().Update(entity);
             await _unitOfWork.SaveChangesAsync();

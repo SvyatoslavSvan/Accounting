@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models.Base
 {
@@ -67,14 +67,9 @@ namespace Accounting.Domain.Models.Base
             InnerId = innerId ?? throw new ArgumentNullException(nameof(InnerId));
             Group = group;
         }
-
-        public virtual void ToSerializable()
-        {
-            this.Group = null;
-        }
-
+       
         private ICollection<Document> _documents;
-
+        [JsonIgnore]
         public ICollection<Document> Documents
         {
             get => _documents;

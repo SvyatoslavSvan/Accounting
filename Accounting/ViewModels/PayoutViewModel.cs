@@ -1,7 +1,6 @@
-﻿
-namespace Accounting.Domain.ViewModels
+﻿namespace Accounting.Domain.ViewModels
 {
-    public class AccrualViewModel
+    public class PayoutViewModel
     {
         public Guid EmployeeId { get; set; }
         public bool IsAdditional { get; set; }

@@ -1,11 +1,12 @@
 ﻿using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 
 namespace Accounting.Domain.ViewModels
 {
-    public class CreateAccrualViewModel
+    public class CreatePayoutViewModel
     {
 #nullable disable
-        public List<PayoutNotBetEmployee> Accruals { get; set; }
+        public List<PayoutBase> Payouts { get; set; }
         public Guid EmployeeId { get; set; }
     }
 }

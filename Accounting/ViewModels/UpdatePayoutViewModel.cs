@@ -2,11 +2,11 @@
 
 namespace Accounting.Domain.ViewModels
 {
-    public class UpdateAccrualViewModel 
+    public class UpdatePayoutViewModel 
     {
         [BindNever]
         public bool IsAdditional { get; set; }
         public decimal Ammount { get; set; }
-        public Guid AccrualId { get; set; }
+        public Guid PayoutId { get; set; }
     }
 }

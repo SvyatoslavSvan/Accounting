@@ -25,9 +25,4 @@
     <ProjectReference Include="..\Accouting.Services\Accouting.Domain.Managers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="SessionEntity\" />
-  </ItemGroup>
-
 </Project>

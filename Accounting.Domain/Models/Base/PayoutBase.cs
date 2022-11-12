@@ -1,4 +1,6 @@
-﻿namespace Accounting.Domain.Models.Base
+﻿using System.Text.Json.Serialization;
+
+namespace Accounting.Domain.Models.Base
 {
     public abstract class PayoutBase
     {
@@ -9,6 +11,7 @@
             IsAdditional = isAdditional;
         }
 
+        [JsonConstructor]
         public PayoutBase(decimal ammount, Guid id, bool isAdditional)
         {
             Ammount = ammount;
@@ -33,9 +36,9 @@
                 _ammount = value;
             }
         }
-        private Document _document;
-
-        public Document Document
+        private Document? _document;
+        [JsonIgnore]
+        public Document? Document
         {
             get => _document;
             set { _document = value ?? throw new ArgumentNullException(); }

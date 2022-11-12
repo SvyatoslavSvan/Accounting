@@ -1,7 +1,8 @@
 ﻿@using Accounting.DAL.Interfaces
 @using Accounting.Domain.ViewModels
+@using Accouting.Domain.Managers.Interfaces
 @model DocumentViewModel
-@inject IEmployeeProvider employeeProvider
+@inject IEmployeeManager employeeManager
 <h4 class="text-center text-success">Створити документ нарахування</h4>
 <div class="container">
     <div class="row">
@@ -40,4 +41,4 @@
     </div>
 </div>
 <partial name="CreateAccrualModalPartial"></partial>
-<partial name="AddEmployeeToDocumentPartial" model="employeeProvider.GetNotBetEmployees().Result.Data"></partial>
+<partial name="AddEmployeeToDocumentPartial" model="employeeManager.GetAll().Result.Data"></partial>

@@ -1,4 +1,6 @@
 ﻿using Accounting.Domain.Enums;
+using Accounting.Domain.Models.Base;
+using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
@@ -12,10 +14,20 @@ namespace Accounting.Domain.Models
             Name = name;
             DateCreate = dateCreate;
         }
+
+        [JsonConstructor]
+        public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees)
+        {
+            _betEmployees = betEmployees;
+            _notBetEmployees = notBetEmployees;
+            _payoutsBetEmployee = payoutsBetEmployees;
+            _payoutsNotBetEmployee = payoutsNotBetEmployees;
+        }
+
         public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
         {
             _notBetEmployees = employees;
-            _accrualsNotBetEmployee = accruals;
+            _payoutsNotBetEmployee = accruals;
             Name = name;
             DateCreate = dateCreate;
         }
@@ -24,7 +36,7 @@ namespace Accounting.Domain.Models
         {
             Id = id;
             _notBetEmployees = employees;
-            _accrualsNotBetEmployee = accruals;
+            _payoutsNotBetEmployee = accruals;
             Name = name;
             DateCreate = dateCreate;
         }
@@ -51,25 +63,32 @@ namespace Accounting.Domain.Models
         }
 
 
-        private ICollection<PayoutNotBetEmployee> _accrualsNotBetEmployee;
+        private ICollection<PayoutNotBetEmployee> _payoutsNotBetEmployee;
 
-        public ICollection<PayoutNotBetEmployee> AccrualsNotBetEmployee
+        public ICollection<PayoutNotBetEmployee> PayoutsNotBetEmployees
         {
-            get => _accrualsNotBetEmployee;
+            get => _payoutsNotBetEmployee;
             set 
             {
                 //UpdateAccruals(value); 
             }
         }
 
-        private ICollection<PayoutBetEmployee> _accrualBetEmployee;    
+        private ICollection<PayoutBetEmployee> _payoutsBetEmployee;    
 
-        public ICollection<PayoutBetEmployee> AccrualsBetEmplyee
+        public ICollection<PayoutBetEmployee> PayoutsBetEmployees
         {
-            get => _accrualBetEmployee;
-            set { _accrualBetEmployee = value ?? throw new ArgumentNullException(); }
+            get => _payoutsBetEmployee;
+            set { _payoutsBetEmployee = value ?? throw new ArgumentNullException(); }
         }
 
+        public void Initialize()
+        {
+            _betEmployees = new List<BetEmployee>();
+            _notBetEmployees = new List<NotBetEmployee>();
+            _payoutsBetEmployee = new List<PayoutBetEmployee>();
+            _payoutsNotBetEmployee = new List<PayoutNotBetEmployee>();
+        }
         public DateTime DateCreate { get; set; }  
     }
 }

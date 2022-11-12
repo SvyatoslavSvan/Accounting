@@ -7,6 +7,7 @@ namespace Accounting.Domain.Models
     {
         [JsonConstructor]
         public BetEmployee(Guid id, string name) : base(id, name) { }
+
         private decimal _bet;
 
         public decimal Bet
@@ -26,7 +27,7 @@ namespace Accounting.Domain.Models
 #nullable disable
 
         private List<WorkDay> _workDays;
-
+        [JsonIgnore]
         public List<WorkDay> WorkDays
         {
             get => _workDays;
@@ -36,19 +37,13 @@ namespace Accounting.Domain.Models
                 _workDays = value; 
             }
         }
-        
-        private ICollection<PayoutBetEmployee> _accruals;
 
+        private ICollection<PayoutBetEmployee> _accruals;
+        [JsonIgnore]
         public ICollection<PayoutBetEmployee> Accruals
         {
             get { return _accruals; }
             set { _accruals = value ?? throw new ArgumentNullException(); }
-        }
-
-        public override void ToSerializable()
-        {
-            base.ToSerializable();
-            this.WorkDays = null;
         }
 
         public BetEmployee(string name, decimal bet, string innerId, int premium) : base(name, innerId, premium)

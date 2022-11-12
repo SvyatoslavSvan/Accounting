@@ -61,7 +61,7 @@ namespace Accouting.Domain.Managers.Implementations
         private void UpdateFieds(Document oldDocument, Document newDocument)
         {
             oldDocument.NotBetEmployees = newDocument.NotBetEmployees;
-            oldDocument.AccrualsNotBetEmployee = newDocument.AccrualsNotBetEmployee;
+            oldDocument.PayoutsNotBetEmployees = newDocument.PayoutsNotBetEmployees;
             oldDocument.Name = newDocument.Name;
             oldDocument.DateCreate = newDocument.DateCreate;
         }     

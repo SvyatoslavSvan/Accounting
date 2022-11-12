@@ -23,54 +23,22 @@ function removeEmployee(elementToRemoveId, response) {
     $('#chooseEmployeeUl').append(response);
 }
 function insertResponse(url, response, elementToRemoveId, formId) {
-    if (url == '/Document/AddEmployeeToDocument') {
+    if (url == '/Document/AddEmployee') {
         appendEmployee(elementToRemoveId, response);
     }
-    if (url == '/DeducationDocument/AddEmployee') {
-        appendEmployee(elementToRemoveId, response);
-    }
-    if (url == '/Deducation/CreateDeducation') {
+    if (url == '/Payout/CreatePayout') {
         appendCreatedAccrualResponse(response, true);
-        getSumOfDeducations();
-    }
-    if (url == '/Deducation/DeleteDeducation') {
-        $('#' + elementToRemoveId).remove();
-        getSumOfDeducations();
-    }
-    if (url == '/Deducation/UpdateDeducation') {
-        var ammountInput = document.getElementById(elementToRemoveId);
-        ammountInput.value = response;
-        getSumOfDeducations();
-    }
-    if (url == '/Document/AddAccrualToEmployee') {
-        /*$('#' + elementToRemoveId).append(response);*/
-        appendCreatedAccrualResponse(response, true);
-        var ammountInput = document.getElementById('ammountInput');
-        ammountInput.parentNode.removeChild(ammountInput);
-        var addAccrualForm = document.getElementById(formId);
-        var newAmmountInput = document.createElement('input');
-        newAmmountInput.id = 'ammountInput';
-        newAmmountInput.type = 'text';
-        newAmmountInput.name = 'Ammount';
-        newAmmountInput.className = 'form-control';
-        addAccrualForm.appendChild(newAmmountInput);
         getSumOfAccruals();
     }
     if (url == '/Document/DeleteEmployeeFromDocument') {
         removeEmployee(elementToRemoveId, response);
     }
-    if (url == '/DeducationDocument/DeleteEmployee') {
-        getSumOfDeducations();
-        $('#' + elementToRemoveId).remove();
-        $('#chooseEmployeeUl').append(response);
-        
-    }
-    if (url == '/Document/UpdateAccrual') {
+    if (url == '/Payout/Update') {
         getSumOfAccruals();
         var ammountInput = document.getElementById(elementToRemoveId);
         ammountInput.value = response;
     }
-    if (url == '/Document/DeleteAccrual') {
+    if (url == '/Payout/Delete') {
         getSumOfAccruals();
         $('#' + elementToRemoveId).remove();
     }
@@ -83,10 +51,7 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Employee/Create') {
         document.getElementById('createEmployee').reset();
         $('#' + elementToRemoveId).append(response);
-    }
-    if (url == '/DeducationDocument/GetSearch') {
-        insertFoundDocuments(response, elementToRemoveId);
-    }
+    }    
 }
 
 
@@ -118,7 +83,7 @@ function getSumOfDeducations() {
 
 function openCreateAccrualModal(employeeId) {
     $.ajax({
-        url: `/Document/CreateAccrual/${employeeId}`,
+        url: `/Payout/CreatePayout/${employeeId}`,
         method: 'get',
         success: function (response) {
             appendCreatedAccrualResponse(response, false);
@@ -165,7 +130,7 @@ function appendCreatedAccrualResponse(response, addAccrualToUl) {
 }
 
 function onAmmountInputChanged(updateAccrualFormId) {
-    sendForm(updateAccrualFormId, '/Document/UpdateAccrual');
+    sendForm(updateAccrualFormId, '/Payout/Update');
 }
 function insertFoundDocuments(response, TbodyId) {
     $('#' + TbodyId).html(response);
