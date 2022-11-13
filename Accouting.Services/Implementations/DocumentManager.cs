@@ -1,5 +1,6 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
+using Accounting.Domain.Enums;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.Requests;
@@ -61,6 +62,10 @@ namespace Accouting.Domain.Managers.Implementations
                 predicate = predicate.And(x => x.Name.Contains(request.Name));
             if (request.DateCreate != default(DateTime) && request.From == default(DateTime) && request.To == default(DateTime))
                 predicate = predicate.And(x => x.DateCreate == request.DateCreate);
+            if (request.DocumentType == DocumentType.Accrual)
+                predicate = predicate.And(x => x.DocumentType == DocumentType.Accrual);
+            if (request.DocumentType == DocumentType.Deducation)
+                predicate = predicate.And(x => x.DocumentType == DocumentType.Deducation);
             return predicate;
         }
 

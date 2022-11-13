@@ -17,6 +17,11 @@
                 <input type="date" name="dateCreate"  class="form-control"/>
                 <label class="form-label">Назва</label>
                 <input type="text" name="name" class="form-control" />
+                <label class="form-label">Документи типу</label>
+                <select class="form-select" name="DocumentType">
+                    <option value="0">Начислення</option>
+                    <option value="1">Утримання</option>
+                </select>
                 <button type="button" class="btn btn-outline-primary" onclick="sendForm('searchInDocuments', '/Document/GetSearch', 'documentsTbody', 'GET')">Знайти</button>
             </form>
        </div>

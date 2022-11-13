@@ -5,7 +5,6 @@ using Accounting.Domain.ViewModels;
 using Accounting.Services;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml.Utils;
 
 namespace Accounting.Controllers
 {
@@ -76,7 +75,10 @@ namespace Accounting.Controllers
         [HttpGet]
         public async Task<IActionResult> Documents()
         {
-            var documents = await _documentManager.GetAll();
+            var documents = await _documentManager.GetSearch(new DocumentSearchRequest()
+            {
+                DocumentType = Domain.Enums.DocumentType.Accrual
+            });
             return View(documents.Data);
         }
 
@@ -99,7 +101,7 @@ namespace Accounting.Controllers
         {
             var sessionDocument = _sessionDocumentService.GetDocument();
             var document = new Document(sessionDocument.NotBetEmployees, sessionDocument.
-                BetEmployees, sessionDocument.PayoutsBetEmployee, sessionDocument.PayoutsNotBetEmployee, viewModel.Name, viewModel.DateCreate);
+                BetEmployees, sessionDocument.PayoutsBetEmployee, sessionDocument.PayoutsNotBetEmployee, viewModel.Name, viewModel.DateCreate, viewModel.DocumentType);
             var createResult = await _documentManager.Create(document);
             if (createResult.Succed)
             {

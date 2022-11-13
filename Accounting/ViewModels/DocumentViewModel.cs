@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Accounting.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Accounting.Domain.ViewModels
 {
@@ -8,5 +9,6 @@ namespace Accounting.Domain.ViewModels
         public string Name { get; set; }
         [Required]
         public DateTime DateCreate { get; set; }
+        public DocumentType DocumentType { get; set; }
     }
 }

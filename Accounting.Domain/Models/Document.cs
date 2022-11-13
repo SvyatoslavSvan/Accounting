@@ -16,7 +16,7 @@ namespace Accounting.Domain.Models
         }
 
         public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, 
-            ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees, string name, DateTime dateCreate)
+            ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees, string name, DateTime dateCreate, DocumentType documentType)
         {
             _betEmployees = betEmployees;
             _notBetEmployees = notBetEmployees;
@@ -24,6 +24,7 @@ namespace Accounting.Domain.Models
             _payoutsNotBetEmployee = payoutsNotBetEmployees;
             Name = name;
             DateCreate = dateCreate;
+            DocumentType = documentType;
         }
 
         public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)

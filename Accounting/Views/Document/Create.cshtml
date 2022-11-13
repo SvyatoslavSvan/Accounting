@@ -3,7 +3,7 @@
 @using Accouting.Domain.Managers.Interfaces
 @model DocumentViewModel
 @inject IEmployeeManager employeeManager
-<h4 class="text-center text-success">Створити документ нарахування</h4>
+<h4 class="text-center text-success" id="documentLabel">Створити документ нарахування</h4>
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
@@ -12,6 +12,11 @@
                 <input type="text" asp-for="Name" class="form-control"/>
                 <label class="form-label" asp-for="Name">Дата Створення</label>
                 <input type="date" asp-for="DateCreate" class="form-control"/>
+                <label class="form-label">Документ типу</label>
+                <select asp-for="DocumentType" class="form-select" onchange="onDocumentTypeInputChange()" id="documentTypeInput">
+                    <option value="0">Начислення</option>
+                    <option value="1">Утримання</option>
+                </select>
                 <button type="submit" class="btn btn-outline-primary m-auto">Сохранити</button>
             </form>
         </div>
@@ -19,7 +24,7 @@
 
         </div>
     </div>
-    <div class="row">
+    <div class="row ">
         <div class="col-md-12">
             <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
                 <table class="table table-hover" id="addedEmployees">

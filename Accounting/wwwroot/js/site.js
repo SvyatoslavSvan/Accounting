@@ -104,5 +104,21 @@ function insertFoundDocuments(response, TbodyId) {
 function createEmployee(createEmployeeFormId) {
     sendForm(createEmployeeFormId, '/Employee/Create', 'employeesUl');
 }
+
+function onDocumentTypeInputChange() {
+    var documentTypeInput = document.getElementById('documentTypeInput');
+    if (documentTypeInput.value == 1) {
+        var documentLabel = document.getElementById('documentLabel');
+        documentLabel.classList.remove('text-succes');
+        documentLabel.classList.add('text-danger');
+        documentLabel.innerHTML = 'Створити документ утримання';
+    }
+    else {
+        var documentLabel = document.getElementById('documentLabel');
+        documentLabel.classList.remove('text-danger');
+        documentLabel.classList.add('text-succes');
+        documentLabel.innerHTML = 'Створити документ нарахування';
+    }
     
+}    
 
