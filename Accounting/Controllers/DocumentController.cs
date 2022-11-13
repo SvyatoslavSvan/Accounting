@@ -61,8 +61,8 @@ namespace Accounting.Controllers
             {
                 getDocumentResult.Data.PayoutsBetEmployees = sessionDocument.PayoutsBetEmployee;
                 getDocumentResult.Data.PayoutsNotBetEmployees = sessionDocument.PayoutsNotBetEmployee;
-                getDocumentResult.Data.BetEmployees = sessionDocument.BetEmployees;
                 getDocumentResult.Data.NotBetEmployees = sessionDocument.NotBetEmployees;
+                getDocumentResult.Data.BetEmployees = sessionDocument.BetEmployees;
                 var updateResult = await _documentManager.Update(getDocumentResult.Data);
                 if (updateResult.Succed)
                 {
