@@ -104,6 +104,7 @@ namespace Accounting.Domain.Models
                 if (_payoutsBetEmployee != null)
                 {
                     UpdateRange(value, _payoutsBetEmployee);
+                    return;
                 }
                 _payoutsBetEmployee = value ?? throw new ArgumentNullException(nameof(PayoutsNotBetEmployees));
             }

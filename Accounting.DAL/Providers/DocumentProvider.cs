@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces;
 using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Calabonga.PredicatesBuilder;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -36,14 +37,20 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
-            var accrualRepository = _unitOfWork.GetRepository<PayoutNotBetEmployee>();
-            accrualRepository.Delete(await accrualRepository.GetAllAsync(predicate: x => x.Document.Id == id));
+            await DeletePayoutsByDocumentId<PayoutBetEmployee>(id);
+            await DeletePayoutsByDocumentId<PayoutNotBetEmployee>(id);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
+
+        private async Task DeletePayoutsByDocumentId<TRepository>(Guid id) where TRepository : PayoutBase
+        {
+            var payoutRepository = _unitOfWork.GetRepository<TRepository>();
+            payoutRepository.Delete(await payoutRepository.GetAllAsync(predicate: x => x.Document.Id == id));
         }
 
         public async Task<BaseResult<List<Document>>> GetAll()
@@ -83,7 +90,8 @@ namespace Accounting.DAL.Providers
             {
                 return new BaseResult<Document>(true, await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(
                     predicate: x => x.Id == id,
-                    include: x => x.Include(x => x.BetEmployees).Include(x => x.NotBetEmployees).Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees)
+                    include: x => x.Include(x => x.BetEmployees).Include(x => x.NotBetEmployees).Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees),
+                    disableTracking: false 
                     ), OperationStatuses.Ok);
             }
             catch (Exception ex)
