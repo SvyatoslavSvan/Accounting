@@ -19,7 +19,7 @@ namespace Accounting.DAL.Providers
         {
             if (entity is PayoutBetEmployee payoutBetEmployee)
             {
-                _unitOfWork.DbContext.Attach(payoutBetEmployee.BetEmployee);
+                _unitOfWork.DbContext.Attach(payoutBetEmployee.Employee);
                 await _unitOfWork.GetRepository<PayoutBetEmployee>().InsertAsync(payoutBetEmployee);
             }
             if (entity is PayoutNotBetEmployee payoutNotBetEmployee)
@@ -54,19 +54,19 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<bool>> DeleteRange(List<PayoutBase> deducationBases)
+        public async Task<BaseResult<bool>> DeleteRange(List<PayoutBase> payoutsBase)
         {
-            var deducationsBetEmployee = new List<PayoutBetEmployee>();
-            var deducationsNotBetEmployee = new List<PayoutNotBetEmployee>();
-            deducationBases.ForEach(x =>
+            var payoutsBetEmployee = new List<PayoutBetEmployee>();
+            var payoutsNotBetEmployee = new List<PayoutNotBetEmployee>();
+            payoutsBase.ForEach(x =>
             {
                 if (x is PayoutBetEmployee xBet)
-                    deducationsBetEmployee.Add(xBet);
+                    payoutsBetEmployee.Add(xBet);
                 if (x is PayoutNotBetEmployee xNotBet)
-                    deducationsNotBetEmployee.Add(xNotBet);
+                    payoutsNotBetEmployee.Add(xNotBet);
             });
-            _unitOfWork.GetRepository<PayoutBetEmployee>().Delete(deducationsBetEmployee);
-            _unitOfWork.GetRepository<PayoutNotBetEmployee>().Delete(deducationsNotBetEmployee);
+            _unitOfWork.GetRepository<PayoutBetEmployee>().Delete(payoutsBetEmployee);
+            _unitOfWork.GetRepository<PayoutNotBetEmployee>().Delete(payoutsNotBetEmployee);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -91,10 +91,20 @@ namespace Accounting.DAL.Providers
             }
         }
 
-        public Task<BaseResult<IList<PayoutBase>>> GetAllByPredicate(Expression<Func<PayoutBetEmployee, bool>> predicatePayoutBetEmployee, 
+        public async Task<BaseResult<IList<PayoutBase>>> GetAllByPredicate(Expression<Func<PayoutBetEmployee, bool>> predicatePayoutBetEmployee, 
             Expression<Func<PayoutNotBetEmployee, bool>> predicatePayoutNotBetEmployee)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var payouts = new List<PayoutBase>();
+                payouts.AddRange(await _unitOfWork.GetRepository<PayoutBetEmployee>().GetAllAsync(predicate: predicatePayoutBetEmployee));
+                payouts.AddRange(await _unitOfWork.GetRepository<PayoutNotBetEmployee>().GetAllAsync(predicate: predicatePayoutNotBetEmployee));
+                return new BaseResult<IList<PayoutBase>>(true, payouts, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<IList<PayoutBase>>(ex);
+            }
         }
 
         public async Task<BaseResult<PayoutBase>> GetById(Guid id)
@@ -125,7 +135,7 @@ namespace Accounting.DAL.Providers
         {
             if (entity is PayoutBetEmployee deducationBetEmployee)
             {
-                _unitOfWork.DbContext.Attach(deducationBetEmployee.BetEmployee);
+                _unitOfWork.DbContext.Attach(deducationBetEmployee.Employee);
                 _unitOfWork.GetRepository<PayoutBetEmployee>().Update(deducationBetEmployee);
             }
             if (entity is PayoutNotBetEmployee deducationNotBetEmployee)

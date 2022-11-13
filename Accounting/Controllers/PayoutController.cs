@@ -25,10 +25,12 @@ namespace Accounting.Controllers
         {
             return PartialView(new CreatePayoutViewModel()
             {
-                Payouts = _sessionDocumentService.GetAccrualsByEmployeeId(id),
+                Payouts = _sessionDocumentService.GetPayoutsByEmployeeId(id),
                 EmployeeId = id
             });
         }
+        [HttpGet]
+        public async Task<IActionResult> GetSumOfPayouts() => PartialView(_sessionDocumentService.GetSumOfPayouts());
 
         [HttpPost]
         public async Task<IActionResult> CreatePayout(PayoutViewModel viewModel)

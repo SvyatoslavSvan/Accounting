@@ -58,5 +58,13 @@ namespace Accounting.SessionEntity
             PayoutsBetEmployee.RemoveAll(x => x.Id == payoutId);
             PayoutsNotBetEmployee.RemoveAll(x => x.Id == payoutId);
         }
+
+        public void DeleteEmployee(Guid id)
+        {
+            BetEmployees.RemoveAll(x => x.Id == id);
+            NotBetEmployees.RemoveAll(x => x.Id == id);
+            PayoutsBetEmployee.RemoveAll(x => x.EmployeeId == id);
+            PayoutsNotBetEmployee.RemoveAll(x => x.EmployeeId == id);
+        }
     }
 }

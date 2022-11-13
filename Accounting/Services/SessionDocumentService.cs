@@ -1,4 +1,5 @@
-﻿using Accounting.Domain.Models;
+﻿using Accounting.DAL.Result.Provider.Base;
+using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Extensions;
 using Accounting.SessionEntity;
@@ -53,7 +54,7 @@ namespace Accounting.Services
             return await Commit(document);
         }
 
-        public List<PayoutBase> GetAccrualsByEmployeeId(Guid employeeId) => _document.GetPayoutsByEmployeeId(employeeId);
+        public List<PayoutBase> GetPayoutsByEmployeeId(Guid employeeId) => _document.GetPayoutsByEmployeeId(employeeId);
 
         public async Task<bool> AddPayout(PayoutBase payout)
         {
@@ -75,5 +76,33 @@ namespace Accounting.Services
             document.DeleteAccrual(payoutId);
             return await Commit(document);
         }
+
+        public async Task<bool> DeleteEmployee(Guid id)
+        {
+            var document = _document;
+            document.DeleteEmployee(id);
+            return await Commit(document);
+        }
+
+        public SessionDocument GetDocument() => _document;
+
+        public async Task<bool> LoadDocument(Document document) => await Commit(MapToSessionDocument(document));
+
+        private SessionDocument MapToSessionDocument(Document document) => new SessionDocument()
+        {
+            NotBetEmployees = document.NotBetEmployees.ToList(),
+            BetEmployees = document.BetEmployees.ToList(),
+            PayoutsBetEmployee = document.PayoutsBetEmployees.ToList(),
+            PayoutsNotBetEmployee = document.PayoutsNotBetEmployees.ToList()
+        };
+
+        public decimal GetSumOfPayouts()
+        {
+            var document = _document;
+            var sum = document.PayoutsNotBetEmployee.Sum(x => x.Ammount);
+            sum += document.PayoutsBetEmployee.Sum(x => x.Ammount);
+            return sum;
+        }
+
     }
 }

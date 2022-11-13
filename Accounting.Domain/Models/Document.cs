@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
-    public class Document
+    public class Document : EntityBase
     {
 #nullable disable
         public Document() { }
@@ -15,13 +15,15 @@ namespace Accounting.Domain.Models
             DateCreate = dateCreate;
         }
 
-        [JsonConstructor]
-        public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees)
+        public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, 
+            ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees, string name, DateTime dateCreate)
         {
             _betEmployees = betEmployees;
             _notBetEmployees = notBetEmployees;
             _payoutsBetEmployee = payoutsBetEmployees;
             _payoutsNotBetEmployee = payoutsNotBetEmployees;
+            Name = name;
+            DateCreate = dateCreate;
         }
 
         public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
@@ -42,7 +44,7 @@ namespace Accounting.Domain.Models
         }
 
         public DocumentType DocumentType { get; private set; }
-        public Guid Id { get; private set; }
+        
         public string Name { get; set; }
         private ICollection<NotBetEmployee> _notBetEmployees;
 
@@ -51,15 +53,28 @@ namespace Accounting.Domain.Models
             get => _notBetEmployees;
             set 
             {
-                _notBetEmployees = value ?? throw new ArgumentNullException(); 
+                if (_notBetEmployees != null)
+                {
+                    UpdateRange(value, _notBetEmployees);
+                    return;
+                }
+                _notBetEmployees = value ?? throw new ArgumentNullException(nameof(NotBetEmployees));
             }
         }
         private ICollection<BetEmployee> _betEmployees;
 
         public ICollection<BetEmployee> BetEmployees
         {
-            get { return _betEmployees; }
-            set { _betEmployees = value; }
+            get => _betEmployees;
+            set 
+            {
+                if (_betEmployees != null)
+                {
+                    UpdateRange(value, _betEmployees);
+                    return;
+                }
+                _betEmployees = value ?? throw new ArgumentNullException(nameof(BetEmployees));
+            }
         }
 
 
@@ -70,7 +85,12 @@ namespace Accounting.Domain.Models
             get => _payoutsNotBetEmployee;
             set 
             {
-                //UpdateAccruals(value); 
+                if (_payoutsNotBetEmployee != null)
+                {
+                    UpdateRange(value, _payoutsNotBetEmployee);
+                    return;
+                }
+                _payoutsNotBetEmployee = value ?? throw new ArgumentNullException(nameof(PayoutsNotBetEmployees));
             }
         }
 
@@ -79,16 +99,41 @@ namespace Accounting.Domain.Models
         public ICollection<PayoutBetEmployee> PayoutsBetEmployees
         {
             get => _payoutsBetEmployee;
-            set { _payoutsBetEmployee = value ?? throw new ArgumentNullException(); }
+            set 
+            {
+                if (_payoutsBetEmployee != null)
+                {
+                    UpdateRange(value, _payoutsBetEmployee);
+                }
+                _payoutsBetEmployee = value ?? throw new ArgumentNullException(nameof(PayoutsNotBetEmployees));
+            }
         }
 
-        public void Initialize()
+        private void UpdateRange<T>(ICollection<T> newRange, ICollection<T> oldRange) where T : EntityBase
         {
-            _betEmployees = new List<BetEmployee>();
-            _notBetEmployees = new List<NotBetEmployee>();
-            _payoutsBetEmployee = new List<PayoutBetEmployee>();
-            _payoutsNotBetEmployee = new List<PayoutNotBetEmployee>();
+            foreach (var item in newRange)
+            {
+                var containsInThis = oldRange.Contains(oldRange.FirstOrDefault(x => x.Id == item.Id));
+                if (!containsInThis)
+                {
+                    oldRange.Add(item);
+                }
+            }
+            var elementsToRemove = new List<Guid>();
+            foreach (var thisEmployee in oldRange)
+            {
+                var containsInUpdate = newRange.Contains(newRange.FirstOrDefault(x => x.Id == thisEmployee.Id));
+                if (!containsInUpdate)
+                {
+                    elementsToRemove.Add(thisEmployee.Id);
+                }
+            }
+            foreach (var item in elementsToRemove)
+            {
+                oldRange.Remove(oldRange.FirstOrDefault(x => x.Id == item));
+            }
         }
+
         public DateTime DateCreate { get; set; }  
     }
 }

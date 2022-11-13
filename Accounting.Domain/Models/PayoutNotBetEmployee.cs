@@ -12,7 +12,10 @@ namespace Accounting.Domain.Models
             Employee = employee;
         }
         [JsonConstructor]
-        public PayoutNotBetEmployee(decimal ammount, Guid id, bool isAdditional) : base(ammount, id, isAdditional) { }
+        public PayoutNotBetEmployee(decimal ammount, Guid id, bool isAdditional, Guid employeeId) : base(ammount, id, isAdditional) 
+        {
+            EmployeeId = employeeId;
+        }
 
         public Guid EmployeeId { get; private set; }
         private NotBetEmployee _employee = null!;

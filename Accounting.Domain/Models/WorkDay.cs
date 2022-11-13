@@ -1,6 +1,8 @@
-﻿namespace Accounting.Domain.Models
+﻿using Accounting.Domain.Models.Base;
+
+namespace Accounting.Domain.Models
 {
-    public class WorkDay
+    public class WorkDay : EntityBase
     {
         public WorkDay() { }
         public WorkDay(DateTime date, float hours)
@@ -15,7 +17,6 @@
             Employee = employee;
         }
 
-        public Guid Id { get; private set; }
         public DateTime Date { get; private set; }
         public const float MinHoursValue = 0;
         public const float MaxHoursValue = 8;

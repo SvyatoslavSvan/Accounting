@@ -3,6 +3,7 @@ using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accouting.Domain.Managers.Interfaces;
+using OfficeOpenXml.Utils;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -19,15 +20,13 @@ namespace Accouting.Domain.Managers.Implementations
 
         public async Task<BaseResult<bool>> Delete(Guid id) => await _payoutProvider.Delete(id);
 
-        public Task<BaseResult<bool>> DeleteByDocumentId(Guid id)
+        public async Task<BaseResult<bool>> DeleteByDocumentId(Guid id)
         {
-            throw new NotImplementedException();
+            var payouts = await _payoutProvider.GetAllByPredicate(x => x.Document.Id == id, x => x.Document.Id == id);
+            return await _payoutProvider.DeleteRange(payouts.Data.ToList());
         }
 
-        public Task<BaseResult<bool>> DeleteRange(List<PayoutNotBetEmployee> accruals)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<BaseResult<bool>> DeleteRange(List<PayoutBase> payouts) => _payoutProvider.DeleteRange(payouts);
 
         public async Task<BaseResult<IList<PayoutBase>>> GetAll()
         {

@@ -2,7 +2,7 @@
 
 namespace Accounting.Domain.Models.Base
 {
-    public abstract class PayoutBase
+    public abstract class PayoutBase : EntityBase
     {
         public PayoutBase() {}
         public PayoutBase(decimal ammount, bool isAdditional)
@@ -19,7 +19,6 @@ namespace Accounting.Domain.Models.Base
             IsAdditional = isAdditional;
         }
 
-        public Guid Id { get; protected set; }
         public bool IsAdditional { get; protected set; }
         private decimal _ammount;
         public decimal Ammount

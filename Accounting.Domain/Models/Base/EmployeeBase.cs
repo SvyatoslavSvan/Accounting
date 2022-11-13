@@ -3,10 +3,9 @@
 namespace Accounting.Domain.Models.Base
 {
 #nullable disable
-    public abstract class EmployeeBase
+    public abstract class EmployeeBase : EntityBase
     {
-        
-        public Guid Id { get; protected set; }
+
         private string _name;
 
         public string Name

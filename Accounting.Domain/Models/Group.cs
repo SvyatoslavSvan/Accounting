@@ -2,10 +2,9 @@
 namespace Accounting.Domain.Models
 {
 #nullable disable
-    public class Group
+    public class Group : EntityBase
     {
         public Group() { }
-        public Guid Id { get; private set; }
         public string Name { get; private set; }
         public List<BetEmployee> BetEmployees { get; private set; }
         public List<NotBetEmployee> NotBetEmployees { get; private set; } // возможно надо будут миграции потому что private set

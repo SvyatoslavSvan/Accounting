@@ -16,7 +16,7 @@
                     <li class="list-group-item" id="@getAccrualLiID(item.Id)">
                         <div class="d-flex justify-content-between">
                             <form id="@getUpdateAccrualFromId(item.Id)">
-                                <input type="hidden" name="AccrualId" value="@item.Id" />
+                                <input type="hidden" name="PayoutId" value="@item.Id" />
                                 @if (item.IsAdditional)
                                 {
                                     <label class="form-label">Отп/больн</label>
@@ -25,8 +25,8 @@
                             </form>
 
                             <form id="@getdeleteAccrualFormId(item.Id)">
-                                <input type="hidden" name="accrualId" value="@item.Id" />
-                                <button class="btn btn-outline-danger" type="button" onclick="sendForm('@getdeleteAccrualFormId(item.Id)', '/Document/DeleteAccrual', '@getAccrualLiID(item.Id)')">Видалити</button>
+                                <input type="hidden" name="payoutId" value="@item.Id" />
+                                <button class="btn btn-outline-danger" type="button" onclick="sendForm('@getdeleteAccrualFormId(item.Id)', '/Payout/Delete', '@getAccrualLiID(item.Id)')">Видалити</button>
                             </form>
                         </div>
                     </li>

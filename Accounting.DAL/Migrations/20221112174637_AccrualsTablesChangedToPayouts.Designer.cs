@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221112174637_AccrualsTablesChangedToPayouts")]
+    partial class AccrualsTablesChangedToPayouts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,6 +120,9 @@ namespace Accounting.DAL.Migrations
                     b.Property<decimal>("Ammount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("BetEmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("DocumentId")
                         .HasColumnType("uniqueidentifier");
 
@@ -129,9 +134,9 @@ namespace Accounting.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentId");
+                    b.HasIndex("BetEmployeeId");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("DocumentId");
 
                     b.ToTable("PayoutsBetEmployee");
                 });
@@ -239,19 +244,19 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.PayoutBetEmployee", b =>
                 {
+                    b.HasOne("Accounting.Domain.Models.BetEmployee", "BetEmployee")
+                        .WithMany("Accruals")
+                        .HasForeignKey("BetEmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Accounting.Domain.Models.Document", "Document")
                         .WithMany("PayoutsBetEmployees")
                         .HasForeignKey("DocumentId");
 
-                    b.HasOne("Accounting.Domain.Models.BetEmployee", "Employee")
-                        .WithMany("Accruals")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("BetEmployee");
 
                     b.Navigation("Document");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.PayoutNotBetEmployee", b =>

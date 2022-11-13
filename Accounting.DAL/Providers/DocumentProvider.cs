@@ -22,6 +22,8 @@ namespace Accounting.DAL.Providers
         {
             _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
             _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.PayoutsBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
             await _unitOfWork.GetRepository<Document>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -79,11 +81,10 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                var document = await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, 
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.PayoutsNotBetEmployees), disableTracking: false);
-                if (document is null)
-                    return new BaseResult<Document>(false, null, OperationStatuses.NotFound);
-                return new BaseResult<Document>(true, document, OperationStatuses.Ok);
+                return new BaseResult<Document>(true, await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(
+                    predicate: x => x.Id == id,
+                    include: x => x.Include(x => x.BetEmployees).Include(x => x.NotBetEmployees).Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees)
+                    ), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
@@ -110,6 +111,8 @@ namespace Accounting.DAL.Providers
         {
             _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
             _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.PayoutsBetEmployees);
             _unitOfWork.GetRepository<Document>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

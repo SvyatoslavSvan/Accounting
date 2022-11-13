@@ -30,7 +30,7 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         appendCreatedAccrualResponse(response, true);
         getSumOfAccruals();
     }
-    if (url == '/Document/DeleteEmployeeFromDocument') {
+    if (url == '/Document/DeleteEmployee') {
         removeEmployee(elementToRemoveId, response);
     }
     if (url == '/Payout/Update') {
@@ -57,26 +57,13 @@ function insertResponse(url, response, elementToRemoveId, formId) {
 
 function getSumOfAccruals() {
     $.ajax({
-        url: '/Document/GetSumOfAccruals',
+        url: '/Payout/GetSumOfPayouts',
         method: 'get', 
         success: function (response) {
             $('#sumAccrual').html(response);
         },
         error: function (response) {
             
-        }
-    });
-}
-
-function getSumOfDeducations() {
-    $.ajax({
-        url: '/DeducationDocument/GetSumOfDeducations',
-        method: 'get',
-        success: function (response) {
-            $('#sumAccrual').html(response);
-        },
-        error: function (response) {
-
         }
     });
 }
@@ -95,29 +82,7 @@ function openCreateAccrualModal(employeeId) {
     });
 }
 
-function openCreateDeducationModal(employeeId) {
-    $.ajax({
-        url: `/Deducation/CreateDeducation/${employeeId}`,
-        method: 'get',
-        success: function (response) {
-            appendCreatedDeducationResponse(response, false);
-        },
-        error: function (response) {
-            alert('Вадим лютин');
-            console.log(response);
-        }
-    });
-}
 
-function appendCreatedDeducationResponse(response, addAccrualToUl) {
-    if (!addAccrualToUl) {
-        $('#createDeducationModalBody').empty();
-        $('#createDeducationModalBody').append(response);
-    } else {
-        $('#DeducationUl').append(response);
-    }
-
-}
 
 function appendCreatedAccrualResponse(response, addAccrualToUl) {
     if (!addAccrualToUl) {
