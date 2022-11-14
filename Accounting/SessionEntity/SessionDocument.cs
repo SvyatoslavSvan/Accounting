@@ -53,6 +53,14 @@ namespace Accounting.SessionEntity
             payoutBetEmployee.Ammount = ammount;
         }
 
+        public List<EmployeeBase> GetAllEmployees()
+        {
+            var employees = new List<EmployeeBase>(NotBetEmployees);
+            employees.AddRange(BetEmployees);
+            return employees;
+        }
+
+
         public void DeleteAccrual(Guid payoutId)
         {
             PayoutsBetEmployee.RemoveAll(x => x.Id == payoutId);

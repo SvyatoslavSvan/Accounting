@@ -157,5 +157,22 @@ namespace Accounting.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetEmployeesAddToDocument(EmployeeSearchRequest request)
+        {
+            var getEmployeesResult = await _employeeManager.GetSearch(request);
+            if (getEmployeesResult.Succed)
+            {
+                var sessionDocument = _sessionDocumentService.GetDocument();
+                var employees = sessionDocument.GetAllEmployees();
+                employees.ForEach(x =>
+                {
+                    getEmployeesResult.Data.Remove(getEmployeesResult.Data.FirstOrDefault(y => y.Id == x.Id));
+                });
+                return PartialView(getEmployeesResult.Data);
+            }
+            return StatusCode(500);
+        }
+
     }
 }

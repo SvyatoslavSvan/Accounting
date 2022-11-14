@@ -6,6 +6,7 @@
         data: $("#" + formId).serialize(),
         success: function (response) {
             insertResponse(url, response, elementToRemoveId, formId);
+            return response;
         },
         error: function (response) {
             alert('Error while sending form')
@@ -51,7 +52,11 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Employee/Create') {
         document.getElementById('createEmployee').reset();
         $('#' + elementToRemoveId).append(response);
-    }    
+    }
+    if (url == '/Document/GetEmployeesAddToDocument') {
+        $('#' + elementToRemoveId).empty();
+        $('#' + elementToRemoveId).append(response);
+    }
 }
 
 
@@ -121,4 +126,7 @@ function onDocumentTypeInputChange() {
     }
     
 }    
+function submitSearchEmployeesAddToDocumentForm() {
+    sendForm('searchEmployeesAddToDocumentfrm', '/Document/GetEmployeesAddToDocument', 'chooseEmployeeUl', 'GET');
+}
 

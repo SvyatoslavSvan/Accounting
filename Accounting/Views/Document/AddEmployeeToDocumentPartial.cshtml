@@ -15,6 +15,18 @@
             </div>
             <div class="modal-body">
                 <div class="container">
+                    <div class="row my-2">
+                        <div class="col-md-5 m-auto">
+                            <h5>Пошук по працівникам</h5>
+                            <form id="searchEmployeesAddToDocumentfrm">
+                                <label class="form-label">Ім'я</label>
+                                <input type="text" name="Name" class="form-control" />
+                                <label class="form-label">Внутрішній номер</label>
+                                <input type="text" name="InnerId" class="form-control" />
+                                <button type="button" class="btn btn-outline-primary" onclick="submitSearchEmployeesAddToDocumentForm()">Шукати</button>
+                            </form>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-11">
                             <ul class="list-group" id="chooseEmployeeUl">

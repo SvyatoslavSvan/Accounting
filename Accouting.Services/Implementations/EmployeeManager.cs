@@ -2,8 +2,11 @@
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using Accounting.Domain.Requests;
 using Accouting.Domain.Managers.Interfaces;
+using Calabonga.PredicatesBuilder;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -54,6 +57,24 @@ namespace Accouting.Domain.Managers.Implementations
         {
             var updateResult = await _provider.Update(model);
             return new BaseResult<EmployeeBase>(updateResult.Succed, model, updateResult.OperationStatus);
+        }
+
+        public Task<BaseResult<IList<EmployeeBase>>> GetSearch(EmployeeSearchRequest request) => _provider.GetAllByPredicate(
+            betEmployeePredicate: GetSearchEmployeePredicate<BetEmployee>(request),
+            notBetEmployeePredicate: GetSearchEmployeePredicate<NotBetEmployee>(request));
+
+        private Expression<Func<T, bool>> GetSearchEmployeePredicate<T>(EmployeeSearchRequest request) where T : EmployeeBase
+        {
+            var predicate = PredicateBuilder.True<T>();
+            if (request.Name is not default(string))
+            {
+                predicate = predicate.And(x => x.Name.Contains(request.Name));
+            }
+            if (request.InnerId is not default(string))
+            {
+                predicate = predicate.And(x => x.InnerId.Contains(request.InnerId));
+            }
+            return predicate;
         }
     }
 }

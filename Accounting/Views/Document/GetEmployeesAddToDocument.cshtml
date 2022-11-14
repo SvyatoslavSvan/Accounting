@@ -1,0 +1,6 @@
+﻿@using Accounting.Domain.Models.Base
+@model IEnumerable<EmployeeBase> 
+@foreach (var item in Model)
+{
+    <partial name="RemovedEmployeeFromDocument" model="item"></partial>
+}
