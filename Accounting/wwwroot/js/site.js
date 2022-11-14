@@ -53,10 +53,11 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         document.getElementById('createEmployee').reset();
         $('#' + elementToRemoveId).append(response);
     }
-    if (url == '/Document/GetEmployeesAddToDocument') {
+    if (url == '/Document/GetSearchEmployeesAddToDocument' || url == '/Document/GetEmployeesAddToDocument') {
         $('#' + elementToRemoveId).empty();
         $('#' + elementToRemoveId).append(response);
     }
+    
 }
 
 
@@ -127,6 +128,9 @@ function onDocumentTypeInputChange() {
     
 }    
 function submitSearchEmployeesAddToDocumentForm() {
+    sendForm('searchEmployeesAddToDocumentfrm', '/Document/GetSearchEmployeesAddToDocument', 'chooseEmployeeUl', 'GET');
+}
+function getEmployeesAddToDocument() {
     sendForm('searchEmployeesAddToDocumentfrm', '/Document/GetEmployeesAddToDocument', 'chooseEmployeeUl', 'GET');
 }
 

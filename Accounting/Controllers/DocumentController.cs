@@ -158,7 +158,7 @@ namespace Accounting.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployeesAddToDocument(EmployeeSearchRequest request)
+        public async Task<IActionResult> GetSearchEmployeesAddToDocument(EmployeeSearchRequest request)
         {
             var getEmployeesResult = await _employeeManager.GetSearch(request);
             if (getEmployeesResult.Succed)
@@ -173,6 +173,21 @@ namespace Accounting.Controllers
             }
             return StatusCode(500);
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetEmployeesAddToDocument()
+        {
+            var getEmployeesResult = await _employeeManager.GetAll();
+            if (getEmployeesResult.Succed)
+            {
+                var sessionDocument = _sessionDocumentService.GetDocument();
+                var employees = sessionDocument.GetAllEmployees();
+                employees.ForEach(x =>
+                {
+                    getEmployeesResult.Data.Remove(getEmployeesResult.Data.FirstOrDefault(y => y.Id == x.Id));
+                });
+                return PartialView("GetSearchEmployeesAddToDocument", getEmployeesResult.Data);
+            }
+            return StatusCode(500);
+        }
     }
 }
