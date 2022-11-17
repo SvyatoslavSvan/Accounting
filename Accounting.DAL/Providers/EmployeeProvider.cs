@@ -65,8 +65,8 @@ namespace Accounting.DAL.Providers
             try
             { 
                 var employees = new List<EmployeeBase>();
-                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
-                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
+                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group), orderBy: x => x.OrderBy(x => x.Name)));
+                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group), orderBy: x => x.OrderBy(x => x.Name)));
                 employees.OrderBy(x => x.Name);
                 return new BaseResult<List<EmployeeBase>>(true, employees, OperationStatuses.Ok);
             }
