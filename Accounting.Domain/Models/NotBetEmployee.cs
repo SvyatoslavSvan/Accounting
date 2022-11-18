@@ -26,9 +26,9 @@ namespace Accounting.Domain.Models
 
         }
 
-        public override Salary CalculateSalary()
+        public override Salary CalculateSalary(DateTime from, DateTime to)
         {
-            throw new NotImplementedException();
+            return base.CalculateSalary(from, to);
         }
     }
 }

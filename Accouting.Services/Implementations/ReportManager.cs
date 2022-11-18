@@ -7,11 +7,20 @@ namespace Accouting.Domain.Managers.Implementations
 {
     public class ReportManager : IReportManager
     {
+        private readonly ISalaryManager _salaryManager;
+
+        public ReportManager(ISalaryManager salaryManager)
+        {
+            _salaryManager = salaryManager;
+        }
+
         public async Task<byte[]> GetReportAsExcel(DateTime from, DateTime to)
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using var package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report");
             sheet = MakeHead(sheet, from, to);
+            var salaries = await _salaryManager.CalculateSalaries(from, to);
             return await package.GetAsByteArrayAsync();
         }
 

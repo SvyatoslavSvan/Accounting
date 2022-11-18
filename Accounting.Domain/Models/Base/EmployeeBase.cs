@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Accounting.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models.Base
 {
@@ -68,6 +69,7 @@ namespace Accounting.Domain.Models.Base
         }
        
         private ICollection<Document> _documents;
+
         [JsonIgnore]
         public ICollection<Document> Documents
         {
@@ -76,7 +78,7 @@ namespace Accounting.Domain.Models.Base
         }
 
 
-        public abstract Salary CalculateSalary();
+        public virtual Salary CalculateSalary(DateTime from, DateTime to) => CalculatePayments(from, to);
 
         public virtual void AddToGroup(Group group)
         {
@@ -94,6 +96,61 @@ namespace Accounting.Domain.Models.Base
                 this.Id = id;
         }
 
+        private Salary CalculatePayments(DateTime from, DateTime to)
+        {   
+            if (this is BetEmployee)
+            { 
+                return GetSalary<PayoutBetEmployee>(from, to);
+            }
+            if (this is NotBetEmployee)
+            {
+                return GetSalary<PayoutNotBetEmployee>(from, to);
+            }
+            return new Salary();
+        }
 
+        private Salary GetSalary<T>(DateTime from, DateTime to) where T : PayoutBase
+        {
+            var payoutAccruals = new List<T>();
+            var payoutsDeducation = new List<T>();
+            var documents = _documents.Where(x => x.DateCreate.Date >= from.Date && x.DateCreate.Date <= to.Date).ToList();
+            documents.ForEach(x =>
+            {
+                var type = typeof(T);
+                if (type == typeof(PayoutBetEmployee))
+                {
+                    if (x.DocumentType == DocumentType.Accrual)
+                    {
+                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                    }
+                    if (x.DocumentType == DocumentType.Deducation)
+                    {
+                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                    }
+                }
+                if (type == typeof(PayoutNotBetEmployee))
+                {
+                    if (x.DocumentType == DocumentType.Accrual)
+                    {
+                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                    }
+                    if (x.DocumentType == DocumentType.Deducation)
+                    {
+                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                    }
+                }
+            });
+            var sumOfAccruals = payoutAccruals.Sum(x => x.Ammount);
+            var sumOfDeducations = payoutsDeducation.Sum(x => x.Ammount);
+            return new Salary()
+            {
+                Payment = sumOfAccruals,
+                Deducation = sumOfDeducations,
+                AdditionalPayout = payoutAccruals.Where(x => x.IsAdditional).Sum(x => x.Ammount),
+                AdditionalDeducation = payoutsDeducation.Where(x => x.IsAdditional).Sum(x => x.Ammount),
+                Employee = this
+            };
+        }
+        
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Accounting.Domain.Models.Base;
+using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
@@ -56,11 +58,31 @@ namespace Accounting.Domain.Models
             Bet = bet;
         }
         
-        public override Salary CalculateSalary()
+        public override Salary CalculateSalary(DateTime from, DateTime to)
         {
-            throw new NotImplementedException();
+            var salary = base.CalculateSalary(from, to);
+            salary.Payment += CalculateBetPayout(from, to);
+            return salary;
         }
 
-        
+        private decimal CalculateBetPayout(DateTime from, DateTime to)
+        {
+            decimal payout = 0;
+            var monthBetween = to.Month - from.Month;
+            var monthToCalculate = from.Month;
+            for (int i = 0; i <= monthBetween; i++)
+            {
+                var payForDay = Bet / WorkDays.Where(x => x.Date.Month == monthToCalculate && x.Hours != 0).Count();
+                var payForHour =  payForDay / 8;
+                var workDays = WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date && x.Date.Month == monthToCalculate).ToList();
+                workDays.ForEach(x =>
+                {
+                    payout += (decimal)x.Hours * payForHour;
+                });
+                monthToCalculate += 1;
+            }
+            return payout;
+        }
+
     }
 }

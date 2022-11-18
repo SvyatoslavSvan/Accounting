@@ -13,27 +13,17 @@ namespace Accouting.Domain.Managers.Implementations
             _employeeManager = employeeManager;
         }
 
-        public async Task<IList<Salary>> CalculateSalaries(DateTime from, DateTime to) => GetSalaries(_employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to).Result.Data);
+        public async Task<IList<Salary>> CalculateSalaries(DateTime from, DateTime to) => GetSalaries(_employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to).Result.Data, from, to);
 
 
-        private IList<Salary> GetSalaries(IList<EmployeeBase> employees)
+        private IList<Salary> GetSalaries(IList<EmployeeBase> employees, DateTime from, DateTime to)
         {
             var salaries = new List<Salary>();
             foreach (var item in employees)
             {
-                salaries.Add(item.CalculateSalary());
+                salaries.Add(item.CalculateSalary(from, to));
             }
             return salaries;
         }
-
-        //private decimal GetBetPayment(IList<WorkDay> workDays, decimal bet)
-        //{
-        //    decimal payment = 0;
-        //    var payForHour = (bet / workDays.Count()) / 8;
-        //    foreach (var item in workDays)
-        //        payment += (decimal)item.Hours * payForHour;
-        //    return payment;
-        //}
-
     }
 }

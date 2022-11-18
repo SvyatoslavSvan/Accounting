@@ -27,23 +27,6 @@ namespace Accounting.Domain.Models
             DocumentType = documentType;
         }
 
-        public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
-        {
-            _notBetEmployees = employees;
-            _payoutsNotBetEmployee = accruals;
-            Name = name;
-            DateCreate = dateCreate;
-        }
-
-        public Document(Guid id,List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
-        {
-            Id = id;
-            _notBetEmployees = employees;
-            _payoutsNotBetEmployee = accruals;
-            Name = name;
-            DateCreate = dateCreate;
-        }
-
         public DocumentType DocumentType { get; private set; }
         
         public string Name { get; set; }

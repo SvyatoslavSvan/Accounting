@@ -18,6 +18,7 @@ namespace Accounting.Domain.Models.Base
             Id = id;
             IsAdditional = isAdditional;
         }
+        public Guid EmployeeId { get; protected set; }
 
         public bool IsAdditional { get; protected set; }
         private decimal _ammount;

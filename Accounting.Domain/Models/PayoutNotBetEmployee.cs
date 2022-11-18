@@ -17,7 +17,6 @@ namespace Accounting.Domain.Models
             EmployeeId = employeeId;
         }
 
-        public Guid EmployeeId { get; private set; }
         private NotBetEmployee _employee = null!;
         [JsonIgnore]
         public NotBetEmployee Employee

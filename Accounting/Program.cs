@@ -31,6 +31,7 @@ builder.Services.AddScoped<IPayoutManager, PayoutManager>();
 builder.Services.AddScoped<IEmployeeManager, EmployeeManager>();
 builder.Services.AddScoped<IWorkDayManager, WorkDayManager>();
 builder.Services.AddScoped<IGroupManager, GroupManager>();
+builder.Services.AddTransient<ISalaryManager, SalaryManager>();
 builder.Services.AddScoped<IReportManager, ReportManager>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
 builder.Services.AddHttpContextAccessor();

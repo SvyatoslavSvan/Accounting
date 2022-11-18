@@ -12,7 +12,7 @@ namespace Accounting.Controllers
         }
         public async Task<IActionResult> DownloadReport(DateTime from, DateTime to)
         {
-            var report = await _reportManager.GetReportAsExcel(from, to);
+            var report = await _reportManager.GetReportAsExcel(DateTime.Now, DateTime.Parse("18.12.2022"));
             return File(report, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
     }

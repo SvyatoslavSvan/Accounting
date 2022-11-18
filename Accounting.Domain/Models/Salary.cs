@@ -4,6 +4,8 @@ namespace Accounting.Domain.Models
 {
 	public class Salary
     {
+		public Salary() { }
+
 		public Salary(decimal payment, decimal additionalPayout, decimal deducation, decimal additionalDeducation)
 		{
 			Payment = payment;
