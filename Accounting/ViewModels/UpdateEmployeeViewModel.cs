@@ -14,5 +14,6 @@ namespace Accounting.Domain.ViewModels
         public string InnerId { get; set; }
         public bool IsBet { get; set; }
         public decimal? Bet { get; set; }
+        public int Premium { get; set; }
     }
 }

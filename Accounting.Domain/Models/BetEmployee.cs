@@ -71,10 +71,19 @@ namespace Accounting.Domain.Models
             var monthBetween = to.Month - from.Month;
             var monthToCalculate = from.Month;
             for (int i = 0; i <= monthBetween; i++)
-            {
-                var payForDay = Bet / WorkDays.Where(x => x.Date.Month == monthToCalculate && x.Hours != 0).Count();
+            { 
+                decimal payForDay = 0;
+                var workDaysToCountPayForDay = WorkDays.Where(x => x.Date.Month == monthToCalculate && x.Hours != 0F).ToList();
+                if (workDaysToCountPayForDay.Count() <= 0)
+                {
+                    payForDay = 0;
+                }
+                else
+                {
+                    payForDay = Bet / workDaysToCountPayForDay.Count();
+                }
                 var payForHour =  payForDay / 8;
-                var workDays = WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date && x.Date.Month == monthToCalculate).ToList();
+                var workDays = WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date && x.Date.Month == monthToCalculate && x.Hours != 0F).ToList();
                 workDays.ForEach(x =>
                 {
                     payout += (decimal)x.Hours * payForHour;
@@ -84,5 +93,6 @@ namespace Accounting.Domain.Models
             return payout;
         }
 
+       
     }
 }

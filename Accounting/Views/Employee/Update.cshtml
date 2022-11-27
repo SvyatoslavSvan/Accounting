@@ -15,6 +15,8 @@
     <input type="text" asp-for="Name" class="form-control p-2" />
     <label asp-for="InnerId" class="form-label">Внутрішній номер</label>
     <input type="text" asp-for="InnerId" class="form-control p-2" />
+    <label asp-for="Premium">Премія</label>
+    <input asp-for="Premium" class="form-control"/>
     @if (Model.IsBet)
     {
         <label asp-for="Bet" class="form-label">Ставка</label>

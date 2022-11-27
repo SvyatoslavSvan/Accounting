@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Models.Base;
+using System.Runtime.CompilerServices;
 
 namespace Accounting.Domain.Models
 {
@@ -56,9 +57,10 @@ namespace Accounting.Domain.Models
 			}
 		}
 
-		private decimal _premium => (_payment * _employee.Premium) - Payment;
+		public decimal Premium => (Payment / 100m) * Employee.Premium;
 
-		private decimal _totalAmount => _payment + _additionalPayout + _premium;
+		public decimal TotalAmmount => _payment + _additionalPayout + Premium;
+		
 
 		private decimal _deducation;
 
@@ -92,6 +94,7 @@ namespace Accounting.Domain.Models
             }
         }
 
-		private decimal _totalDeducation => _deducation + _additionalDeducation;
+		public decimal TotalDeducation => _deducation + _additionalDeducation;
+		public decimal Total => TotalAmmount - TotalDeducation;
     }
 }

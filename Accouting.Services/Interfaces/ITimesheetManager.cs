@@ -4,8 +4,8 @@ using Accouting.Domain.Managers.Interfaces.Base;
 
 namespace Accouting.Domain.Managers.Interfaces
 {
-    public interface IWorkDayManager : IBaseCrudManager<WorkDay>
+    public interface ITimesheetManager : IBaseCrudManager<Timesheet>
     {
-        public Task<BaseResult<IList<WorkDay>>> CreateNewWorkDays();
+        public Task<BaseResult<Timesheet>> CreateNew();
     }
 }

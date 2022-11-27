@@ -26,6 +26,33 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Звіти</h6>
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ReportAsExcelModal">
+                        Звіт в ексель
+                    </button>
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
+<div class="modal fade" id="ReportAsExcelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success" id="exampleModalLabel">Звіт в ексель</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="get" asp-action="DownloadReport" asp-controller="Report">
+                    <input type="date" class="form-control" name="from"/>
+                    <input type="date" class="form-control" name="to" />
+                    <button type="submit" class="btn btn-outline-secondary">Звіт</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

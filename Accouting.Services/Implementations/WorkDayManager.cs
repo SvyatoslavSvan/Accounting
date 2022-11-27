@@ -2,6 +2,7 @@
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accouting.Domain.Managers.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Accouting.Domain.Managers.Implementations
@@ -53,22 +54,12 @@ namespace Accouting.Domain.Managers.Implementations
             return workDays;
         }
 
-        private async Task<bool> IsNeededToCreateNewDays() => await _workDayProvider.Count(predicate: x => x.Date.Month == DateTime.Now.Month) == 0 ? true : false;
-
-        public async Task<BaseResult<bool>> CreateNewWorkDays()
+        public async Task<BaseResult<IList<WorkDay>>> CreateNewWorkDays()
         {
-            if (await IsNeededToCreateNewDays())
-            {
-                var getEmployeesResult = await _employeeManager.GetBetEmployees();
-                var workDays = GetWorkDaysWithEmployees(getEmployeesResult.Data);
-                var createResult = await _workDayProvider.CreateRange(workDays);
-                if (createResult.Succed)
-                {
-                    return createResult;
-                }
-                return new BaseResult<bool>(false, false, createResult.OperationStatus);
-            }
-            return new BaseResult<bool>(true, true, OperationStatuses.AllWorkDaysMatch);
+            var getEmployeesResult = await _employeeManager.GetBetEmployees();
+            var workDays = GetWorkDaysWithEmployees(getEmployeesResult.Data);
+            var createResult = await _workDayProvider.CreateRange(workDays);
+            return new BaseResult<IList<WorkDay>>(createResult.Succed, workDays, OperationStatuses.Ok);
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id) => await _workDayProvider.Delete(id);

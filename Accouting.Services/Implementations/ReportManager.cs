@@ -8,10 +8,12 @@ namespace Accouting.Domain.Managers.Implementations
     public class ReportManager : IReportManager
     {
         private readonly ISalaryManager _salaryManager;
+        private readonly IGroupManager _groupManager;
 
-        public ReportManager(ISalaryManager salaryManager)
+        public ReportManager(ISalaryManager salaryManager, IGroupManager groupManager)
         {
             _salaryManager = salaryManager;
+            _groupManager = groupManager;
         }
 
         public async Task<byte[]> GetReportAsExcel(DateTime from, DateTime to)
@@ -21,7 +23,48 @@ namespace Accouting.Domain.Managers.Implementations
             var sheet = package.Workbook.Worksheets.Add("Report");
             sheet = MakeHead(sheet, from, to);
             var salaries = await _salaryManager.CalculateSalaries(from, to);
+            sheet = await MakeRows(sheet, salaries);
             return await package.GetAsByteArrayAsync();
+        }
+
+        private async Task<ExcelWorksheet> MakeRows(ExcelWorksheet sheet, IList<Salary> salaries)
+        {
+            var column = 1;
+            var row = 5;
+            string RowAddress = $"A{row}:J{row}";
+            var groups = await _groupManager.GetAll();
+            foreach (var group in groups.Data)
+            {
+                MakeGroupRow(group.Name , RowAddress , sheet);
+                row++;
+                var salariesWithGroup = salaries.Where(x => x.Employee.Group.Id == group.Id).ToList();
+                if (salariesWithGroup.Count() > 0)
+                {
+                    foreach (var salary in salariesWithGroup)
+                    {
+                        sheet.Cells[row, column].Value = salary.Employee.InnerId;
+                        sheet.Cells[row, column + 1].Value = salary.Employee.Name;
+                        sheet.Cells[row, column + 2].Value = salary.Payment;
+                        sheet.Cells[row, column + 3].Value = salary.Premium;
+                        sheet.Cells[row, column + 4].Value = salary.AdditionalPayout;
+                        sheet.Cells[row, column + 5].Value = salary.TotalAmmount;
+                        sheet.Cells[row, column + 6].Value = salary.Deducation;
+                        sheet.Cells[row, column + 7].Value = salary.AdditionalDeducation;
+                        sheet.Cells[row, column + 8].Value = salary.TotalDeducation;
+                        sheet.Cells[row, column + 9].Value = salary.Total;
+                        row++;
+                    }
+                }
+            }
+            return sheet;
+        }
+
+        private ExcelWorksheet MakeGroupRow(string name, string address, ExcelWorksheet sheet)
+        {
+            sheet.Cells[address].Merge = true;
+            sheet.Cells[address].Value = name;
+            AlingValue(address, sheet);
+            return sheet;
         }
 
         private ExcelWorksheet MakeHead(ExcelWorksheet sheet, DateTime from, DateTime to)

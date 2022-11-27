@@ -15,15 +15,15 @@ namespace Accounting.Controllers
 
         public async Task<IActionResult> Timesheet(DateTime month)
         {
-            var createResult = await _workDayManager.CreateNewWorkDays();
-            if (createResult.Succed)
-            {
-                var getEmployeesResult = await _employeeManager.GetEmployeesWithWorkDaysByDate(month == default(DateTime) ? DateTime.Now : month);
-                if (getEmployeesResult.Succed)
-                {
-                    return View(getEmployeesResult.Data);
-                }
-            }
+            //var createResult = await _workDayManager.CreateNewWorkDays();
+            //if (createResult.Succed)
+            //{
+            //    var getEmployeesResult = await _employeeManager.GetEmployeesWithWorkDaysByDate(month == default(DateTime) ? DateTime.Now : month);
+            //    if (getEmployeesResult.Succed)
+            //    {
+            //        return View(getEmployeesResult.Data);
+            //    }
+            //}
             return BadRequest();
         }
 

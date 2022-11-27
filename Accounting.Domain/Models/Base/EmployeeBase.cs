@@ -121,27 +121,27 @@ namespace Accounting.Domain.Models.Base
                 {
                     if (x.DocumentType == DocumentType.Accrual)
                     {
-                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id));
                     }
                     if (x.DocumentType == DocumentType.Deducation)
                     {
-                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsBetEmployees.Where(x => x.EmployeeId == this.Id));
                     }
                 }
                 if (type == typeof(PayoutNotBetEmployee))
                 {
                     if (x.DocumentType == DocumentType.Accrual)
                     {
-                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                        payoutAccruals.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id ));
                     }
                     if (x.DocumentType == DocumentType.Deducation)
                     {
-                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id && !x.IsAdditional));
+                        payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id));
                     }
                 }
             });
-            var sumOfAccruals = payoutAccruals.Sum(x => x.Ammount);
-            var sumOfDeducations = payoutsDeducation.Sum(x => x.Ammount);
+            var sumOfAccruals = payoutAccruals.Where(x => !x.IsAdditional).Sum(x => x.Ammount);
+            var sumOfDeducations = payoutsDeducation.Where(x => !x.IsAdditional).Sum(x => x.Ammount);
             return new Salary()
             {
                 Payment = sumOfAccruals,

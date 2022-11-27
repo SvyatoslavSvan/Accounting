@@ -17,5 +17,7 @@ namespace Accounting.DAL.Contexts
         public DbSet<PayoutBetEmployee> PayoutsBetEmployee { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<WorkDay> WorkDays { get; set; }
+        public DbSet<Timesheet> Timesheets { get; set; }
+        public DbSet<HoursDaysInWorkMonth> HoursDaysInWorkMonths { get; set; }
     }
 }

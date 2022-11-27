@@ -83,6 +83,7 @@ namespace Accounting.Controllers
                 updateViewModel.InnerId = betEmployee.InnerId;
                 updateViewModel.GroupId = betEmployee.GroupId;
                 updateViewModel.IsBet = true;
+                updateViewModel.Premium = betEmployee.Premium;
             }
             else if (getByIdResult.Data is NotBetEmployee notBetEmployee)
             {
@@ -90,6 +91,7 @@ namespace Accounting.Controllers
                 updateViewModel.InnerId = notBetEmployee.InnerId;
                 updateViewModel.GroupId = notBetEmployee.GroupId;
                 updateViewModel.IsBet = false;
+                updateViewModel.Premium = notBetEmployee.Premium;
             }
             return PartialView(updateViewModel);
         }
@@ -111,6 +113,7 @@ namespace Accounting.Controllers
                             getEmployeeToUpdateResult.Data.Name = viewModel.Name;
                             getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
                             getEmployeeToUpdateResult.Data.Bet = (decimal)viewModel.Bet;
+                            getEmployeeToUpdateResult.Data.Premium = viewModel.Premium;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                             return RedirectToAction(nameof(Employees));
                         }
@@ -121,6 +124,7 @@ namespace Accounting.Controllers
                         if (getEmployeeToUpdateResult.Succed)
                         {
                             getEmployeeToUpdateResult.Data.AddToGroup(getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.Premium = viewModel.Premium;
                             getEmployeeToUpdateResult.Data.Name = viewModel.Name;
                             getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);

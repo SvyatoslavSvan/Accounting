@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221124131851_NavigationPropertyAddedToWorkDayHoursDaysInWorkMonth")]
+    partial class NavigationPropertyAddedToWorkDayHoursDaysInWorkMonth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,8 +95,8 @@ namespace Accounting.DAL.Migrations
                     b.Property<int>("DaysCount")
                         .HasColumnType("int");
 
-                    b.Property<float>("HoursCount")
-                        .HasColumnType("real");
+                    b.Property<int>("HoursCount")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("TimesheetId")
                         .HasColumnType("uniqueidentifier");

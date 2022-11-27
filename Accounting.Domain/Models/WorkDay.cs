@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Models.Base;
+using System.Security.Cryptography;
 
 namespace Accounting.Domain.Models
 {
@@ -42,5 +43,6 @@ namespace Accounting.Domain.Models
 
         public BetEmployee Employee { get; private set; } = null!;
         public Guid EmployeeId { get; private set; }
+        public Timesheet Timesheet { get; private set; }
     }
 }
