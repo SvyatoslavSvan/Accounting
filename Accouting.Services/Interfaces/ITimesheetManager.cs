@@ -7,5 +7,6 @@ namespace Accouting.Domain.Managers.Interfaces
     public interface ITimesheetManager : IBaseCrudManager<Timesheet>
     {
         public Task<BaseResult<Timesheet>> CreateNew();
+        public Task<BaseResult<Timesheet>> GetByDate(DateTime date);
     }
 }

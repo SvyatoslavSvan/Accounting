@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221128100327_TimesheetpropChangedtonullable")]
+    partial class TimesheetpropChangedtonullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,21 +244,6 @@ namespace Accounting.DAL.Migrations
                     b.ToTable("BetEmployeeDocument");
                 });
 
-            modelBuilder.Entity("BetEmployeeTimesheet", b =>
-                {
-                    b.Property<Guid>("EmployeesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TimesheetsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("EmployeesId", "TimesheetsId");
-
-                    b.HasIndex("TimesheetsId");
-
-                    b.ToTable("BetEmployeeTimesheet");
-                });
-
             modelBuilder.Entity("DocumentNotBetEmployee", b =>
                 {
                     b.Property<Guid>("DocumentsId")
@@ -367,21 +354,6 @@ namespace Accounting.DAL.Migrations
                     b.HasOne("Accounting.Domain.Models.Document", null)
                         .WithMany()
                         .HasForeignKey("DocumentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BetEmployeeTimesheet", b =>
-                {
-                    b.HasOne("Accounting.Domain.Models.BetEmployee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Accounting.Domain.Models.Timesheet", null)
-                        .WithMany()
-                        .HasForeignKey("TimesheetsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

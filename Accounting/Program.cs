@@ -34,6 +34,8 @@ builder.Services.AddScoped<IGroupManager, GroupManager>();
 builder.Services.AddTransient<ISalaryManager, SalaryManager>();
 builder.Services.AddScoped<IReportManager, ReportManager>();
 builder.Services.AddTransient<ISessionDocumentService, SessionDocumentService>();
+builder.Services.AddScoped<ITimesheetProvider, TimesheetProvider>();
+builder.Services.AddScoped<ITimesheetManager, TimesheetManager>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

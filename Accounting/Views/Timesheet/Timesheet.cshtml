@@ -1,8 +1,8 @@
 ﻿@using Accounting.Extensions;
 @using Accounting.Domain.Models
-@model IList<BetEmployee>
+@model Timesheet
 @{
-    var employeeToCountDays = Model.FirstOrDefault();
+    var employeeToCountDays = Model.Employees.FirstOrDefault();
     string getUpdateFormId(Guid id) => id.ToString() + "updateWorkDayForm";
 }
 <div class="container">
@@ -30,7 +30,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Employees)
                     {
                         <tr>
                             <td>

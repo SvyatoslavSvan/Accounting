@@ -39,6 +39,14 @@ namespace Accounting.Domain.Models
                 _workDays = value; 
             }
         }
+        private ICollection<Timesheet> _timesheets;
+
+        public ICollection<Timesheet> Timesheets
+        {
+            get => _timesheets;
+            set { _timesheets = value; }
+        }
+
 
         private ICollection<PayoutBetEmployee> _accruals;
         [JsonIgnore]

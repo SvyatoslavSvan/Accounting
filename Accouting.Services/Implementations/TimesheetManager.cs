@@ -2,7 +2,7 @@
 using Accounting.Domain.Models;
 using Accouting.Domain.Managers.Interfaces;
 using Accounting.DAL.Interfaces;
-using System.Net.Http.Headers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -19,7 +19,8 @@ namespace Accouting.Domain.Managers.Implementations
 
         public async Task<BaseResult<Timesheet>> Create(Timesheet model)
         {
-            throw new NotImplementedException();
+            var createResult = await _provider.Create(model);
+            return new BaseResult<Timesheet>(createResult.Succed, model, createResult.OperationStatus);
         }
 
         private async Task<bool> IsNeedToCreateTimesheet()
@@ -32,25 +33,23 @@ namespace Accouting.Domain.Managers.Implementations
             return false;
         }
 
-        public Task<BaseResult<bool>> Delete(Guid id)
+        public async Task<BaseResult<bool>> Delete(Guid id) => await _provider.Delete(id);  
+
+        public async Task<BaseResult<IList<Timesheet>>> GetAll()
         {
-            throw new NotImplementedException();
+            var timesheets = await _provider.GetAll();
+            return new BaseResult<IList<Timesheet>>(timesheets.Succed, timesheets.Data, timesheets.OperationStatus);
         }
 
-        public Task<BaseResult<IList<Timesheet>>> GetAll()
+        public async Task<BaseResult<Timesheet>> GetById(Guid id) => await _provider.GetById(id);
+       
+
+        public async Task<BaseResult<Timesheet>> Update(Timesheet model)
         {
-            throw new NotImplementedException();
+            var updateResult = await _provider.Update(model);
+            return new BaseResult<Timesheet>(updateResult.Succed, model, updateResult.OperationStatus);
         }
 
-        public Task<BaseResult<Timesheet>> GetById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<BaseResult<Timesheet>> Update(Timesheet model)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<BaseResult<Timesheet>> CreateNew()
         {
@@ -59,12 +58,14 @@ namespace Accouting.Domain.Managers.Implementations
                 var createWorkDaysResult = await _workDayManager.CreateNewWorkDays();
                 if (createWorkDaysResult.Succed)
                 {
-                    var timesheet = new Timesheet(createWorkDaysResult.Data, new HoursDaysInWorkMonth((int)createWorkDaysResult.Data.Sum(x => x.Hours), createWorkDaysResult.Data.Count()), DateTime.Now.Date);
+                    var timesheet = new Timesheet(createWorkDaysResult.Data, createWorkDaysResult.Employees, new HoursDaysInWorkMonth((int)createWorkDaysResult.Data.Sum(x => x.Hours), createWorkDaysResult.Data.Count()), DateTime.Now.Date);
                     var createResult = await _provider.Create(timesheet);
                     return new BaseResult<Timesheet>(createResult.Succed, timesheet, OperationStatuses.Ok);
                 }
             }
             return new BaseResult<Timesheet>(true, null, OperationStatuses.AllTimesheetsMatch);
         }
+
+        public async Task<BaseResult<Timesheet>> GetByDate(DateTime date) => await _provider.GetByPredicate(x => x.Date.Year == date.Year && x.Date.Month == date.Month, x => x.Include(x => x.Employees).ThenInclude(x => x.WorkDays));
     }
 }

@@ -44,5 +44,6 @@ namespace Accounting.Domain.Models
         public BetEmployee Employee { get; private set; } = null!;
         public Guid EmployeeId { get; private set; }
         public Timesheet Timesheet { get; private set; }
+        public Guid? TimesheetId { get; private set; }
     }
 }
