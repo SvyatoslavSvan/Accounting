@@ -58,7 +58,7 @@ namespace Accouting.Domain.Managers.Implementations
                 var createWorkDaysResult = await _workDayManager.CreateNewWorkDays();
                 if (createWorkDaysResult.Succed)
                 {
-                    var timesheet = new Timesheet(createWorkDaysResult.Data, createWorkDaysResult.Employees, new HoursDaysInWorkMonth((int)createWorkDaysResult.Data.Sum(x => x.Hours), createWorkDaysResult.Data.Count()), DateTime.Now.Date);
+                    var timesheet = new Timesheet(createWorkDaysResult.Data, createWorkDaysResult.Employees, createWorkDaysResult.HoursDaysInWorkMonth, DateTime.Now.Date);
                     var createResult = await _provider.Create(timesheet);
                     return new BaseResult<Timesheet>(createResult.Succed, timesheet, OperationStatuses.Ok);
                 }
