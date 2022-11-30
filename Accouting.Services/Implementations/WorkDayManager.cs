@@ -45,7 +45,7 @@ namespace Accouting.Domain.Managers.Implementations
             return workDays;
         }
 
-        private HoursDaysInWorkMonth GetHoursDaysInWorkMonth(List<WorkDay> WorkDays) => new HoursDaysInWorkMonth(WorkDays.Sum(x => x.Hours), WorkDays.Count());
+        private HoursDaysInWorkMonth GetHoursDaysInWorkMonth(List<WorkDay> WorkDays) => new HoursDaysInWorkMonth(WorkDays.Sum(x => x.Hours), WorkDays.Where(x => x.Hours != 0f).ToList().Count());
 
         private IList<WorkDay> GetWorkDaysWithEmployees(IList<BetEmployee> employees)
         {

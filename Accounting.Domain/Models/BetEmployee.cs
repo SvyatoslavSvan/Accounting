@@ -75,30 +75,16 @@ namespace Accounting.Domain.Models
 
         private decimal CalculateBetPayout(DateTime from, DateTime to)
         {
-            decimal payout = 0;
-            var monthBetween = to.Month - from.Month;
-            var monthToCalculate = from.Month;
-            for (int i = 0; i <= monthBetween; i++)
-            { 
-                decimal payForDay = 0;
-                var workDaysToCountPayForDay = WorkDays.Where(x => x.Date.Month == monthToCalculate && x.Hours != 0F).ToList();
-                if (workDaysToCountPayForDay.Count() <= 0)
-                {
-                    payForDay = 0;
-                }
-                else
-                {
-                    payForDay = Bet / workDaysToCountPayForDay.Count();
-                }
-                var payForHour =  payForDay / 8;
-                var workDays = WorkDays.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date && x.Date.Month == monthToCalculate && x.Hours != 0F).ToList();
-                workDays.ForEach(x =>
-                {
-                    payout += (decimal)x.Hours * payForHour;
-                });
-                monthToCalculate += 1;
-            }
-            return payout;
+            decimal payment = 0;
+            var timesheets = Timesheets.Where(x =>x.Date.Month >= from.Date.Month && x.Date.Year >= from.Date.Year && x.Date.Month <= to.Month && x.Date.Year <= to.Date.Year).ToList();
+            timesheets.ForEach(x =>
+            {
+                var payForHour = (Bet / x.HoursDaysInWorkMonth.DaysCount) / (decimal)(x.HoursDaysInWorkMonth.HoursCount / x.HoursDaysInWorkMonth.DaysCount);
+                var workDays = x.WorkDays.Where(x => x.EmployeeId == Id).Where(x => x.Date >= from.Date && x.Date <= to.Date);
+                var workHours = workDays.Sum(x => x.Hours);
+                payment += (decimal)workHours * payForHour;
+            });
+            return payment; 
         }
 
        
