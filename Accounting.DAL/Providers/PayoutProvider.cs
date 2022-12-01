@@ -135,12 +135,10 @@ namespace Accounting.DAL.Providers
         {
             if (entity is PayoutBetEmployee deducationBetEmployee)
             {
-                _unitOfWork.DbContext.Attach(deducationBetEmployee.Employee);
                 _unitOfWork.GetRepository<PayoutBetEmployee>().Update(deducationBetEmployee);
             }
             if (entity is PayoutNotBetEmployee deducationNotBetEmployee)
             {
-                _unitOfWork.DbContext.Attach(deducationNotBetEmployee);
                 _unitOfWork.GetRepository<PayoutNotBetEmployee>().Update(deducationNotBetEmployee);
             }
             await _unitOfWork.SaveChangesAsync();

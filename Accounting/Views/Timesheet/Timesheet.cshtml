@@ -5,7 +5,7 @@
 @{
     string getUpdateFormId(Guid id) => id.ToString() + "updateWorkDayForm";
 }
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <div class="col-md-6 m-auto">
             <form method="get" asp-action="Timesheet" asp-controller="Timesheet">
@@ -18,39 +18,38 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12" style="max-width: 100%; overflow: scroll" >
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Працівник</th>
-                        @foreach (var item in Model.WorkDaysToHeader)
-                        {
-                            <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Employees)
-                    {
+        <div class="col-md-12" style="overflow: scroll" >
+                <table>
+                    <thead>
                         <tr>
-                            <td>
-                                @item.Name
-                            </td>
-                            @foreach (var workDay in item.WorkDays)
+                            <th>Працівник</th>
+                            @foreach (var item in Model.WorkDaysToHeader)
                             {
-                                <td class="m-0">
-                                    <form id="@getUpdateFormId(workDay.Id)">
-                                        <input type="hidden" value="@workDay.Id" name="Id"/>
-                                        <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
-                                    </form>
-                                    
-                                </td>
+                                <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Employees)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                @foreach (var workDay in item.WorkDays)
+                                {
+                                    <td class="m-0">
+                                        <form id="@getUpdateFormId(workDay.Id)">
+                                            <input type="hidden" value="@workDay.Id" name="Id" />
+                                            <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
+                                        </form>
+
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
         </div>
-       
     </div>
 </div>

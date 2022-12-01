@@ -29,6 +29,7 @@ namespace Accounting.Controllers
                 EmployeeId = id
             });
         }
+
         [HttpGet]
         public async Task<IActionResult> GetSumOfPayouts() => PartialView(_sessionDocumentService.GetSumOfPayouts());
 
