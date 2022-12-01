@@ -16,6 +16,8 @@ namespace Accounting.Domain.Models
             set { _accruals = value; }
         }
 
+        public NotBetEmployee() { }
+
         public NotBetEmployee(string name, string innerId, int premium) : base(name, innerId, premium)
         {
             

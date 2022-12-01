@@ -5,9 +5,23 @@ namespace Accounting.Domain.Models
     public class Group : EntityBase
     {
         public Group() { }
-        public string Name { get; private set; }
+        private string _name;
+
+        public string Name
+        {
+            get => _name;
+            set 
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Value cannot be WhiteSpace" + nameof(Name));
+                }
+                _name = value;
+            }
+        }
+
         public List<BetEmployee> BetEmployees { get; private set; }
-        public List<NotBetEmployee> NotBetEmployees { get; private set; } // возможно надо будут миграции потому что private set
+        public List<NotBetEmployee> NotBetEmployees { get; private set; } 
         public Group(string name)
         {
             Name = name;

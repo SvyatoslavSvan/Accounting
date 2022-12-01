@@ -57,6 +57,9 @@ function insertResponse(url, response, elementToRemoveId, formId) {
         $('#' + elementToRemoveId).empty();
         $('#' + elementToRemoveId).append(response);
     }
+    if (url == '/Group/Create') {
+        $('#' + elementToRemoveId).append(response);
+    }
     
 }
 

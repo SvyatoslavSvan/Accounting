@@ -66,6 +66,7 @@ namespace Accouting.Domain.Managers.Implementations
             return new BaseResult<Timesheet>(true, null, OperationStatuses.AllTimesheetsMatch);
         }
 
-        public async Task<BaseResult<Timesheet>> GetByDate(DateTime date) => await _provider.GetByPredicate(x => x.Date.Year == date.Year && x.Date.Month == date.Month, x => x.Include(x => x.Employees).ThenInclude(x => x.WorkDays));
+        public async Task<BaseResult<Timesheet>> GetByDate(DateTime date) => await _provider.GetByPredicate(x => x.Date.Year == date.Year && x.Date.Month == date.Month, x => 
+        x.Include(x => x.Employees).ThenInclude(x => x.WorkDays));
     }
 }

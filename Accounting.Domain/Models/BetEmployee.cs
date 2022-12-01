@@ -9,6 +9,7 @@ namespace Accounting.Domain.Models
     {
         [JsonConstructor]
         public BetEmployee(Guid id, string name) : base(id, name) { }
+        public BetEmployee() { }
 
         private decimal _bet;
 

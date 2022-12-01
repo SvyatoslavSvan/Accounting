@@ -3,18 +3,18 @@
 @model IEnumerable<Group>
 
 <div class="container">
-    <div class="col-md-6">
-        <ul class="list-group">
+    <h4 class="text-center">Групи</h4>
+    <div class="col-md-6 m-auto" style="overflow: scroll; max-height: 600px">
+        <ul class="list-group" id="groupsUl">
             @foreach (var item in Model)
             {
                 <li class="list-group-item">@item.Name</li>
             }
         </ul>
     </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+        Створити групу
+    </button>
 </div>
-
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
-    Додати групу
-</button>
 
 @await Html.PartialAsync("CreateGroupPartial", new GroupViewModel())

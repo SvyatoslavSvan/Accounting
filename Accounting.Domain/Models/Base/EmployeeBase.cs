@@ -48,6 +48,8 @@ namespace Accounting.Domain.Models.Base
                 _premium = value;
             }
         }
+        public EmployeeBase() { }
+
         [JsonConstructor]
         public EmployeeBase(Guid id, string name)
         {

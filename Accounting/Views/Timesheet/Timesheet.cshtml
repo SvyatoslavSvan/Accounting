@@ -1,18 +1,18 @@
 ﻿@using Accounting.Extensions;
 @using Accounting.Domain.Models
-@model Timesheet
+@using Accounting.ViewModels
+@model TimesheetViewModel
 @{
-    var employeeToCountDays = Model.Employees.FirstOrDefault();
     string getUpdateFormId(Guid id) => id.ToString() + "updateWorkDayForm";
 }
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-6 m-auto">
             <form method="get" asp-action="Timesheet" asp-controller="Timesheet">
                 <label class="form-label">
                     Данні за 
                 </label>
-                <input type="date" class="form-control" name="month"/>
+                <input type="date" class="form-control" asp-for="Date"/>
                 <input type="submit" class="btn btn-outline-primary"/>
             </form>
         </div>
@@ -23,7 +23,7 @@
                 <thead>
                     <tr>
                         <th>Працівник</th>
-                        @foreach (var item in employeeToCountDays.WorkDays)
+                        @foreach (var item in Model.WorkDaysToHeader)
                         {
                             <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
                         }
