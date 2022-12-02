@@ -4,6 +4,7 @@ using Accounting.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accounting.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20221202155318_HoursWorkdaysInWorkMonthRemovedFromDbContext")]
+    partial class HoursWorkdaysInWorkMonthRemovedFromDbContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,6 +84,29 @@ namespace Accounting.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Accounting.Domain.Models.HoursDaysInWorkMonth", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DaysCount")
+                        .HasColumnType("int");
+
+                    b.Property<float>("HoursCount")
+                        .HasColumnType("real");
+
+                    b.Property<Guid>("TimesheetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TimesheetId")
+                        .IsUnique();
+
+                    b.ToTable("HoursDaysInWorkMonth");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.NotBetEmployee", b =>
@@ -172,12 +197,6 @@ namespace Accounting.DAL.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DaysCount")
-                        .HasColumnType("int");
-
-                    b.Property<float>("HoursCount")
-                        .HasColumnType("real");
-
                     b.HasKey("Id");
 
                     b.ToTable("Timesheets");
@@ -264,6 +283,17 @@ namespace Accounting.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Accounting.Domain.Models.HoursDaysInWorkMonth", b =>
+                {
+                    b.HasOne("Accounting.Domain.Models.Timesheet", "Timesheet")
+                        .WithOne("HoursDaysInWorkMonth")
+                        .HasForeignKey("Accounting.Domain.Models.HoursDaysInWorkMonth", "TimesheetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Timesheet");
                 });
 
             modelBuilder.Entity("Accounting.Domain.Models.NotBetEmployee", b =>
@@ -401,6 +431,9 @@ namespace Accounting.DAL.Migrations
 
             modelBuilder.Entity("Accounting.Domain.Models.Timesheet", b =>
                 {
+                    b.Navigation("HoursDaysInWorkMonth")
+                        .IsRequired();
+
                     b.Navigation("WorkDays");
                 });
 #pragma warning restore 612, 618

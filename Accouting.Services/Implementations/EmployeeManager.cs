@@ -40,7 +40,7 @@ namespace Accouting.Domain.Managers.Implementations
         public async Task<BaseResult<EmployeeBase>> GetById(Guid id) => await _provider.GetById(id);
 
         public async Task<BaseResult<IList<EmployeeBase>>> GetEmployeeWithSalaryPropertiesByPeriod(DateTime from, DateTime to) => await _provider.GetAllByPredicate(
-                includeBetEmployee: x => x.Include(x => x.Timesheets).ThenInclude(x => x.HoursDaysInWorkMonth).Include(x => x.Timesheets).ThenInclude(x => x.WorkDays)
+                includeBetEmployee: x => x.Include(x => x.Timesheets).ThenInclude(x => x.WorkDays)
                 .Include(x => x.Group).
                 Include(x => x.Documents.Where(x => x.DateCreate.Date >= from.Date && x.DateCreate.Date <= to.Date)).
                 ThenInclude(x => x.PayoutsBetEmployees).

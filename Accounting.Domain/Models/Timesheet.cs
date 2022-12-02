@@ -8,13 +8,16 @@ namespace Accounting.Domain.Models
 		{
 
 		}
-		public Timesheet(ICollection<WorkDay> workDays, ICollection<BetEmployee> employees , HoursDaysInWorkMonth hoursDaysInWorkMonth, DateTime date)
+
+		public Timesheet(ICollection<WorkDay> workDays, ICollection<BetEmployee> employees , DateTime date, int daysCount, float hoursCount)
 		{
 			WorkDays = workDays;
-			HoursDaysInWorkMonth = hoursDaysInWorkMonth;
 			Date = date;
 			Employees = employees;
+			DaysCount = daysCount;
+			HoursCount = hoursCount;
 		}
+
 		private ICollection<WorkDay> _workDays;
 
 		public ICollection<WorkDay> WorkDays
@@ -26,17 +29,23 @@ namespace Accounting.Domain.Models
 			}
 		}
 
-		private HoursDaysInWorkMonth _hoursDaysInWorkMonth;
+		private int _daysCount;
 
-		public HoursDaysInWorkMonth HoursDaysInWorkMonth
-        {
-			get => _hoursDaysInWorkMonth;
-
-			set 
-			{
-				_hoursDaysInWorkMonth = value ?? throw new ArgumentNullException(nameof(value)); 
-			}
+		public int DaysCount
+		{
+			get { return _daysCount; }
+			set { _daysCount = value; }
 		}
+
+		private float _hourCount;
+
+		public float HoursCount
+		{
+			get { return _hourCount; }
+			set { _hourCount = value; }
+		}
+
+
 		private ICollection<BetEmployee> _employees;
 
 		public ICollection<BetEmployee> Employees

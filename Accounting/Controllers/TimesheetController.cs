@@ -1,4 +1,5 @@
-﻿using Accounting.DAL.Result.Provider.Base;
+﻿using Accounting.DAL.Migrations;
+using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
@@ -37,6 +38,23 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
+        public async Task<IActionResult> UpdateWorkHoursDays(UpdateHoursWorkDaysViewModel viewModel)
+        {
+            var getTimesheetResult = await _timesheetManager.GetById(viewModel.TimesheetId);
+            if (getTimesheetResult.Succed)
+            {
+                getTimesheetResult.Data.HoursCount = viewModel.WorkHours;
+                getTimesheetResult.Data.DaysCount = viewModel.WorkDays;
+                var updateResult = await _timesheetManager.Update(getTimesheetResult.Data);
+                if (updateResult.Succed)
+                {
+                    return Ok();
+                }
+            }
+            return StatusCode(500);
+        }
+
         private TimesheetViewModel GetViewModel(Timesheet timesheet)
         {
             TimesheetViewModel viewModel = new TimesheetViewModel();
@@ -47,6 +65,9 @@ namespace Accounting.Controllers
             }
             viewModel.Employees = timesheet.Employees.ToList();
             viewModel.Date = timesheet.Date;
+            viewModel.Id = timesheet.Id;
+            viewModel.DaysCount = timesheet.DaysCount;
+            viewModel.HoursCount = timesheet.HoursCount;
             return viewModel;
         }
         

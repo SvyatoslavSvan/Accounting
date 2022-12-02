@@ -7,13 +7,23 @@
 }
 <div class="container">
     <div class="row">
-        <div class="col-md-6 m-auto">
+        <div class="col-md-6">
             <form method="get" asp-action="Timesheet" asp-controller="Timesheet">
                 <label class="form-label">
-                    Данні за 
+                    Данні за @Model.Date.Date.ToShortDateString()
                 </label>
                 <input type="date" class="form-control" asp-for="Date"/>
                 <input type="submit" class="btn btn-outline-primary"/>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form id="updateHoursWorkDays">
+                <input type="hidden" name="TimesheetId" value="@Model.Id"/>
+                <label class="form-label">Кількість днів</label>
+                <input type="number" name="Workdays" class="form-control" value="@Model.DaysCount"/>
+                <label class="form-label">Кількість годин</label>
+                <input type="text" name="WorkHours" class="form-control" value="@Model.HoursCount" />
+                <button type="button" onclick="sendForm('updateHoursWorkDays', '/Timesheet/UpdateWorkHoursDays', '')" class="btn btn-outline-primary">Оновити</button>
             </form>
         </div>
     </div>

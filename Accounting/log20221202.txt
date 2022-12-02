@@ -1,0 +1,10 @@
+2022-12-02 18:42:06.693 +03:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [HoursDaysInWorkMonths] DROP CONSTRAINT [FK_HoursDaysInWorkMonths_Timesheets_TimesheetId];
+2022-12-02 18:43:15.906 +03:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [HoursDaysInWorkMonths] DROP CONSTRAINT [FK_HoursDaysInWorkMonths_Timesheets_TimesheetId];
+2022-12-02 18:47:41.767 +03:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [HoursDaysInWorkMonths] DROP CONSTRAINT [FK_HoursDaysInWorkMonths_Timesheets_TimesheetId];
+2022-12-02 18:49:52.538 +03:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [HoursDaysInWorkMonths] DROP CONSTRAINT [FK_HoursDaysInWorkMonths_Timesheets_TimesheetId];
+2022-12-02 18:50:48.794 +03:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [HoursDaysInWorkMonths] DROP CONSTRAINT [FK_HoursDaysInWorkMonths_Timesheets_TimesheetId];
