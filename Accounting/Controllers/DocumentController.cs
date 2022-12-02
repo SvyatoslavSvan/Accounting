@@ -38,14 +38,17 @@ namespace Accounting.Controllers
                     {
                         employeesAddToDocument.Data.Remove(employeesAddToDocument.Data.FirstOrDefault(x => x.Id == item.Id));
                     }
+                    var sumOfPayouts = document.Data.PayoutsNotBetEmployees.Sum(x => x.Ammount);
+                    sumOfPayouts += document.Data.PayoutsBetEmployees.Sum(x => x.Ammount);
                     return View(new UpdateDocumentViewModel()
                     {
                         Name = document.Data.Name,
                         DateCreate = document.Data.DateCreate,
                         EmployeesAddToDocument = employeesAddToDocument.Data.ToList(),
                         EmployeesInDocument = employeesInDocument,
-                        Id = document.Data.Id
-                    });
+                        Id = document.Data.Id,
+                        SumOfpayouts = sumOfPayouts
+                    }) ;
                 }
             }
             return BadRequest();
@@ -93,7 +96,10 @@ namespace Accounting.Controllers
         public async Task<IActionResult> Create()
         {
             await _sessionDocumentService.Create();
-            return View();
+            return View(new DocumentViewModel()
+            {
+                DateCreate = DateTime.Now
+            });
         }
 
         [HttpPost]

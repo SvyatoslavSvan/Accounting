@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Enums;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 
 namespace Accounting.Domain.ViewModels
@@ -10,5 +11,7 @@ namespace Accounting.Domain.ViewModels
         [Required]
         public DateTime DateCreate { get; set; }
         public DocumentType DocumentType { get; set; }
+        [BindNever]
+        public decimal SumOfpayouts { get; set; }
     }
 }
