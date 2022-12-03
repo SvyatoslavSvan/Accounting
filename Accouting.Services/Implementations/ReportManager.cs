@@ -31,11 +31,10 @@ namespace Accouting.Domain.Managers.Implementations
         {
             var column = 1;
             var row = 5;
-            string RowAddress = $"A{row}:J{row}";
             var groups = await _groupManager.GetAll();
             foreach (var group in groups.Data)
             {
-                sheet = MakeGroupRow(group.Name , RowAddress , sheet);
+                MakeGroupRow(group.Name , $"A{row}:J{row}", sheet);
                 row++;
                 var salariesWithGroup = salaries.Where(x => x.Employee.Group.Id == group.Id).ToList();
                 if (salariesWithGroup.Count() > 0)
