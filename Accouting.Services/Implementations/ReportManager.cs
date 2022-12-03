@@ -35,7 +35,7 @@ namespace Accouting.Domain.Managers.Implementations
             var groups = await _groupManager.GetAll();
             foreach (var group in groups.Data)
             {
-                MakeGroupRow(group.Name , RowAddress , sheet);
+                sheet = MakeGroupRow(group.Name , RowAddress , sheet);
                 row++;
                 var salariesWithGroup = salaries.Where(x => x.Employee.Group.Id == group.Id).ToList();
                 if (salariesWithGroup.Count() > 0)
@@ -114,11 +114,6 @@ namespace Accouting.Domain.Managers.Implementations
         {
             sheet.Cells[address].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             sheet.Cells[address].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-        }
-
-        public IList<Salary> GetReportAsModel()
-        {
-            throw new NotImplementedException();
         }
 
         private string GetMonth(int month)

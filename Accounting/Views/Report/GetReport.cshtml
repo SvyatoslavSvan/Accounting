@@ -1,10 +1,10 @@
 ﻿@using Accounting.Domain.Models
 @using Accounting.ViewModels
+@using Accouting.Domain.Managers.Interfaces
 @model ReportViewModel
 <table class="table table-striped">
     <thead>
-        <tr>
-
+        <tr >
             <th class="text-center">
                 Зведенна вiдомicть за перiод 
             </th>
@@ -16,30 +16,81 @@
         </tr>
         <tr>
             <th>
-                Таб но
+                Таб №
             </th>
             <th>
-                Сотрудник
+                Працівник
             </th>
             <th>
-                <div class="container">
-                    <div class="col-md-12">
-                        Начислення
-                    </div>
-                    <div class="col-md-4">
-                        Начисленно
-                    </div>
-                    <div class="col-md-4">
-                        отпуск/больн
-                    </div>
-                    <div class="col-md-4">
-                        всього
-                    </div>
-                </div>
+                Оплата
+            </th>
+            <th>
+                Премія
+            </th>
+            <th>
+                Відп/больн
+            </th>
+            <th>
+                Всього
+            </th>
+            <th>
+                Податки
+            </th>
+            <th>
+                Карточка
+            </th>
+            <th>
+                Усього
+            </th>
+            <th>
+                На руки
             </th>
         </tr>
     </thead>
     <tbody>
-
+        @foreach (var item in Model.Groups)
+        {
+            var salaries = Model.Salaries.Where(x => x.Employee.Group.Id == item.Id);
+            <tr class="text-center">
+                <td>
+                    @item.Name
+                </td>
+            </tr>
+            @foreach (var salary in salaries)
+            {
+                <tr>
+                    <td>
+                        @salary.Employee.InnerId
+                    </td>
+                    <td>
+                        @salary.Employee.Name
+                    </td>
+                    <td>
+                        @Math.Round(salary.Payment, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.Premium, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.AdditionalPayout, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.TotalAmmount, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.Deducation, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.AdditionalDeducation, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.TotalDeducation, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                    <td>
+                        @Math.Round(salary.Total, 2, MidpointRounding.AwayFromZero)
+                    </td>
+                </tr>
+            }
+        }
     </tbody>
 </table>
