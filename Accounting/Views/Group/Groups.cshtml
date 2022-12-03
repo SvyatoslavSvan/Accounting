@@ -3,6 +3,7 @@
 @model IEnumerable<Group>
 @{
     string GetDeleteFormId(Guid id) => id.ToString() + "delgrpfrm";
+    string GetUpdateFormId(Guid id) => id.ToString() + "updgrpfrm";
     string GetLiId(Guid Id) => Id.ToString() + "ligrpid";
 }
 <div class="container">
@@ -11,7 +12,10 @@
         <ul class="list-group" id="groupsUl">
             @foreach (var item in Model)
             {
-                <li class="list-group-item" id="@GetLiId(item.Id)">@item.Name <form id="@GetDeleteFormId(item.Id)">
+                <li class="list-group-item" id="@GetLiId(item.Id)"><form id="@GetUpdateFormId(item.Id)">
+                    <input type="hidden" value="@item.Id" name="Id" />
+                        <input type="text" value="@item.Name" name="Name" onchange="sendForm('@GetUpdateFormId(item.Id)', '/Group/Update')" />
+                </form> <form id="@GetDeleteFormId(item.Id)">
                     <input type="hidden" name="id" value="@item.Id">
                         <button type="button" onclick="sendForm('@GetDeleteFormId(item.Id)','/Group/Delete', '@GetLiId(item.Id)')" class="btn btn-outline-danger">Видалити</button>
                 </form></li>

@@ -60,6 +60,9 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Group/Create') {
         $('#' + elementToRemoveId).append(response);
     }
+    if (url == '/Group/Delete') {
+        $('#' + elementToRemoveId).remove();
+    }
     
 }
 
