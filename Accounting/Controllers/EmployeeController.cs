@@ -81,7 +81,7 @@ namespace Accounting.Controllers
                 updateViewModel.Bet = betEmployee.Bet;
                 updateViewModel.Name = betEmployee.Name;
                 updateViewModel.InnerId = betEmployee.InnerId;
-                updateViewModel.GroupId = betEmployee.GroupId;
+                updateViewModel.GroupId = (Guid)betEmployee.GroupId;
                 updateViewModel.IsBet = true;
                 updateViewModel.Premium = betEmployee.Premium;
             }
@@ -89,7 +89,7 @@ namespace Accounting.Controllers
             {
                 updateViewModel.Name = notBetEmployee.Name;
                 updateViewModel.InnerId = notBetEmployee.InnerId;
-                updateViewModel.GroupId = notBetEmployee.GroupId;
+                updateViewModel.GroupId = (Guid)notBetEmployee.GroupId;
                 updateViewModel.IsBet = false;
                 updateViewModel.Premium = notBetEmployee.Premium;
             }
