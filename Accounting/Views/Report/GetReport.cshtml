@@ -1,0 +1,45 @@
+﻿@using Accounting.Domain.Models
+@using Accounting.ViewModels
+@model ReportViewModel
+<table class="table table-striped">
+    <thead>
+        <tr>
+
+            <th class="text-center">
+                Зведенна вiдомicть за перiод 
+            </th>
+        </tr>
+        <tr>
+            <th class="text-center">
+                За перiод з @Model.From.Date.ToShortDateString() по @Model.To.ToShortDateString()
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Таб но
+            </th>
+            <th>
+                Сотрудник
+            </th>
+            <th>
+                <div class="container">
+                    <div class="col-md-12">
+                        Начислення
+                    </div>
+                    <div class="col-md-4">
+                        Начисленно
+                    </div>
+                    <div class="col-md-4">
+                        отпуск/больн
+                    </div>
+                    <div class="col-md-4">
+                        всього
+                    </div>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
