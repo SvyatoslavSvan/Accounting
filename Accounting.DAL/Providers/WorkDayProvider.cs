@@ -4,7 +4,6 @@ using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
@@ -84,6 +83,21 @@ namespace Accounting.DAL.Providers
             {
                 return HandleException<IList<WorkDay>>(ex);
             }
+        }
+
+        public async Task<BaseResult<bool>> UpdateRange(IList<WorkDay> workDays)
+        {
+            foreach (var item in workDays)
+            {
+                _unitOfWork.DbContext.Attach(item.Timesheet);
+            }
+            _unitOfWork.GetRepository<WorkDay>().Update(workDays);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
     }
 }

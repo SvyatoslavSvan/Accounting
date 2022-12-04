@@ -71,7 +71,7 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                return new BaseResult<Timesheet>(true, await _unitOfWork.GetRepository<Timesheet>().GetFirstOrDefaultAsync(predicate: x => x.Id == id), OperationStatuses.Ok);
+                return new BaseResult<Timesheet>(true, await _unitOfWork.GetRepository<Timesheet>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, include: x => x.Include(x => x.WorkDays).Include(x => x.Employees)), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {

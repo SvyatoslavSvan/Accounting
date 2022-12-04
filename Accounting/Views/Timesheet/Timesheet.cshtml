@@ -62,4 +62,21 @@
                 </table>
         </div>
     </div>
+    <div class="row"> 
+        <div class="col-md-6 m-auto">
+            <form method="post" asp-action="UpdateWorkDaysForEmployee" asp-controller="Timesheet">
+                <label class="form-label">Значення годин для працівника</label>
+                <input type="text" name="Value" class="form-control"/>
+                <label class="form-label">Працівник</label>
+                <select name="EmployeeId" class="form-select">
+                    @foreach (var item in Model.Employees)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <input type="hidden" name="TimesheetId" value="@Model.Id"/>
+                <button type="submit" class="btn btn-outline-primary">Оновити</button>
+            </form>
+        </div>
+    </div>
 </div>

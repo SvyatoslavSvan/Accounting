@@ -68,5 +68,21 @@ namespace Accouting.Domain.Managers.Implementations
 
         public async Task<BaseResult<Timesheet>> GetByDate(DateTime date) => await _provider.GetByPredicate(x => x.Date.Year == date.Year && x.Date.Month == date.Month, x => 
         x.Include(x => x.Employees).ThenInclude(x => x.WorkDays));
+
+        public async Task<BaseResult<Timesheet>> UpdateWorkDaysForEmployee(float value, Guid employeeId, Guid timesheetId)
+        {
+            var getTimesheetResult = await _provider.GetById(timesheetId);
+            if (getTimesheetResult.Succed)
+            {
+                var workDays = getTimesheetResult.Data.GetUpdatedWorkDaysForEmployee(employeeId, value);
+                var updateResult = await _workDayManager.UpdateRange(workDays);
+                if (updateResult.Succed)
+                {
+                    return new BaseResult<Timesheet>(true, getTimesheetResult.Data, OperationStatuses.Ok);
+                }
+                return new BaseResult<Timesheet>(updateResult.Succed, null, updateResult.OperationStatus);
+            }
+            return getTimesheetResult;
+        }
     }
 }

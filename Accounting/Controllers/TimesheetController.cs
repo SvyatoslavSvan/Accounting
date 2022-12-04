@@ -4,6 +4,8 @@ using Accounting.Domain.Models;
 using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml.Utils;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Accounting.Controllers
 {
@@ -51,6 +53,16 @@ namespace Accounting.Controllers
                 {
                     return Ok();
                 }
+            }
+            return StatusCode(500);
+        }
+
+        public async Task<IActionResult> UpdateWorkDaysForEmployee(UpdateWorkDaysForEmployeeViewModel viewModel)
+        {
+            var updateResult = await _timesheetManager.UpdateWorkDaysForEmployee(viewModel.Value, viewModel.EmployeeId, viewModel.TimesheetId);
+            if (updateResult.Succed)
+            {
+                return View("Timesheet", GetViewModel(updateResult.Data));
             }
             return StatusCode(500);
         }

@@ -8,5 +8,6 @@ namespace Accouting.Domain.Managers.Interfaces
     public interface IWorkDayManager : IBaseCrudManager<WorkDay>
     {
         public Task<CreateWorkDaysResult> CreateNewWorkDays();
+        public Task<BaseResult<IList<WorkDay>>> UpdateRange(IList<WorkDay> workDays);
     }
 }

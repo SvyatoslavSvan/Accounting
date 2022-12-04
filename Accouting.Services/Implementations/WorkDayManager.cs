@@ -5,6 +5,7 @@ using Accouting.Domain.Managers.Interfaces;
 using Accouting.Domain.Managers.Result;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -82,6 +83,11 @@ namespace Accouting.Domain.Managers.Implementations
         {
             var updateResult = await _workDayProvider.Update(model);
             return new BaseResult<WorkDay>(updateResult.Succed, model, updateResult.OperationStatus);
+        }
+        public async Task<BaseResult<IList<WorkDay>>> UpdateRange(IList<WorkDay> workDays)
+        {
+            var updateResult = await _workDayProvider.UpdateRange(workDays);
+            return new BaseResult<IList<WorkDay>>(updateResult.Succed, workDays, OperationStatuses.Ok);
         }
     }
 }

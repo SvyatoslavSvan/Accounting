@@ -45,6 +45,15 @@ namespace Accounting.Domain.Models
 			set { _hourCount = value; }
 		}
 
+		public IList<WorkDay> GetUpdatedWorkDaysForEmployee(Guid employeeId, float value)
+		{
+			var workDays = WorkDays.Where(x => x.EmployeeId == employeeId);
+			foreach (var item in workDays)
+			{
+				item.Hours = value;
+			}
+			return workDays.ToList();
+		}
 
 		private ICollection<BetEmployee> _employees;
 
