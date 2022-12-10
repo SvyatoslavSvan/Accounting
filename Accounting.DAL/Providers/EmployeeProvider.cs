@@ -245,13 +245,15 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<BetEmployee, bool>> betEmployeePredicate = null, 
             Expression<Func<NotBetEmployee, bool>> notBetEmployeePredicate = null, Func<IQueryable<BetEmployee>, 
-                IIncludableQueryable<BetEmployee, object>> includeBetEmployee = null, Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>> includeNotBetEmployee = null)
+                IIncludableQueryable<BetEmployee, object>> includeBetEmployee = null, Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>> includeNotBetEmployee = null,
+            Func<IQueryable<BetEmployee>, IOrderedQueryable<BetEmployee>>? orderByBetEmployee = null,
+            Func<IQueryable<NotBetEmployee>, IOrderedQueryable<NotBetEmployee>>? orderByNotBetEmployee = null)
         {
             try
             {
                 var employees = new List<EmployeeBase>();
-                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(predicate: betEmployeePredicate, include: includeBetEmployee));
-                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(predicate: notBetEmployeePredicate, include: includeNotBetEmployee));
+                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(predicate: betEmployeePredicate, include: includeBetEmployee, orderBy: orderByBetEmployee));
+                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(predicate: notBetEmployeePredicate, include: includeNotBetEmployee, orderBy: orderByNotBetEmployee));
                 return new BaseResult<IList<EmployeeBase>>(true, employees, OperationStatuses.Ok);
             }
             catch (Exception ex)

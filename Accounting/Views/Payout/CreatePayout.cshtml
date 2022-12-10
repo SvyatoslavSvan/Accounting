@@ -19,7 +19,7 @@
                                 <input type="hidden" name="PayoutId" value="@item.Id" />
                                 @if (item.IsAdditional)
                                 {
-                                    <label class="form-label">Отп/больн</label>
+                                    <label class="form-label">Додатково</label>
                                 }
                                 <input type="text" name="Ammount" value="@item.Ammount" onchange="onAmmountInputChanged('@getUpdateAccrualFromId(item.Id)')" class="form-control-sm" id="@getAmmountInputId(item.Id)" />
                             </form>
@@ -38,7 +38,7 @@
         <div class="col-md-5 m-auto">
             <form id="@formId">
                 <input asp-for="EmployeeId" type="hidden" value="@Model.EmployeeId" />
-                <label class="form-label">Отпускные/Больничные</label>
+                <label class="form-label">Додатково</label>
                 <input name="IsAdditional" type="checkbox" class="form-check" id="IsAdditional" value="true" />
                 <label class="form-label">Сума</label>
                 <input name="Ammount" class="form-control" type="text" id="ammountInput" />

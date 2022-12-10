@@ -13,7 +13,7 @@
             <input type="hidden" name="PayoutId" value="@Model.PayoutId" />
             @if(Model.IsAdditional)
             {
-                <label class="form-label">Отп/больн</label>
+                <label class="form-label">Додатково</label>
             }
             <input type="text" name="Ammount" value="@Model.Ammount" onchange="onAmmountInputChanged('@updateAccrualFormId')" class="form-control-sm" id="@ammountInputId"/>
         </form>

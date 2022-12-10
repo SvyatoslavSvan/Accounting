@@ -18,7 +18,8 @@ namespace Accounting.DAL.Interfaces
             Expression<Func<BetEmployee, bool>> betEmployeePredicate = null, 
             Expression<Func<NotBetEmployee, bool>> notBetEmployeePredicate = null,
             Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>>? includeBetEmployee = null, 
-            Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>>? includeNotBetEmployee = null);
+            Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>>? includeNotBetEmployee = null, Func<IQueryable<BetEmployee>, IOrderedQueryable<BetEmployee>>? orderByBetEmployee = null,
+            Func<IQueryable<NotBetEmployee>, IOrderedQueryable<NotBetEmployee>>? orderByNotBetEmployee = null);
         public Task<BaseResult<IList<BetEmployee>>> GetBetEmployeesWithInclude(Func<IQueryable<BetEmployee>, IIncludableQueryable<BetEmployee, object>>? include);
         
     }

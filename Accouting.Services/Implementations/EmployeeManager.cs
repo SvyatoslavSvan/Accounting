@@ -72,7 +72,7 @@ namespace Accouting.Domain.Managers.Implementations
 
         public Task<BaseResult<IList<EmployeeBase>>> GetSearch(EmployeeSearchRequest request) => _provider.GetAllByPredicate(
             betEmployeePredicate: GetSearchEmployeePredicate<BetEmployee>(request),
-            notBetEmployeePredicate: GetSearchEmployeePredicate<NotBetEmployee>(request), x => x.Include(x => x.Group), x => x.Include(x => x.Group));
+            notBetEmployeePredicate: GetSearchEmployeePredicate<NotBetEmployee>(request), x => x.Include(x => x.Group), x => x.Include(x => x.Group), x => x.OrderBy(x => x.Name), x => x.OrderBy(x => x.Name));
 
         private Expression<Func<T, bool>> GetSearchEmployeePredicate<T>(EmployeeSearchRequest request) where T : EmployeeBase
         {
