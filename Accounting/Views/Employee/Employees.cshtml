@@ -3,6 +3,16 @@
 @model List<EmployeeBase>
 
 <div class="container m-auto">
+    <div class="col-md-6 m-auto">
+        <form asp-action="GetSearch" asp-controller="Employee" method="get">
+            <label class="form-label">Ім'я</label>
+            <input type="text" name="Name" class="form-control" />
+            <label class="form-label">Внутрішній номер</label>
+            <input type="text" name="InnerId" class="form-control" />
+            <button type="submit" class="btn btn-outline-primary">Шукати</button>
+            <a asp-action="Employees" asp-controller="Employee" class="btn btn-outline-secondary">Вибрати всіх</a>
+        </form>
+    </div>
     <div class="col-md-12">
         <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
             <ul class="list-group" id="employeesUl">

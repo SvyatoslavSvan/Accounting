@@ -67,6 +67,16 @@ namespace Accounting.Controllers
             return StatusCode(500);
         }
 
+        public async Task<IActionResult> UpdateWorkDaysByDate(Guid timesheetId, float value, DateTime date)
+        {
+            var updateResult = await _timesheetManager.UpdateWorkDaysByDate(value, date, timesheetId);
+            if (updateResult.Succed)
+            {
+                return View("Timesheet", GetViewModel(updateResult.Data));
+            }
+            return StatusCode(500);
+        }
+
         private TimesheetViewModel GetViewModel(Timesheet timesheet)
         {
             TimesheetViewModel viewModel = new TimesheetViewModel();

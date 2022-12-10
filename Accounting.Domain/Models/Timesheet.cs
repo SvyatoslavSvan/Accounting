@@ -55,7 +55,18 @@ namespace Accounting.Domain.Models
 			return workDays.ToList();
 		}
 
-		private ICollection<BetEmployee> _employees;
+		public IList<WorkDay> GetUpdatedWorkDaysByDate(float value, DateTime date)
+		{
+			var workDays = _workDays.Where(x => x.Date.Date == date.Date).ToList();
+			workDays.ForEach(x =>
+			{
+				x.Hours = value;
+			});
+			return workDays;
+		}
+
+
+        private ICollection<BetEmployee> _employees;
 
 		public ICollection<BetEmployee> Employees
 		{

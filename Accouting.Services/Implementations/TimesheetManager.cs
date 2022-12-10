@@ -3,6 +3,7 @@ using Accounting.Domain.Models;
 using Accouting.Domain.Managers.Interfaces;
 using Accounting.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.Utils;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -84,5 +85,18 @@ namespace Accouting.Domain.Managers.Implementations
             }
             return getTimesheetResult;
         }
+
+        public async Task<BaseResult<Timesheet>> UpdateWorkDaysByDate(float value, DateTime date, Guid timesheetId)
+        {
+            var getTimesheetResult = await _provider.GetById(timesheetId);
+            if (getTimesheetResult.Succed)
+            {
+                var workDays = getTimesheetResult.Data.GetUpdatedWorkDaysByDate(value, date);
+                var updateResult = await _workDayManager.UpdateRange(workDays);
+                return new BaseResult<Timesheet>(updateResult.Succed, getTimesheetResult.Data, updateResult.OperationStatus);
+            }
+            return getTimesheetResult;
+        }
+
     }
 }

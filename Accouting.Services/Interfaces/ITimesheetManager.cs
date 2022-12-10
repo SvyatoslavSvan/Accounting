@@ -9,5 +9,6 @@ namespace Accouting.Domain.Managers.Interfaces
         public Task<BaseResult<Timesheet>> CreateNew();
         public Task<BaseResult<Timesheet>> GetByDate(DateTime date);
         public Task<BaseResult<Timesheet>> UpdateWorkDaysForEmployee(float value, Guid employeeId, Guid timesheetId);
+        public Task<BaseResult<Timesheet>> UpdateWorkDaysByDate(float value, DateTime date, Guid timesheetId);    
     }
 }

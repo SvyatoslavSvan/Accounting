@@ -1,6 +1,6 @@
-﻿using Accounting.DAL.Interfaces.Base;
-using Accounting.Domain.Models;
+﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +17,7 @@ namespace Accounting.Controllers
             _employeeManager = employeeProvider;
             _groupManager = groupProvider;
         }
+
         [HttpGet]
         public async Task<IActionResult> Employees()
         {
@@ -27,6 +28,18 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSearch(EmployeeSearchRequest request)
+        {
+            var getSearchedResult = await _employeeManager.GetSearch(request);
+            if (getSearchedResult.Succed)
+            {
+                return View("Employees", getSearchedResult.Data);
+            }
+            return StatusCode(500);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateEmployeeViewModel employeeViewModel)
         {
