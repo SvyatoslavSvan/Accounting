@@ -13,21 +13,12 @@ namespace Accounting.Controllers
         private readonly ISessionDocumentService _sessionDocumentService;
         private readonly IEmployeeManager _employeeManager;
         private readonly IPayoutManager _payoutManager;
+
         public PayoutController(ISessionDocumentService sessionDocumentService, IEmployeeManager employeeManager, IPayoutManager payoutManager)
         {
             _sessionDocumentService = sessionDocumentService;
             _employeeManager = employeeManager;
             _payoutManager = payoutManager; 
-        }
-
-        [HttpGet]
-        public IActionResult CreatePayout(Guid id)
-        {
-            return PartialView(new CreatePayoutViewModel()
-            {
-                Payouts = _sessionDocumentService.GetPayoutsByEmployeeId(id),
-                EmployeeId = id
-            });
         }
 
         [HttpGet]
@@ -57,7 +48,9 @@ namespace Accounting.Controllers
                         {
                             PayoutId = payout.Id,
                             Ammount = payout.Ammount,
-                            IsAdditional = payout.IsAdditional
+                            IsAdditional = payout.IsAdditional,
+                            Employee = getEmployeeResult.Data,
+                            CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(getEmployeeResult.Data.Id)
                         });
                     }
                 }

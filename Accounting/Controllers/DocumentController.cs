@@ -3,8 +3,10 @@ using Accounting.Domain.Models.Base;
 using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accounting.Services;
+using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml.Utils;
 
 namespace Accounting.Controllers
 {
@@ -15,6 +17,7 @@ namespace Accounting.Controllers
         private readonly IEmployeeManager _employeeManager;
         private readonly IPayoutManager _payoutManager;
         private readonly IDocumentManager _documentManager;
+
         public DocumentController(ISessionDocumentService sessionDocumentService, IEmployeeManager employeeManager, IPayoutManager payoutManager, IDocumentManager documentManager)
         {
             _sessionDocumentService = sessionDocumentService;
@@ -139,7 +142,11 @@ namespace Accounting.Controllers
             {
                 if (await _sessionDocumentService.AddEmployeeToDocument(getEmployeeResult.Data))
                 {
-                    return PartialView("AddedEmployee", getEmployeeResult.Data);
+                    return PartialView("AddedEmployee", new AddedEmployeeViewModel() 
+                    { 
+                        Employee = getEmployeeResult.Data,
+                        CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(employeeId)
+                    });
                 }
                 else
                 {
@@ -150,14 +157,14 @@ namespace Accounting.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteEmployee(Guid EmployeeId)
+        public async Task<IActionResult> DeleteEmployee(Guid EmployeeId , Guid PayoutId)
         {
-            var deleteResult = await _payoutManager.DeleteRange(_sessionDocumentService.GetPayoutsByEmployeeId(EmployeeId));
-            if (deleteResult.Succed)
+            var deletePayoutResult = await _payoutManager.Delete(PayoutId);
+            if (deletePayoutResult.Succed)
             {
-                if (await _sessionDocumentService.DeleteEmployee(EmployeeId))
+                if (await _sessionDocumentService.DeleteEmployee(EmployeeId, PayoutId))
                 {
-                    return PartialView("RemovedEmployeeFromDocument", _employeeManager.GetById(EmployeeId).Result.Data);
+                    return Ok();
                 }
             }
             return BadRequest();
@@ -169,12 +176,6 @@ namespace Accounting.Controllers
             var getEmployeesResult = await _employeeManager.GetSearch(request);
             if (getEmployeesResult.Succed)
             {
-                var sessionDocument = _sessionDocumentService.GetDocument();
-                var employees = sessionDocument.GetAllEmployees();
-                employees.ForEach(x =>
-                {
-                    getEmployeesResult.Data.Remove(getEmployeesResult.Data.FirstOrDefault(y => y.Id == x.Id));
-                });
                 return PartialView(getEmployeesResult.Data);
             }
             return StatusCode(500);
@@ -186,12 +187,6 @@ namespace Accounting.Controllers
             var getEmployeesResult = await _employeeManager.GetAll();
             if (getEmployeesResult.Succed)
             {
-                var sessionDocument = _sessionDocumentService.GetDocument();
-                var employees = sessionDocument.GetAllEmployees();
-                employees.ForEach(x =>
-                {
-                    getEmployeesResult.Data.Remove(getEmployeesResult.Data.FirstOrDefault(y => y.Id == x.Id));
-                });
                 return PartialView("GetSearchEmployeesAddToDocument", getEmployeesResult.Data);
             }
             return StatusCode(500);

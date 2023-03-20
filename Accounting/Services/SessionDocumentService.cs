@@ -1,5 +1,4 @@
-﻿using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.Models;
+﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Extensions;
 using Accounting.SessionEntity;
@@ -16,7 +15,16 @@ namespace Accounting.Services
             _session = provider.GetRequiredService<IHttpContextAccessor>().HttpContext.Session;
             _logger = logger;
         }
-        
+        private IList<EmployeeBase> _employees
+        {
+            get
+            {
+                var employees = new List<EmployeeBase>(_document.NotBetEmployees);
+                employees.AddRange(_document.BetEmployees);
+                return employees;
+            }
+        }
+
 
         public Task<bool> Create() => Commit(new SessionDocument());
 
@@ -77,14 +85,22 @@ namespace Accounting.Services
             return await Commit(document);
         }
 
-        public async Task<bool> DeleteEmployee(Guid id)
+        public async Task<bool> DeleteEmployee(Guid employeeId, Guid PayoutId)
         {
             var document = _document;
-            document.DeleteEmployee(id);
+            document.DeleteEmployee(employeeId, PayoutId);
             return await Commit(document);
         }
 
-        public SessionDocument GetDocument() => _document;
+        public SessionDocument GetDocument() => RemoveTwinsEmployees();
+
+        private SessionDocument RemoveTwinsEmployees()
+        {
+            var document = _document;
+            document.BetEmployees = _document.BetEmployees.DistinctBy(x => x.Id).ToList();
+            document.NotBetEmployees = _document.NotBetEmployees.DistinctBy(x => x.Id).ToList();
+            return document;
+        }
 
         public async Task<bool> LoadDocument(Document document) => await Commit(MapToSessionDocument(document));
 
@@ -104,5 +120,6 @@ namespace Accounting.Services
             return sum;
         }
 
+        public int GetCountOfTwinsEmployees(Guid id) => _employees.Where(x => x.Id == id).Count();
     }
 }

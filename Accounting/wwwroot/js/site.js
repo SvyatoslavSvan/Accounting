@@ -16,20 +16,24 @@
 
 function appendEmployee(elementToRemoveId, response) {
     $('#addedEmployeesTbody').append(response);
-    $('#' + elementToRemoveId).remove();
 }
+
 function removeEmployee(elementToRemoveId, response) {
     $('#' + elementToRemoveId).remove();
     getSumOfAccruals();
-    $('#chooseEmployeeUl').append(response);
 }
+
 function insertResponse(url, response, elementToRemoveId, formId) {
     if (url == '/Document/AddEmployee') {
         appendEmployee(elementToRemoveId, response);
     }
     if (url == '/Payout/CreatePayout') {
-        appendCreatedAccrualResponse(response, true);
         getSumOfAccruals();
+        let formTr = document.getElementById(elementToRemoveId);
+        while (formTr.firstChild) {
+            formTr.removeChild(formTr.firstChild)
+        }
+        formTr.innerHTML += response;
     }
     if (url == '/Document/DeleteEmployee') {
         removeEmployee(elementToRemoveId, response);
@@ -65,6 +69,12 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     }
     
 }
+function addEmployeeToDocument(formId, elementToRemove, inputPayoutId) {
+    sendForm(formId, '/Document/AddEmployee', elementToRemove);
+    var modal = document.getElementById('addEmployeeToDocumentModal');
+    var modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
+}
 
 
 function getSumOfAccruals() {
@@ -92,18 +102,6 @@ function openCreateAccrualModal(employeeId) {
             console.log(response);
         }
     });
-}
-
-
-
-function appendCreatedAccrualResponse(response, addAccrualToUl) {
-    if (!addAccrualToUl) {
-        $('#createAccrualModalBody').empty();
-        $('#createAccrualModalBody').append(response);
-    } else {
-        $('#accrualUl').append(response);
-    }
-    
 }
 
 function onAmmountInputChanged(updateAccrualFormId) {
@@ -139,4 +137,6 @@ function submitSearchEmployeesAddToDocumentForm() {
 function getEmployeesAddToDocument() {
     sendForm('searchEmployeesAddToDocumentfrm', '/Document/GetEmployeesAddToDocument', 'chooseEmployeeUl', 'GET');
 }
-
+function setFocus(elementId) {
+    document.getElementById(elementId).focus();
+}

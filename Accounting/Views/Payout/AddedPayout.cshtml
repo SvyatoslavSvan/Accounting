@@ -1,25 +1,30 @@
 ﻿@using Accounting.Domain.ViewModels
 @model UpdatePayoutViewModel
 @{
-    var updateAccrualFormId = Model.PayoutId + "updateAccrualForm";
-    var formTdId = Model.PayoutId + "tdForm";
-    var accrualLiId = Model.PayoutId + "litodelete";
-    var deleteAccrualFormId = Model.PayoutId + "deleteForm";
-    var ammountInputId = Model.PayoutId + "ammountInputId";
+    var UpdatePayoutForm = Model.PayoutId + "updatePayout";
+    var formToDeleteEmployee = Model.Employee.Id + "formToDelete" + Model.CountInSessionDocument;
+    var trId = Model.Employee.Id + "tr" + Model.CountInSessionDocument;
 }
-<li class="list-group-item" id="@accrualLiId">
-    <div class="d-flex justify-content-between">
-        <form id="@updateAccrualFormId">
-            <input type="hidden" name="PayoutId" value="@Model.PayoutId" />
-            @if(Model.IsAdditional)
-            {
-                <label class="form-label">Додатково</label>
-            }
-            <input type="text" name="Ammount" value="@Model.Ammount" onchange="onAmmountInputChanged('@updateAccrualFormId')" class="form-control-sm" id="@ammountInputId"/>
-        </form>
-        <form id="@deleteAccrualFormId">
-            <input type="hidden" name="payoutId" value="@Model.PayoutId"/>
-            <button class="btn btn-outline-danger" type="button" onclick="sendForm('@deleteAccrualFormId', '/Payout/Delete', '@accrualLiId')">Видалити</button>
-        </form>
+
+<td>@Model.Employee.InnerId</td>
+<td>@Model.Employee.Name</td>
+<td>
+    <form id="@UpdatePayoutForm" onchange="sendForm('@UpdatePayoutForm', '/Payout/Update')">
+        <input type="hidden" name="PayoutId" value="@Model.PayoutId" />
+        <input type="text" placeholder="Додати Суми" name="Ammount" value="@Model.Ammount" />
+        <input type="checkbox" value="true" name="IsAdditional" />
+    </form>
+</td>
+<td>
+    <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <form id="@formToDeleteEmployee">
+                        <input type="hidden" name="EmployeeId" value="@Model.Employee.Id" />
+                        <input type="hidden" name="PayoutId" value="@Model.PayoutId" />
+                        <button type="button" onclick="sendForm('@formToDeleteEmployee', '/Document/DeleteEmployee', '@trId')" class="btn btn-info mx-auto">Видалити з документа</button>
+                    </form>
+                </div>
+            </div>
     </div>
-</li>
+</td>

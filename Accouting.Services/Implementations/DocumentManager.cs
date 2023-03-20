@@ -2,7 +2,6 @@
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Enums;
 using Accounting.Domain.Models;
-using Accounting.Domain.Models.Base;
 using Accounting.Domain.Requests;
 using Accouting.Domain.Managers.Interfaces;
 using Calabonga.PredicatesBuilder;
@@ -73,10 +72,6 @@ namespace Accouting.Domain.Managers.Implementations
         {
             var updateResult = await _provider.Update(model);
             return new BaseResult<Document>(updateResult.Succed, model, updateResult.OperationStatus);
-        }
-
-        
-
-        
+        }        
     }
 }

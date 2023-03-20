@@ -1,30 +1,34 @@
 ﻿@using Accounting.Domain.Models
 @using Accounting.Domain.Models.Base
-@model EmployeeBase
+@using Accounting.ViewModels
+@model AddedEmployeeViewModel
 @{
-    var formId = Model.Id + "form";
-    var formTdId = Model.Id + "tdForm";
-    var trId = Model.Id + "tr";
-    var formToDeleteEmployee = Model.Id + "formToDelete";
+
+    var trId = Model.Employee.Id + "tr" + Model.CountInSessionDocument;
+    var formToDeleteEmployee = Model.Employee.Id + "formToDelete" + Model.CountInSessionDocument;
+    var formPayout = Model.Employee.Id + "createPayout" + Model.CountInSessionDocument;
+    var payoutDivId = Model.Employee.Id + "PayoutDiv" + Model.CountInSessionDocument;
+    var payoutInput = Model.Employee.Id + "payoutinput" + Model.CountInSessionDocument;
+    var payoutId = Model.Employee.Id + "payoutId" + Model.CountInSessionDocument;
 }
 <tr id="@trId">
-    <td>@Model.InnerId</td>
-    <td>@Model.Name</td>
+    <td>@Model.Employee.InnerId</td>
+    <td>@Model.Employee.Name</td>
     <td>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccrualModal" onclick="openCreateAccrualModal('@Model.Id')">
-            Додати Суми
-        </button> 
-    </td>
-    <td>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <form id="@formToDeleteEmployee">
-                        <input type="hidden" name="EmployeeId" value="@Model.Id" />
-                        <button type="button" onclick="sendForm('@formToDeleteEmployee', '/Document/DeleteEmployee', '@trId')" class="btn btn-info mx-auto">Видалити з документа</button>
-                    </form>
-                </div>
-            </div>
+        <div id="@payoutDivId">
+            <form id="@formPayout">
+                <input type="hidden" name="EmployeeId" value="@Model.Employee.Id" />
+                <input type="text" placeholder="Додати Суми" name="Ammount" onchange="sendForm('@formPayout', '/Payout/CreatePayout', '@trId')" id="@payoutInput" autofocus />
+                <input type="checkbox" value="true" name="IsAdditional" />
+            </form>
         </div>
     </td>
+   
 </tr>
+
+<script type="text/javascript">
+    setTimeout(function(){
+        document.getElementById('@payoutInput').focus();
+    }, 500);
+</script>
+

@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Accounting.ViewModels;
 
 namespace Accounting.Domain.ViewModels
 {
-    public class UpdatePayoutViewModel 
+    public class UpdatePayoutViewModel : AddedEmployeeViewModel
     {
-        [BindNever]
         public bool IsAdditional { get; set; }
         public decimal Ammount { get; set; }
         public Guid PayoutId { get; set; }

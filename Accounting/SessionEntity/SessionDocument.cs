@@ -9,7 +9,7 @@ namespace Accounting.SessionEntity
         public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
         public List<PayoutBetEmployee> PayoutsBetEmployee { get; set; } = new List<PayoutBetEmployee>();
         public List<PayoutNotBetEmployee> PayoutsNotBetEmployee { get; set; } = new List<PayoutNotBetEmployee>();
-
+        
         public void AddEmployee(EmployeeBase employeeBase)
         {
             if (employeeBase is BetEmployee betEmployee)
@@ -20,7 +20,9 @@ namespace Accounting.SessionEntity
             {
                 NotBetEmployees.Add(notBetEmployee);
             }
+            return;
         }
+
         public void AddPayout(PayoutBase payoutBase)
         {
             if (payoutBase is PayoutBetEmployee payoutBetEmployee)
@@ -67,12 +69,12 @@ namespace Accounting.SessionEntity
             PayoutsNotBetEmployee.RemoveAll(x => x.Id == payoutId);
         }
 
-        public void DeleteEmployee(Guid id)
+        public void DeleteEmployee(Guid employeeId, Guid payoutId)
         {
-            BetEmployees.RemoveAll(x => x.Id == id);
-            NotBetEmployees.RemoveAll(x => x.Id == id);
-            PayoutsBetEmployee.RemoveAll(x => x.EmployeeId == id);
-            PayoutsNotBetEmployee.RemoveAll(x => x.EmployeeId == id);
+            NotBetEmployees.Remove(NotBetEmployees.FirstOrDefault(x => x.Id == employeeId));
+            BetEmployees.Remove(BetEmployees.FirstOrDefault(x => x.Id == employeeId));
+            PayoutsBetEmployee.Remove(PayoutsBetEmployee.FirstOrDefault(x => x.Id == payoutId));
+            PayoutsNotBetEmployee.Remove(PayoutsNotBetEmployee.FirstOrDefault(x => x.Id == payoutId));
         }
     }
 }

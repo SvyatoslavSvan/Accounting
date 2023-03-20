@@ -13,9 +13,10 @@ namespace Accounting.Services
         public Task<bool> AddPayout(PayoutBase payout);
         public Task<bool> UpdatePayout(Guid payoutId, decimal ammount);
         public Task<bool> DeleteAccrual(Guid payoutId);
-        public Task<bool> DeleteEmployee(Guid id);
+        public Task<bool> DeleteEmployee(Guid employeeId, Guid PayoutId);
         public SessionDocument GetDocument();
         public Task<bool> LoadDocument(Document document);
         public decimal GetSumOfPayouts();
+        public int GetCountOfTwinsEmployees(Guid id);
     }
 }
