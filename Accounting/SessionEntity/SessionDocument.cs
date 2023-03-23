@@ -1,5 +1,6 @@
 ﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using System.Text.Json.Serialization;
 
 namespace Accounting.SessionEntity
 {
@@ -9,7 +10,29 @@ namespace Accounting.SessionEntity
         public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
         public List<PayoutBetEmployee> PayoutsBetEmployee { get; set; } = new List<PayoutBetEmployee>();
         public List<PayoutNotBetEmployee> PayoutsNotBetEmployee { get; set; } = new List<PayoutNotBetEmployee>();
-        
+
+        [JsonIgnore]
+        public IList<EmployeeBase> Employees
+        {
+            get
+            {
+                var employees = new List<EmployeeBase>(NotBetEmployees);
+                employees.AddRange(BetEmployees);
+                return employees;
+            }
+        }
+
+        [JsonIgnore]
+        public IList<PayoutBase> Payouts
+        {
+            get
+            {
+                var payouts = new List<PayoutBase>(PayoutsNotBetEmployee);
+                payouts.AddRange(PayoutsBetEmployee);
+                return payouts;
+            }
+        }
+
         public void AddEmployee(EmployeeBase employeeBase)
         {
             if (employeeBase is BetEmployee betEmployee)
@@ -32,6 +55,21 @@ namespace Accounting.SessionEntity
             if (payoutBase is PayoutNotBetEmployee payoutNotBetEmployee)
             {
                 PayoutsNotBetEmployee.Add(payoutNotBetEmployee);
+            }
+        }
+
+        public void AddPayouts(IList<PayoutBase> payouts)
+        {
+            foreach (var item in payouts)
+            {
+                if (item is PayoutBetEmployee payoutBetEmployee)
+                {
+                    PayoutsBetEmployee.Add(payoutBetEmployee);
+                }
+                if (item is PayoutNotBetEmployee payoutNotBetEmployee)
+                {
+                    PayoutsNotBetEmployee.Add(payoutNotBetEmployee);
+                }
             }
         }
 

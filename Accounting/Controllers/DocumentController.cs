@@ -6,7 +6,6 @@ using Accounting.Services;
 using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml.Utils;
 
 namespace Accounting.Controllers
 {
@@ -18,7 +17,8 @@ namespace Accounting.Controllers
         private readonly IPayoutManager _payoutManager;
         private readonly IDocumentManager _documentManager;
 
-        public DocumentController(ISessionDocumentService sessionDocumentService, IEmployeeManager employeeManager, IPayoutManager payoutManager, IDocumentManager documentManager)
+        public DocumentController(ISessionDocumentService sessionDocumentService, 
+            IEmployeeManager employeeManager, IPayoutManager payoutManager, IDocumentManager documentManager)
         {
             _sessionDocumentService = sessionDocumentService;
             _employeeManager = employeeManager; 
@@ -34,27 +34,39 @@ namespace Accounting.Controllers
             {
                 if (await _sessionDocumentService.LoadDocument(document.Data))
                 {
-                    var employeesInDocument = new List<EmployeeBase>(document.Data.NotBetEmployees);
-                    employeesInDocument.AddRange(document.Data.BetEmployees);
-                    var employeesAddToDocument = await _employeeManager.GetAll();
-                    foreach (var item in employeesInDocument)
-                    {
-                        employeesAddToDocument.Data.Remove(employeesAddToDocument.Data.FirstOrDefault(x => x.Id == item.Id));
-                    }
-                    var sumOfPayouts = document.Data.PayoutsNotBetEmployees.Sum(x => x.Ammount);
-                    sumOfPayouts += document.Data.PayoutsBetEmployees.Sum(x => x.Ammount);
+                    var employeesExsistInDocument = _sessionDocumentService.GetEmployees();
+                    var payouts = _sessionDocumentService.GetPayouts();
+                    var sumOfPayouts = document.Data.GetSumOfPayouts();
+                    var getEmployeesResult = await _employeeManager.GetAll();
                     return View(new UpdateDocumentViewModel()
                     {
                         Name = document.Data.Name,
                         DateCreate = document.Data.DateCreate,
-                        EmployeesAddToDocument = employeesAddToDocument.Data.ToList(),
-                        EmployeesInDocument = employeesInDocument,
+                        EmployeesInDocument = GetAddedEmployeeViewModels(employeesExsistInDocument, payouts),
                         Id = document.Data.Id,
-                        SumOfpayouts = sumOfPayouts
-                    }) ;
+                        SumOfpayouts = sumOfPayouts,
+                        Employees = getEmployeesResult.Data.ToList(),
+                    });
                 }
             }
             return BadRequest();
+        }
+
+        private List<AddedEmployeeViewModel> GetAddedEmployeeViewModels(IList<EmployeeBase> employees, IList<PayoutBase> payouts)
+        {
+            var viewModels = new List<AddedEmployeeViewModel>();
+            foreach (var item in employees)
+            {
+                var payout = payouts.First(x => x.EmployeeId == item.Id);
+                viewModels.Add(new AddedEmployeeViewModel()
+                {
+                    Employee = item,
+                    CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(item.Id),
+                    Payout = payout
+                });
+                payouts.Remove(payout);
+            }
+            return viewModels;
         }
 
         [HttpPost]

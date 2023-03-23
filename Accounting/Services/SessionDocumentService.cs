@@ -10,11 +10,13 @@ namespace Accounting.Services
         private readonly ISession _session;
         private readonly ILogger<Document> _logger;
         private const string sessionDocumentKey = "sessiondocumentkey";
+
         public SessionDocumentService(IServiceProvider provider, ILogger<Document> logger)
         {
             _session = provider.GetRequiredService<IHttpContextAccessor>().HttpContext.Session;
             _logger = logger;
         }
+
         private IList<EmployeeBase> _employees
         {
             get
@@ -104,13 +106,31 @@ namespace Accounting.Services
 
         public async Task<bool> LoadDocument(Document document) => await Commit(MapToSessionDocument(document));
 
-        private SessionDocument MapToSessionDocument(Document document) => new SessionDocument()
+        private SessionDocument MapToSessionDocument(Document document)
         {
-            NotBetEmployees = document.NotBetEmployees.ToList(),
-            BetEmployees = document.BetEmployees.ToList(),
-            PayoutsBetEmployee = document.PayoutsBetEmployees.ToList(),
-            PayoutsNotBetEmployee = document.PayoutsNotBetEmployees.ToList()
-        };
+            var sessionDocument = new SessionDocument();
+            var employees = document.GetEmployees();
+            var payouts = document.GetPayouts();
+            foreach (var item in employees)
+            {
+                var itemPayouts = payouts.Where(x => x.EmployeeId == item.Id).ToList();
+                var payoutsCount = itemPayouts.Count();
+                if (payoutsCount == 1)
+                {
+                    sessionDocument.AddEmployee(item);
+                    sessionDocument.AddPayout(itemPayouts.First());
+                }
+                if(payoutsCount > 1)
+                {
+                    for (int i = 0; i < payoutsCount; i++)
+                    {
+                        sessionDocument.AddEmployee(item);
+                    }
+                    sessionDocument.AddPayouts(itemPayouts);
+                }
+            }
+            return sessionDocument;
+        }
 
         public decimal GetSumOfPayouts()
         {
@@ -121,5 +141,9 @@ namespace Accounting.Services
         }
 
         public int GetCountOfTwinsEmployees(Guid id) => _employees.Where(x => x.Id == id).Count();
+
+        public IList<PayoutBase> GetPayouts() => _document.Payouts;
+
+        public IList<EmployeeBase> GetEmployees() => _document.Employees;
     }
 }

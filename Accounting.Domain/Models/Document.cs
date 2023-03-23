@@ -1,6 +1,5 @@
 ﻿using Accounting.Domain.Enums;
 using Accounting.Domain.Models.Base;
-using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
@@ -25,6 +24,23 @@ namespace Accounting.Domain.Models
             Name = name;
             DateCreate = dateCreate;
             DocumentType = documentType;
+        }
+        
+       
+        public IList<PayoutBase> GetPayouts()
+        {
+            var payouts = new List<PayoutBase>();
+            payouts.AddRange(PayoutsBetEmployees);
+            payouts.AddRange(PayoutsNotBetEmployees);
+            return payouts;
+        }
+
+        public IList<EmployeeBase> GetEmployees()
+        {
+            var employees = new List<EmployeeBase>();
+            employees.AddRange(BetEmployees);
+            employees.AddRange(NotBetEmployees);
+            return employees;
         }
 
         public DocumentType DocumentType { get; private set; }
@@ -117,6 +133,13 @@ namespace Accounting.Domain.Models
             {
                 oldRange.Remove(oldRange.FirstOrDefault(x => x.Id == item));
             }
+        }
+
+        public decimal GetSumOfPayouts()
+        {
+            var sumOfPayouts = PayoutsNotBetEmployees.Sum(x => x.Ammount);
+            sumOfPayouts += PayoutsBetEmployees.Sum(x => x.Ammount);
+            return sumOfPayouts;
         }
 
         public DateTime DateCreate { get; set; }  

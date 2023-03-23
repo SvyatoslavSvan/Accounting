@@ -16,6 +16,6 @@ namespace Accounting.Domain.ViewModels
         [BindNever]
         public decimal SumOfpayouts { get; set; }
         [BindNever]
-        public IEnumerable<AddEmployeeViewModel> Employees { get; set; }
+        public IEnumerable<AddEmployeeViewModel> EmployeesViewModels { get; set; }
     }
 }

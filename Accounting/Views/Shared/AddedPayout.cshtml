@@ -14,9 +14,9 @@
         <input type="text" placeholder="Додати Суми" name="Ammount" value="@Model.Ammount" />
         @if (Model.Payout.IsAdditional)
         {
-            <input type="checkbox" value="true" name="IsAdditional" checked/>
+            <input type="checkbox" value="true" name="IsAdditional" checked />
         }
-        @if(!Model.Payout.IsAdditional)
+        @if (!Model.Payout.IsAdditional)
         {
             <input type="checkbox" value="true" name="IsAdditional" />
         }

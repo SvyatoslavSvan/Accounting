@@ -20,7 +20,7 @@ namespace Accounting.Domain.Models.Base
         }
         public Guid EmployeeId { get; protected set; }
 
-        public bool IsAdditional { get; protected set; }
+        public bool IsAdditional { get; set; }
         private decimal _ammount;
         public decimal Ammount
         {

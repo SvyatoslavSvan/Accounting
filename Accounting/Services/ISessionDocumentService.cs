@@ -18,5 +18,7 @@ namespace Accounting.Services
         public Task<bool> LoadDocument(Document document);
         public decimal GetSumOfPayouts();
         public int GetCountOfTwinsEmployees(Guid id);
+        public IList<PayoutBase> GetPayouts();
+        public IList<EmployeeBase> GetEmployees();
     }
 }

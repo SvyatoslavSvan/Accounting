@@ -6,5 +6,6 @@ namespace Accounting.ViewModels
     {
         public EmployeeBase Employee { get; set; }
         public int CountInSessionDocument { get; set; }
+        public PayoutBase Payout { get; set; }
     }
 }

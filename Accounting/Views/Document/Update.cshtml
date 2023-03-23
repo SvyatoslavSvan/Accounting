@@ -1,5 +1,11 @@
 ﻿@using Accounting.Domain.ViewModels
+@using Accounting.ViewModels
 @model UpdateDocumentViewModel
+@{
+    string getUpdatePayoutForm(Guid id) => id + "updatePayout";
+    string getFormToDeleteId(Guid id, int count) => id + "formToDelete" + count;
+    string getTrId(Guid id, int count) => id + "tr" + count;
+}
 <h4 class="text-center">Оновити - @Model.Name</h4>
 <div class="container">
     <div class="row">
@@ -31,7 +37,18 @@
                     <tbody id="addedEmployeesTbody">
                         @foreach (var item in Model.EmployeesInDocument)
                         {
-                            <partial name="AddedEmployee" model="item"></partial>
+                            <tr id="@getTrId(item.Employee.Id, item.CountInSessionDocument)">
+                                    <partial name="AddedPayout" model="new UpdatePayoutViewModel()
+                                        {
+                                            CountInSessionDocument = item.CountInSessionDocument,
+                                            Ammount = item.Payout.Ammount,
+                                            Employee = item.Employee,
+                                            IsAdditional = item.Payout.IsAdditional,
+                                            Payout = item.Payout,
+                                            PayoutId = item.Payout.Id
+                                        }">
+                                    </partial>
+                            </tr>
                         }
                     </tbody>
                 </table>
@@ -42,5 +59,4 @@
         </div>
     </div>
 </div>
-<partial name="CreateAccrualModalPartial"></partial>
-<partial name="AddEmployeeToDocumentPartial" model="Model.EmployeesAddToDocument"></partial>
+<partial name="AddEmployeeToDocumentPartial" model="Model.Employees"></partial>

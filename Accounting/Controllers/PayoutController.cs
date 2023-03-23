@@ -50,7 +50,8 @@ namespace Accounting.Controllers
                             Ammount = payout.Ammount,
                             IsAdditional = payout.IsAdditional,
                             Employee = getEmployeeResult.Data,
-                            CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(getEmployeeResult.Data.Id)
+                            CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(getEmployeeResult.Data.Id),
+                            Payout = createResult.Data
                         });
                     }
                 }
@@ -70,6 +71,7 @@ namespace Accounting.Controllers
             if (getPayoutResult.Succed)
             {
                 getPayoutResult.Data.Ammount = viewModel.Ammount;
+                getPayoutResult.Data.IsAdditional = viewModel.IsAdditional;
                 var updateResult = await _payoutManager.Update(getPayoutResult.Data);
                 if (await _sessionDocumentService.UpdatePayout(viewModel.PayoutId, viewModel.Ammount))
                 {
