@@ -1,4 +1,5 @@
 ﻿@using Accounting.Domain.Models
+@using Accounting.Domain.Enums
 @model List<Document>
 @{
     string getDeleteDocumentFormId(Guid id) => id.ToString() + "deleteDocument";
@@ -36,6 +37,8 @@
                         <tr>
                             <th scope="col">Назва документа</th>
                             <th scope="col">Дата створення</th>
+                            <th scope="col">Тип</th>
+                            <th scope="col">Сума</th>
                         </tr>
                     </thead>
                     <tbody id="documentsTbody">
@@ -44,6 +47,8 @@
                         <tr id="@getDocumentTrId(item.Id)">
                             <td>@item.Name</td>
                             <td>@item.DateCreate</td>
+                            <td>@item.DocumentType.ToFriendlyString()</td>
+                            <td>@item.GetSumOfPayouts()</td>
                             <td>
                                 <form id="@getDeleteDocumentFormId(item.Id)">
                                     <input type="hidden" name="documentId" value="@item.Id">

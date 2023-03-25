@@ -50,3 +50,12 @@
 </div>
 <partial name="CreateAccrualModalPartial"></partial>
 <partial name="AddEmployeeToDocumentPartial" model="employeeManager.GetAll().Result.Data"></partial>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addEmployeeToDocumentModal').on('shown.bs.modal', function (e) {
+                $('#SearchNameInput').focus();
+            });
+        });
+    </script>
+}

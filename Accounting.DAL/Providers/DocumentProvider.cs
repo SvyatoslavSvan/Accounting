@@ -75,7 +75,8 @@ namespace Accounting.DAL.Providers
                 var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(
                   orderBy: x => x.OrderBy(x => x.DateCreate)
                  , disableTracking: false,
-                  predicate: predicate);
+                  predicate: predicate,
+                  include: x => x.Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees));
                 return new BaseResult<IList<Document>>(true, documents, OperationStatuses.Ok);
             }
             catch (Exception ex)
