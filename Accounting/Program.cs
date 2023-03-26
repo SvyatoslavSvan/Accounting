@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces;
 using Accounting.DAL.Interfaces.Base;
 using Accounting.DAL.Providers;
 using Accounting.Domain.Models;
+using Accounting.MigrationApplyer;
 using Accounting.Services;
 using Accouting.Domain.Managers.Implementations;
 using Accouting.Domain.Managers.Interfaces;
@@ -38,7 +39,6 @@ builder.Services.AddScoped<ITimesheetProvider, TimesheetProvider>();
 builder.Services.AddScoped<ITimesheetManager, TimesheetManager>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -57,5 +57,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
+MigrationApplyer.ApplyMigrations(app.Services);
 app.Run();
+
