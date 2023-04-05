@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
-            <form method="post" asp-action="Update" asp-controller="Document">
+            <form method="post" asp-action="Update" asp-controller="Document" id="updateDocumentfrm">
                 <input type="hidden" asp-for="Id" value="@Model.Id"/>
                 <label class="form-label" asp-for="Name">Назва документа</label>
                 <input type="text" asp-for="Name" class="form-control" />
@@ -58,5 +58,25 @@
             <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-primary m-auto" form="updateDocumentfrm">Сохранити</button>
+        </div>
+    </div>
 </div>
 <partial name="AddEmployeeToDocumentPartial" model="Model.Employees"></partial>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addEmployeeToDocumentModal').on('shown.bs.modal', function (e) {
+                $('#SearchInnerIdInput').focus();
+            });
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+
+                document.getElementById('searchEmployeesbtn').click();
+            }
+        });
+    </script>
+}

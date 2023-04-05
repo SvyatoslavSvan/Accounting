@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
-            <form method="post" asp-action="Create" asp-controller="Document">
+            <form method="post" asp-action="Create" asp-controller="Document" id="createDocumentfrm">
                 <label class="form-label" asp-for="Name">Назва документа</label>
                 <input type="text" asp-for="Name" class="form-control"/>
                 <label class="form-label" asp-for="Name">Дата Створення</label>
@@ -20,7 +20,6 @@
                     <option value="0">Начислення</option>
                     <option value="1">Утримання</option>
                 </select>
-                <button type="submit" class="btn btn-outline-primary m-auto">Сохранити</button>
             </form>
         </div>
         <div class="col-md-2 m-auto" id="sumAccrual">
@@ -46,16 +45,29 @@
         <div class="col-md-3">
             <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
         </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-primary m-auto" form="createDocumentfrm">Сохранити</button>
+        </div>
     </div>
 </div>
 <partial name="CreateAccrualModalPartial"></partial>
 <partial name="AddEmployeeToDocumentPartial" model="employeeManager.GetAll().Result.Data"></partial>
+
 @section Scripts {
     <script type="text/javascript">
         $(document).ready(function () {
             $('#addEmployeeToDocumentModal').on('shown.bs.modal', function (e) {
-                $('#SearchNameInput').focus();
+                $('#SearchInnerIdInput').focus();
             });
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+
+                document.getElementById('searchEmployeesbtn').click();
+            }
         });
     </script>
 }

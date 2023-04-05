@@ -1,6 +1,19 @@
 ﻿@using Accounting.Domain.Models.Base
 @model IEnumerable<EmployeeBase> 
+
+@{
+    string getLiId(Guid id) => id + "li";
+    string getPayoutInputId(Guid employeeId) => employeeId + "payoutinput";
+}
+
 @foreach (var item in Model)
 {
-    <partial name="RemovedEmployeeFromDocument" model="item"></partial>
+    <li class="list-group-item" id="@getLiId(item.Id)">
+        <h4>Номер: @item.InnerId</h4>
+        <h5>ПІБ: @item.Name</h5>
+        <form asp-action="AddEmployeeToDocument" asp-controller="Document" class="my-1" id="@item.Id">
+            <input type="hidden" name="employeeId" value="@item.Id" />
+            <button type="button" class="btn btn-primary my-3" onclick="addEmployeeToDocument('@item.Id','@getLiId(item.Id)', '@getPayoutInputId(item.Id)')">Додати</button>
+        </form>
+    </li>
 }
