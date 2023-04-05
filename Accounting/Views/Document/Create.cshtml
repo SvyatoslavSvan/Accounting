@@ -65,7 +65,7 @@
         });
         document.addEventListener('keydown', function (event) {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-
+                document.getElementById('SearchInnerIdInput').value = "";
                 document.getElementById('searchEmployeesbtn').click();
             }
         });
