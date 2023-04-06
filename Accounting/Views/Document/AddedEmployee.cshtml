@@ -16,7 +16,7 @@
     <td>@Model.Employee.Name</td>
     <td>
         <div id="@payoutDivId">
-            <form id="@formPayout">
+            <form id="@formPayout" onsubmit="return false;">
                 <input type="hidden" name="EmployeeId" value="@Model.Employee.Id" />
                 <input type="text" placeholder="Додати Суми" name="Ammount" onchange="sendForm('@formPayout', '/Payout/CreatePayout', '@trId')" id="@payoutInput" autofocus />
                 <input type="checkbox" value="true" name="IsAdditional" />
