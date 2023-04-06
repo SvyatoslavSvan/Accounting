@@ -83,7 +83,7 @@ namespace Accouting.Domain.Managers.Implementations
             }
             if (request.InnerId is not default(string))
             {
-                predicate = predicate.And(x => x.InnerId.Contains(request.InnerId));
+                predicate = predicate.And(x => x.InnerId == request.InnerId);
             }
             return predicate;
         }

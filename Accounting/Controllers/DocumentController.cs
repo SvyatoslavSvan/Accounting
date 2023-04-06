@@ -80,6 +80,8 @@ namespace Accounting.Controllers
                 getDocumentResult.Data.PayoutsNotBetEmployees = sessionDocument.PayoutsNotBetEmployee;
                 getDocumentResult.Data.NotBetEmployees = sessionDocument.NotBetEmployees;
                 getDocumentResult.Data.BetEmployees = sessionDocument.BetEmployees;
+                getDocumentResult.Data.Name = viewModel.Name;
+                getDocumentResult.Data.DateCreate = viewModel.DateCreate;
                 var updateResult = await _documentManager.Update(getDocumentResult.Data);
                 if (updateResult.Succed)
                 {
