@@ -24,7 +24,7 @@ namespace Accounting.Controllers
                 {
                     return Ok();
                 }
-                if (updateResult.OperationStatus == OperationStatuses.Error || workDay.OperationStatus == OperationStatuses.Error)
+                if (updateResult.OperationStatus == OperationStatuses.Error || workDay.OperationStatus == OperationStatuses.NotFound)
                 {
                     return StatusCode(500);
                 }

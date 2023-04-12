@@ -22,7 +22,7 @@ namespace Accouting.Domain.Managers.Implementations
             using var package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report");
             sheet = MakeHead(sheet, from, to);
-            var salaries = await _salaryManager.CalculateSalaries(from, to);
+            var salaries = _salaryManager.CalculateSalaries(from, to);
             sheet = await MakeRows(sheet, salaries);
             return await package.GetAsByteArrayAsync();
         }
@@ -43,14 +43,14 @@ namespace Accouting.Domain.Managers.Implementations
                     {
                         sheet.Cells[row, column].Value = salary.Employee.InnerId;
                         sheet.Cells[row, column + 1].Value = salary.Employee.Name;
-                        sheet.Cells[row, column + 2].Value = salary.Payment;
-                        sheet.Cells[row, column + 3].Value = salary.Premium;
-                        sheet.Cells[row, column + 4].Value = salary.AdditionalPayout;
-                        sheet.Cells[row, column + 5].Value = salary.TotalAmmount;
-                        sheet.Cells[row, column + 6].Value = salary.Deducation;
-                        sheet.Cells[row, column + 7].Value = salary.AdditionalDeducation;
-                        sheet.Cells[row, column + 8].Value = salary.TotalDeducation;
-                        sheet.Cells[row, column + 9].Value = salary.Total;
+                        sheet.Cells[row, column + 2].Value = Math.Round(salary.Payment, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 3].Value = Math.Round(salary.Premium, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 4].Value = Math.Round(salary.AdditionalPayout, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 5].Value = Math.Round(salary.TotalAmmount, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 6].Value = Math.Round(salary.Deducation, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 7].Value = Math.Round(salary.AdditionalDeducation, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 8].Value = Math.Round(salary.TotalDeducation, 2, MidpointRounding.AwayFromZero);
+                        sheet.Cells[row, column + 9].Value = Math.Round(salary.Total, 2, MidpointRounding.AwayFromZero);
                         row++;
                     }
                 }

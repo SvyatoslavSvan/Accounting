@@ -1,9 +1,7 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accouting.Domain.Managers.Interfaces;
-using OfficeOpenXml.Utils;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -27,6 +25,17 @@ namespace Accouting.Domain.Managers.Implementations
         }
 
         public Task<BaseResult<bool>> DeleteRange(List<PayoutBase> payouts) => _payoutProvider.DeleteRange(payouts);
+
+        public async Task<BaseResult<bool>> DeleteWithoutDocument()
+        {
+            var getPayoutsResult = await _payoutProvider.GetAllByPredicate(x => x.Document == null, x => x.Document == null);
+            if (getPayoutsResult.Succed) 
+            {
+                var deleteResult =  await _payoutProvider.DeleteRange(getPayoutsResult.Data.ToList());
+                return deleteResult;
+            }
+            return new BaseResult<bool>(getPayoutsResult.Succed, getPayoutsResult.Succed);
+        }
 
         public async Task<BaseResult<IList<PayoutBase>>> GetAll()
         {

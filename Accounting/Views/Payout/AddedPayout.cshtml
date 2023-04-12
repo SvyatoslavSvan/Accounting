@@ -9,7 +9,7 @@
 <td>@Model.Employee.InnerId</td>
 <td>@Model.Employee.Name</td>
 <td>
-    <form id="@UpdatePayoutForm" onchange="sendForm('@UpdatePayoutForm', '/Payout/Update')">
+    <form id="@UpdatePayoutForm" onchange="sendForm('@UpdatePayoutForm', '/Payout/Update')" onsubmit="return false;">
         <input type="hidden" name="PayoutId" value="@Model.PayoutId" />
         <input type="text" placeholder="Додати Суми" name="Ammount" value="@Model.Ammount" />
         @if (Model.Payout.IsAdditional)

@@ -9,7 +9,11 @@ namespace Accounting.ModelBinders
         {
             var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
-            if (valueProviderResult != ValueProviderResult.None && decimal.TryParse(valueProviderResult.FirstValue, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
+            if (valueProviderResult != ValueProviderResult.None && decimal.TryParse(valueProviderResult.FirstValue.Replace(",", "."), NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+            {
+                bindingContext.Result = ModelBindingResult.Success(result);
+            }
+            else if (valueProviderResult != ValueProviderResult.None && decimal.TryParse(valueProviderResult.FirstValue.Replace(".", ","), NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out result))
             {
                 bindingContext.Result = ModelBindingResult.Success(result);
             }

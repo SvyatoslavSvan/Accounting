@@ -9,15 +9,20 @@ namespace Accounting.Controllers
         private readonly IReportManager _reportManager;
         private readonly ISalaryManager _salaryManager;
         private readonly IGroupManager _groupManager;
-        public ReportController(IReportManager reportManager, ISalaryManager salaryManager, IGroupManager groupManager)
+        private readonly IPayoutManager _payoutManager;
+
+        public ReportController(IReportManager reportManager, ISalaryManager salaryManager, IGroupManager groupManager, IPayoutManager payoutManager)
         {
             _reportManager = reportManager;
             _salaryManager = salaryManager;
             _groupManager = groupManager;
+            _payoutManager = payoutManager;
         }
+
         public async Task<IActionResult> GetReport(DateTime from, DateTime to)
         {
-            var salaries = await _salaryManager.CalculateSalaries(from, to);
+            await _payoutManager.DeleteWithoutDocument();
+            var salaries = _salaryManager.CalculateSalaries(from, to);
             var groups = await _groupManager.GetAll();
             return View(new ReportViewModel()
             {
@@ -27,6 +32,7 @@ namespace Accounting.Controllers
                 Groups = groups.Data
             });
         }
+
         public async Task<IActionResult> DownloadReport(DateTime from, DateTime to)
          {
             var report = await _reportManager.GetReportAsExcel(from, to);

@@ -49,7 +49,7 @@
                                 @foreach (var workDay in item.WorkDays)
                                 {
                                     <td class="m-0">
-                                        <form id="@getUpdateFormId(workDay.Id)">
+                                        <form id="@getUpdateFormId(workDay.Id)" onsubmit="return false;">
                                             <input type="hidden" value="@workDay.Id" name="Id" />
                                             <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
                                         </form>
