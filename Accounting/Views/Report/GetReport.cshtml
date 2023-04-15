@@ -92,5 +92,37 @@
                 </tr>
             }
         }
+        <tr>
+            <td>
+                ------
+            </td>
+            <td>
+                Разом
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfPayments, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfPremium, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfAdditionalPayments, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.TotalSumOfPayments, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfDeducations, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfAdditionalDeducations, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.TotalSumOfDeducation, 2, MidpointRounding.AwayFromZero)
+            </td>
+            <td>
+                @Math.Round(Model.SalaryTotal.SumOfTotal, 2, MidpointRounding.AwayFromZero)
+            </td>
+        </tr>
     </tbody>
 </table>

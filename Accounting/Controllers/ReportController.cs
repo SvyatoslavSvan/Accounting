@@ -1,4 +1,5 @@
-﻿using Accounting.ViewModels;
+﻿using Accounting.Domain.Models;
+using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,8 @@ namespace Accounting.Controllers
                 Salaries = salaries,
                 From = from,
                 To = to,
-                Groups = groups.Data
+                Groups = groups.Data,
+                SalaryTotal = new SalaryTotal(salaries)
             });
         }
 

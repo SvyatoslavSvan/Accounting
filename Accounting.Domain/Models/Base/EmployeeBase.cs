@@ -141,6 +141,7 @@ namespace Accounting.Domain.Models.Base
                         payoutsDeducation.AddRange((IEnumerable<T>)x.PayoutsNotBetEmployees.Where(x => x.EmployeeId == this.Id));
                     }
                 }
+
             });
             var sumOfAccruals = payoutAccruals.Where(x => !x.IsAdditional).Sum(x => x.Ammount);
             var sumOfDeducations = payoutsDeducation.Where(x => !x.IsAdditional).Sum(x => x.Ammount);

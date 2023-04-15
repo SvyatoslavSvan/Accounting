@@ -9,6 +9,8 @@ namespace Accouting.Domain.Managers.Implementations
     {
         private readonly ISalaryManager _salaryManager;
         private readonly IGroupManager _groupManager;
+        private IList<Salary> _salaries;
+        private ExcelWorksheet _excelWorksheet;
 
         public ReportManager(ISalaryManager salaryManager, IGroupManager groupManager)
         {
@@ -20,93 +22,108 @@ namespace Accouting.Domain.Managers.Implementations
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using var package = new ExcelPackage();
-            var sheet = package.Workbook.Worksheets.Add("Report");
-            sheet = MakeHead(sheet, from, to);
-            var salaries = _salaryManager.CalculateSalaries(from, to);
-            sheet = await MakeRows(sheet, salaries);
+            _excelWorksheet = package.Workbook.Worksheets.Add("Report");
+            _excelWorksheet = MakeHead(from, to);
+            _salaries = _salaryManager.CalculateSalaries(from, to);
+            await MakeRows();
             return await package.GetAsByteArrayAsync();
         }
 
-        private async Task<ExcelWorksheet> MakeRows(ExcelWorksheet sheet, IList<Salary> salaries)
+        private async Task<ExcelWorksheet> MakeRows()
         {
             var column = 1;
             var row = 5;
             var groups = await _groupManager.GetAll();
             foreach (var group in groups.Data)
             {
-                MakeGroupRow(group.Name , $"A{row}:J{row}", sheet);
+                MakeGroupRow(group.Name , $"A{row}:J{row}");
                 row++;
-                var salariesWithGroup = salaries.Where(x => x.Employee.Group.Id == group.Id).ToList();
+                var salariesWithGroup = _salaries.Where(x => x.Employee.Group.Id == group.Id).ToList();
                 if (salariesWithGroup.Count() > 0)
                 {
                     foreach (var salary in salariesWithGroup)
                     {
-                        sheet.Cells[row, column].Value = salary.Employee.InnerId;
-                        sheet.Cells[row, column + 1].Value = salary.Employee.Name;
-                        sheet.Cells[row, column + 2].Value = Math.Round(salary.Payment, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 3].Value = Math.Round(salary.Premium, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 4].Value = Math.Round(salary.AdditionalPayout, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 5].Value = Math.Round(salary.TotalAmmount, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 6].Value = Math.Round(salary.Deducation, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 7].Value = Math.Round(salary.AdditionalDeducation, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 8].Value = Math.Round(salary.TotalDeducation, 2, MidpointRounding.AwayFromZero);
-                        sheet.Cells[row, column + 9].Value = Math.Round(salary.Total, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column].Value = salary.Employee.InnerId;
+                        _excelWorksheet.Cells[row, column + 1].Value = salary.Employee.Name;
+                        _excelWorksheet.Cells[row, column + 2].Value = Math.Round(salary.Payment, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 3].Value = Math.Round(salary.Premium, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 4].Value = Math.Round(salary.AdditionalPayout, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 5].Value = Math.Round(salary.TotalAmmount, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 6].Value = Math.Round(salary.Deducation, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 7].Value = Math.Round(salary.AdditionalDeducation, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 8].Value = Math.Round(salary.TotalDeducation, 2, MidpointRounding.AwayFromZero);
+                        _excelWorksheet.Cells[row, column + 9].Value = Math.Round(salary.Total, 2, MidpointRounding.AwayFromZero);
                         row++;
                     }
                 }
             }
-            return sheet;
+            MakeSumOfFields(row, column);
+            return _excelWorksheet;
         }
 
-        private ExcelWorksheet MakeGroupRow(string name, string address, ExcelWorksheet sheet)
+        private void MakeSumOfFields(int row, int column)
         {
-            sheet.Cells[address].Merge = true;
-            sheet.Cells[address].Value = name;
-            AlingValue(address, sheet);
-            return sheet;
+            var salaryTotal = new SalaryTotal(_salaries);
+            _excelWorksheet.Cells[row, column].Value = "Итого";
+            _excelWorksheet.Cells[row, column + 2].Value = Math.Round(salaryTotal.SumOfPayments, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 3].Value = Math.Round(salaryTotal.SumOfPremium, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 4].Value = Math.Round(salaryTotal.SumOfAdditionalPayments, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 5].Value = Math.Round(salaryTotal.TotalSumOfPayments, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 6].Value = Math.Round(salaryTotal.SumOfDeducations, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 7].Value = Math.Round(salaryTotal.SumOfAdditionalDeducations, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 8].Value = Math.Round(salaryTotal.TotalSumOfDeducation, 2, MidpointRounding.AwayFromZero);
+            _excelWorksheet.Cells[row, column + 9].Value = Math.Round(salaryTotal.SumOfTotal, 2, MidpointRounding.AwayFromZero);
         }
 
-        private ExcelWorksheet MakeHead(ExcelWorksheet sheet, DateTime from, DateTime to)
+        private ExcelWorksheet MakeGroupRow(string name, string address)
+        {
+            _excelWorksheet.Cells[address].Merge = true;
+            _excelWorksheet.Cells[address].Value = name;
+            AlingValue(address, _excelWorksheet);
+            return _excelWorksheet;
+        }
+
+        private ExcelWorksheet MakeHead(DateTime from, DateTime to)
         {
             const string title = "Зведена відомість за період";
             string subTitle = $"За період з {from.Day} {GetMonth(from.Month)} {from.Year} р. по {to.Day} {GetMonth(to.Month)} {to.Year} р.";
-            sheet.Column(2).Width = 80;
-            sheet.Cells["A1:J1"].Merge = true;
-            sheet.Cells["A1:J1"].Value = title;
-            AlingValue("A1:J1", sheet);
-            sheet.Cells["A2:J2"].Merge = true;
-            sheet.Cells["A2:J2"].Value = subTitle;
-            AlingValue("A2:J2", sheet);
-            sheet.Cells["A3:A4"].Merge = true;
-            sheet.Cells["A3:A4"].Value = "таб №";
-            AlingValue("A3:A4", sheet);
-            sheet.Cells["B3:B4"].Merge = true;
-            sheet.Cells["B3:B4"].Value = "Працівник";
-            AlingValue("B3:B4", sheet);
-            sheet.Cells["C3:F3"].Merge = true;
-            sheet.Cells["C3:F3"].Value = "Начислення";
-            AlingValue("C3:F3", sheet);
-            sheet.Cells["C4"].Value = "Оплата";
-            AlingValue("C4", sheet);
-            sheet.Cells["D4"].Value = "Премія";
-            AlingValue("D4", sheet);
-            sheet.Cells["E4"].Value = "Відп/боль";
-            AlingValue("E4", sheet);
-            sheet.Cells["F4"].Value = "Усього";
-            AlingValue("F4", sheet);
-            sheet.Cells["G3:I3"].Merge = true;
-            sheet.Cells["G3:I3"].Value = "Утримано";
-            AlingValue("G3:I3", sheet);
-            sheet.Cells["G4"].Value = "Податки";
-            AlingValue("G4", sheet);
-            sheet.Cells["H4"].Value = "Карточка";
-            AlingValue("H4", sheet);
-            sheet.Cells["I4"].Value = "Усього";
-            AlingValue("I4", sheet);
-            sheet.Cells["J3:J4"].Merge = true;
-            sheet.Cells["J3:J4"].Value = "На руки";
-            AlingValue("J3:J4", sheet);
-            return sheet;
+            _excelWorksheet.Column(2).Width = 80;
+            _excelWorksheet.Cells["A1:J1"].Merge = true;
+            _excelWorksheet.Cells["A1:J1"].Value = title;
+            AlingValue("A1:J1", _excelWorksheet);
+            _excelWorksheet.Cells["A2:J2"].Merge = true;
+            _excelWorksheet.Cells["A2:J2"].Value = subTitle;
+            AlingValue("A2:J2", _excelWorksheet);
+            _excelWorksheet.Cells["A3:A4"].Merge = true;
+            _excelWorksheet.Cells["A3:A4"].Value = "таб №";
+            AlingValue("A3:A4", _excelWorksheet);
+            _excelWorksheet.Cells["B3:B4"].Merge = true;
+            _excelWorksheet.Cells["B3:B4"].Value = "Працівник";
+            AlingValue("B3:B4", _excelWorksheet);
+            _excelWorksheet.Cells["C3:F3"].Merge = true;
+            _excelWorksheet.Cells["C3:F3"].Value = "Начислення";
+            AlingValue("C3:F3", _excelWorksheet);
+            _excelWorksheet.Cells["C4"].Value = "Оплата";
+            AlingValue("C4", _excelWorksheet);
+            _excelWorksheet.Cells["D4"].Value = "Премія";
+            AlingValue("D4", _excelWorksheet);
+            _excelWorksheet.Cells["E4"].Value = "Відп/боль";
+            AlingValue("E4", _excelWorksheet);
+            _excelWorksheet.Cells["F4"].Value = "Усього";
+            AlingValue("F4", _excelWorksheet);
+            _excelWorksheet.Cells["G3:I3"].Merge = true;
+            _excelWorksheet.Cells["G3:I3"].Value = "Утримано";
+            AlingValue("G3:I3", _excelWorksheet);
+            _excelWorksheet.Cells["G4"].Value = "Податки";
+            AlingValue("G4", _excelWorksheet);
+            _excelWorksheet.Cells["H4"].Value = "Карточка";
+            AlingValue("H4", _excelWorksheet);
+            _excelWorksheet.Cells["I4"].Value = "Усього";
+            AlingValue("I4", _excelWorksheet);
+            _excelWorksheet.Cells["J3:J4"].Merge = true;
+            _excelWorksheet.Cells["J3:J4"].Value = "На руки";
+            AlingValue("J3:J4", _excelWorksheet);
+            return _excelWorksheet;
         }
 
         private void AlingValue(string address, ExcelWorksheet sheet)
