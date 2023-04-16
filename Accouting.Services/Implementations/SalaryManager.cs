@@ -13,7 +13,11 @@ namespace Accouting.Domain.Managers.Implementations
             _employeeManager = employeeManager;
         }
 
-        public IList<Salary> CalculateSalaries(DateTime from, DateTime to) => GetSalaries(_employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to).Result.Data, from, to);
+        public async Task<IList<Salary>> CalculateSalariesAsync(DateTime from, DateTime to)
+        {
+            var salaries = await _employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to);
+            return GetSalaries(salaries.Data, from, to);
+        }
 
 
         private IList<Salary> GetSalaries(IList<EmployeeBase> employees, DateTime from, DateTime to)

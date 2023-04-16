@@ -24,7 +24,7 @@ namespace Accouting.Domain.Managers.Implementations
             using var package = new ExcelPackage();
             _excelWorksheet = package.Workbook.Worksheets.Add("Report");
             _excelWorksheet = MakeHead(from, to);
-            _salaries = _salaryManager.CalculateSalaries(from, to);
+            _salaries = await _salaryManager.CalculateSalariesAsync(from, to);
             await MakeRows();
             return await package.GetAsByteArrayAsync();
         }

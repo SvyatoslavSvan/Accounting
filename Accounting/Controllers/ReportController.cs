@@ -23,7 +23,7 @@ namespace Accounting.Controllers
         public async Task<IActionResult> GetReport(DateTime from, DateTime to)
         {
             await _payoutManager.DeleteWithoutDocument();
-            var salaries = _salaryManager.CalculateSalaries(from, to);
+            var salaries = await _salaryManager.CalculateSalariesAsync(from, to);
             var groups = await _groupManager.GetAll();
             return View(new ReportViewModel()
             {
