@@ -68,7 +68,7 @@ namespace Accouting.Domain.Managers.Implementations
         }
 
         public async Task<BaseResult<Timesheet>> GetByDate(DateTime date) => await _provider.GetByPredicate(x => x.Date.Year == date.Year && x.Date.Month == date.Month, x => 
-        x.Include(x => x.Employees).ThenInclude(x => x.WorkDays));
+        x.Include(x => x.WorkDays).Include(x => x.Employees));
 
         public async Task<BaseResult<Timesheet>> UpdateWorkDaysForEmployee(float value, Guid employeeId, Guid timesheetId)
         {

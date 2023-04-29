@@ -1,6 +1,4 @@
 ﻿using Accounting.Domain.Models.Base;
-using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
@@ -77,11 +75,11 @@ namespace Accounting.Domain.Models
         private decimal CalculateBetPayout(DateTime from, DateTime to)
         {
             decimal payment = 0;
-            var timesheets = Timesheets.Where(x =>x.Date.Month >= from.Date.Month && x.Date.Year >= from.Date.Year && x.Date.Month <= to.Month && x.Date.Year <= to.Date.Year).ToList();
+            var timesheets = Timesheets.Where(x =>x.Date.Month >= from.Date.Month && x.Date.Year >= from.Date.Year && x.Date.Month <= to.Date.Month && x.Date.Year <= to.Date.Year).ToList();
             timesheets.ForEach(x =>
             {
                 var payForHour = (Bet / x.DaysCount) / (decimal)(x.HoursCount / x.DaysCount);
-                var workDays = x.WorkDays.Where(x => x.EmployeeId == Id).Where(x => x.Date >= from.Date && x.Date <= to.Date);
+                var workDays = x.WorkDays.Where(x => x.EmployeeId == Id).Where(x => x.Date >= from.Date && x.Date <= to.Date).ToList();
                 var workHours = workDays.Sum(x => x.Hours);
                 payment += (decimal)workHours * payForHour;
             });

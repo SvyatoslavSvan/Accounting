@@ -77,10 +77,10 @@ namespace Accounting.Controllers
         private TimesheetViewModel GetViewModel(Timesheet timesheet)
         {
             TimesheetViewModel viewModel = new TimesheetViewModel();
-            viewModel.WorkDaysToHeader = timesheet.Employees.First().WorkDays.Where(x => x.Date.Month == timesheet.Date.Month && x.Date.Year == timesheet.Date.Year).ToList();
+            viewModel.WorkDaysToHeader = timesheet.WorkDays.Where(x => x.EmployeeId == timesheet.Employees.First().Id).ToList();
             foreach (var item in timesheet.Employees)
             {
-                item.WorkDays = item.WorkDays.Where(x => x.Date.Month == timesheet.Date.Month && x.Date.Year == timesheet.Date.Year).ToList();
+                item.WorkDays = timesheet.WorkDays.Where(x => x.EmployeeId == item.Id).ToList();
             }
             viewModel.Employees = timesheet.Employees.ToList();
             viewModel.Date = timesheet.Date;
