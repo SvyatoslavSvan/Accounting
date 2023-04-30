@@ -84,7 +84,7 @@ namespace Accounting.Domain.Models
             timesheets.ForEach(x =>
             {
                 var payForHour = (Bet / x.DaysCount) / (decimal)(x.HoursCount / x.DaysCount);
-                var workHours = x.WorkDays.Where(x => x.EmployeeId == this.Id).Sum(x => x.Hours);
+                var workHours = x.WorkDays.Where(x => x.EmployeeId == this.Id).Where(x => x.Date >= from.Date && x.Date <= to.Date).Sum(x => x.Hours);
                 payment += (decimal)workHours * payForHour;
             });
             return payment; 
