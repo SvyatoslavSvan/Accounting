@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Enums;
+using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models.Base
@@ -145,14 +146,9 @@ namespace Accounting.Domain.Models.Base
             });
             var sumOfAccruals = payoutAccruals.Where(x => !x.IsAdditional).Sum(x => x.Ammount);
             var sumOfDeducations = payoutsDeducation.Where(x => !x.IsAdditional).Sum(x => x.Ammount);
-            return new Salary()
-            {
-                Payment = sumOfAccruals,
-                Deducation = sumOfDeducations,
-                AdditionalPayout = payoutAccruals.Where(x => x.IsAdditional).Sum(x => x.Ammount),
-                AdditionalDeducation = payoutsDeducation.Where(x => x.IsAdditional).Sum(x => x.Ammount),
-                Employee = this
-            };
+            var sumOfAdditionalPayouts = payoutAccruals.Where(x => x.IsAdditional).Sum(x => x.Ammount);
+            var sumofAdditionalDeducations = payoutsDeducation.Where(x => x.IsAdditional).Sum(x => x.Ammount);
+            return new Salary(sumOfAccruals, sumOfAdditionalPayouts, sumOfDeducations, sumofAdditionalDeducations, this);
         }
         
     }

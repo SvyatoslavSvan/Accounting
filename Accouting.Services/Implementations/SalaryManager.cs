@@ -1,6 +1,7 @@
 ﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accouting.Domain.Managers.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -8,15 +9,15 @@ namespace Accouting.Domain.Managers.Implementations
     {
         private readonly IEmployeeManager _employeeManager;
 
-        public SalaryManager(IEmployeeManager employeeManager, IPayoutManager payoutManager)
+        public SalaryManager(IEmployeeManager employeeManager)
         {
             _employeeManager = employeeManager;
         }
 
         public async Task<IList<Salary>> CalculateSalariesAsync(DateTime from, DateTime to)
         {
-            var salaries = await _employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to);
-            return GetSalaries(salaries.Data, from, to);
+            var getEmployeesResult = await _employeeManager.GetEmployeeWithSalaryPropertiesByPeriod(from, to);
+            return GetSalaries(getEmployeesResult.Data, from, to);
         }
 
 
