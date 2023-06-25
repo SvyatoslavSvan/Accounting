@@ -21,10 +21,9 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Create(Document entity)
         {
-            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.Employees);
+            _unitOfWork.DbContext.AttachRange(entity.Payouts);
+            await DeletePayoutsByDocumentId(entity.Id);
             await _unitOfWork.GetRepository<Document>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -37,8 +36,7 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
-            await DeletePayoutsByDocumentId<PayoutBetEmployee>(id);
-            await DeletePayoutsByDocumentId<PayoutNotBetEmployee>(id);
+            
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -47,9 +45,9 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        private async Task DeletePayoutsByDocumentId<TRepository>(Guid id) where TRepository : PayoutBase
+        private async Task DeletePayoutsByDocumentId(Guid id)  
         {
-            var payoutRepository = _unitOfWork.GetRepository<TRepository>();
+            var payoutRepository = _unitOfWork.GetRepository<Payout>();
             payoutRepository.Delete(await payoutRepository.GetAllAsync(predicate: x => x.Document.Id == id));
         }
 
@@ -76,7 +74,7 @@ namespace Accounting.DAL.Providers
                   orderBy: x => x.OrderBy(x => x.DateCreate)
                  , disableTracking: false,
                   predicate: predicate,
-                  include: x => x.Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees));
+                  include: x => x.Include(x => x.Payouts));
                 return new BaseResult<IList<Document>>(true, documents, OperationStatuses.Ok);
             }
             catch (Exception ex)
@@ -91,7 +89,7 @@ namespace Accounting.DAL.Providers
             {
                 return new BaseResult<Document>(true, await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(
                     predicate: x => x.Id == id,
-                    include: x => x.Include(x => x.BetEmployees).Include(x => x.NotBetEmployees).Include(x => x.PayoutsBetEmployees).Include(x => x.PayoutsNotBetEmployees),
+                    include: x => x.Include(x => x.Employees).Include(x => x.Payouts),
                     disableTracking: false 
                     ), OperationStatuses.Ok);
             }
@@ -118,10 +116,8 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Update(Document entity)
         {
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.BetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.Payouts);
+            _unitOfWork.DbContext.AttachRange(entity.Employees);
             _unitOfWork.GetRepository<Document>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

@@ -17,13 +17,11 @@ namespace Accounting.Services
             _logger = logger;
         }
 
-        private IList<EmployeeBase> _employees
+        private IList<Employee> _employees
         {
             get
             {
-                var employees = new List<EmployeeBase>(_document.NotBetEmployees);
-                employees.AddRange(_document.BetEmployees);
-                return employees;
+                return _document.Employees;
             }
         }
 
@@ -57,16 +55,16 @@ namespace Accounting.Services
             _logger.LogError(ex?.InnerException?.Message);
         }
 
-        public async Task<bool> AddEmployeeToDocument(EmployeeBase employee)
+        public async Task<bool> AddEmployeeToDocument(Employee employee)
         {
             var document = _document;
             document.AddEmployee(employee);
             return await Commit(document);
         }
 
-        public List<PayoutBase> GetPayoutsByEmployeeId(Guid employeeId) => _document.GetPayoutsByEmployeeId(employeeId);
+        public List<Payout> GetPayoutsByEmployeeId(Guid employeeId) => _document.GetPayoutsByEmployeeId(employeeId);
 
-        public async Task<bool> AddPayout(PayoutBase payout)
+        public async Task<bool> AddPayout(Payout payout)
         {
             var document = _document;
             document.AddPayout(payout);
@@ -83,7 +81,7 @@ namespace Accounting.Services
         public async Task<bool> DeleteAccrual(Guid payoutId)
         {
             var document = _document;
-            document.DeleteAccrual(payoutId);
+            document.DeletePayout(payoutId);
             return await Commit(document);
         }
 
@@ -99,8 +97,7 @@ namespace Accounting.Services
         private SessionDocument RemoveTwinsEmployees()
         {
             var document = _document;
-            document.BetEmployees = _document.BetEmployees.DistinctBy(x => x.Id).ToList();
-            document.NotBetEmployees = _document.NotBetEmployees.DistinctBy(x => x.Id).ToList();
+            document.Employees = _document.Employees.DistinctBy(x => x.Id).ToList();
             return document;
         }
 
@@ -109,8 +106,8 @@ namespace Accounting.Services
         private SessionDocument MapToSessionDocument(Document document)
         {
             var sessionDocument = new SessionDocument();
-            var employees = document.GetEmployees();
-            var payouts = document.GetPayouts();
+            var employees = document.Employees;
+            var payouts = document.Payouts;
             foreach (var item in employees)
             {
                 var itemPayouts = payouts.Where(x => x.EmployeeId == item.Id).ToList();
@@ -135,15 +132,14 @@ namespace Accounting.Services
         public decimal GetSumOfPayouts()
         {
             var document = _document;
-            var sum = document.PayoutsNotBetEmployee.Sum(x => x.Ammount);
-            sum += document.PayoutsBetEmployee.Sum(x => x.Ammount);
+            var sum = document.Payouts.Sum(x => x.Ammount);
             return sum;
         }
 
         public int GetCountOfTwinsEmployees(Guid id) => _employees.Where(x => x.Id == id).Count();
 
-        public IList<PayoutBase> GetPayouts() => _document.Payouts;
+        public IList<Payout> GetPayouts() => _document.Payouts;
 
-        public IList<EmployeeBase> GetEmployees() => _document.Employees;
+        public IList<Employee> GetEmployees() => _document.Employees;
     }
 }

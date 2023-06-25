@@ -93,6 +93,8 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Update(Timesheet entity)
         {
+            _unitOfWork.DbContext.AttachRange(entity.WorkDays);
+            _unitOfWork.DbContext.AttachRange(entity.Employees);
             _unitOfWork.GetRepository<Timesheet>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

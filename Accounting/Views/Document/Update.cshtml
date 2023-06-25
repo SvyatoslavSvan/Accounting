@@ -3,8 +3,8 @@
 @model UpdateDocumentViewModel
 @{
     string getUpdatePayoutForm(Guid id) => id + "updatePayout";
-    string getFormToDeleteId(Guid id, int count) => id + "formToDelete" + count;
-    string getTrId(Guid id, int count) => id + "tr" + count;
+    string getFormToDeleteId(Guid id) => id + "formToDelete";
+    string getTrId(Guid id) => id + "tr";
 }
 <h4 class="text-center">Оновити - @Model.Name</h4>
 <div class="container">
@@ -35,27 +35,16 @@
                         </tr>
                     </thead>
                     <tbody id="addedEmployeesTbody">
-                        @foreach (var item in Model.EmployeesInDocument)
+                        @foreach (var item in Model.Payouts)
                         {
-                            <tr id="@getTrId(item.Employee.Id, item.CountInSessionDocument)">
-                                    <partial name="AddedPayout" model="new UpdatePayoutViewModel()
-                                        {
-                                            CountInSessionDocument = item.CountInSessionDocument,
-                                            Ammount = item.Payout.Ammount,
-                                            Employee = item.Employee,
-                                            IsAdditional = item.Payout.IsAdditional,
-                                            Payout = item.Payout,
-                                            PayoutId = item.Payout.Id
-                                        }">
-                                    </partial>
-                            </tr>
+                           <partial name="AddedPayout" model="item"/>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="col-md-3">
-            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal" id="addEmployeesBtn">Додати в документ</button>
         </div>
     </div>
     <div class="row">
@@ -72,11 +61,30 @@
                 $('#SearchInnerIdInput').focus();
             });
         });
-        document.addEventListener('keydown', function (event) {
+
+        document.addEventListener('keydown', function (event) 
+        {
             if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 document.getElementById('searchEmployeesbtn').click();
                 document.getElementById('SearchInnerIdInput').value = "";
             }
+            if (event.code === 'Space') {
+                var isShown = $('#addEmployeeToDocumentModal').hasClass('show');
+                if(isShown) {
+                    var ul = document.getElementById('chooseEmployeeUl'); 
+                    var liList = ul.getElementsByTagName('li');
+                    if (liList.length > 0)
+                    {
+                       var firstLi = liList[0];
+                       var submitButton = firstLi.querySelector('button[type="button"]');
+                       submitButton.click();
+                    }
+                }
+                else {
+                    document.getElementById('addEmployeesBtn').click();
+                }
+            }
         });
+
     </script>
 }

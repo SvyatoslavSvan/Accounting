@@ -1,9 +1,7 @@
 ﻿using Accounting.Domain.Models;
-using Accounting.Domain.Models.Base;
 using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accounting.Services;
-using Accounting.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,15 +32,14 @@ namespace Accounting.Controllers
             {
                 if (await _sessionDocumentService.LoadDocument(document.Data))
                 {
-                    var employeesExsistInDocument = _sessionDocumentService.GetEmployees();
-                    var payouts = _sessionDocumentService.GetPayouts();
+                    var payouts = document.Data.Payouts;
                     var sumOfPayouts = document.Data.GetSumOfPayouts();
                     var getEmployeesResult = await _employeeManager.GetAll();
                     return View(new UpdateDocumentViewModel()
                     {
                         Name = document.Data.Name,
                         DateCreate = document.Data.DateCreate,
-                        EmployeesInDocument = GetAddedEmployeeViewModels(employeesExsistInDocument, payouts),
+                        Payouts = payouts.ToList(),
                         Id = document.Data.Id,
                         SumOfpayouts = sumOfPayouts,
                         Employees = getEmployeesResult.Data.ToList(),
@@ -52,22 +49,6 @@ namespace Accounting.Controllers
             return BadRequest();
         }
 
-        private List<AddedEmployeeViewModel> GetAddedEmployeeViewModels(IList<EmployeeBase> employees, IList<PayoutBase> payouts)
-        {
-            var viewModels = new List<AddedEmployeeViewModel>();
-            foreach (var item in employees)
-            {
-                var payout = payouts.First(x => x.EmployeeId == item.Id);
-                viewModels.Add(new AddedEmployeeViewModel()
-                {
-                    Employee = item,
-                    CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(item.Id),
-                    Payout = payout
-                });
-                payouts.Remove(payout);
-            }
-            return viewModels;
-        }
 
         [HttpPost]
         public async Task<IActionResult> Update(UpdateDocumentViewModel viewModel)
@@ -76,10 +57,8 @@ namespace Accounting.Controllers
             var getDocumentResult = await _documentManager.GetById(viewModel.Id);
             if (getDocumentResult.Succed && sessionDocument is not null)
             {
-                getDocumentResult.Data.PayoutsBetEmployees = sessionDocument.PayoutsBetEmployee;
-                getDocumentResult.Data.PayoutsNotBetEmployees = sessionDocument.PayoutsNotBetEmployee;
-                getDocumentResult.Data.NotBetEmployees = sessionDocument.NotBetEmployees;
-                getDocumentResult.Data.BetEmployees = sessionDocument.BetEmployees;
+                getDocumentResult.Data.Employees = sessionDocument.Employees;
+                getDocumentResult.Data.Payouts = sessionDocument.Payouts;
                 getDocumentResult.Data.Name = viewModel.Name;
                 getDocumentResult.Data.DateCreate = viewModel.DateCreate;
                 var updateResult = await _documentManager.Update(getDocumentResult.Data);
@@ -123,8 +102,7 @@ namespace Accounting.Controllers
         public async Task<IActionResult> Create(DocumentViewModel viewModel)
         {
             var sessionDocument = _sessionDocumentService.GetDocument();
-            var document = new Document(sessionDocument.NotBetEmployees, sessionDocument.
-                BetEmployees, sessionDocument.PayoutsBetEmployee, sessionDocument.PayoutsNotBetEmployee, viewModel.Name, viewModel.DateCreate, viewModel.DocumentType);
+            var document = new Document(sessionDocument.Employees, viewModel.Name, viewModel.DateCreate, viewModel.DocumentType, sessionDocument.Payouts);
             var createResult = await _documentManager.Create(document);
             if (createResult.Succed)
             {
@@ -156,11 +134,7 @@ namespace Accounting.Controllers
             {
                 if (await _sessionDocumentService.AddEmployeeToDocument(getEmployeeResult.Data))
                 {
-                    return PartialView("AddedEmployee", new AddedEmployeeViewModel() 
-                    { 
-                        Employee = getEmployeeResult.Data,
-                        CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(employeeId)
-                    });
+                    return PartialView("AddedEmployee", getEmployeeResult.Data);
                 }
                 else
                 {

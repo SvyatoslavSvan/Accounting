@@ -14,99 +14,49 @@ namespace Accounting.Domain.Models
             DateCreate = dateCreate;
         }
 
-        public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, 
-            ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees, string name, DateTime dateCreate, DocumentType documentType)
+        public Document(ICollection<Employee> employees, string name, DateTime dateCreate, DocumentType documentType, ICollection<Payout> payouts)
         {
-            _betEmployees = betEmployees;
-            _notBetEmployees = notBetEmployees;
-            _payoutsBetEmployee = payoutsBetEmployees;
-            _payoutsNotBetEmployee = payoutsNotBetEmployees;
             Name = name;
             DateCreate = dateCreate;
             DocumentType = documentType;
-        }
-        
-       
-        public IList<PayoutBase> GetPayouts()
-        {
-            var payouts = new List<PayoutBase>();
-            payouts.AddRange(PayoutsBetEmployees);
-            payouts.AddRange(PayoutsNotBetEmployees);
-            return payouts;
-        }
-
-        public IList<EmployeeBase> GetEmployees()
-        {
-            var employees = new List<EmployeeBase>();
-            employees.AddRange(BetEmployees);
-            employees.AddRange(NotBetEmployees);
-            return employees;
+            Payouts = payouts;
+            Employees = employees;
         }
 
         public DocumentType DocumentType { get; private set; }
         
         public string Name { get; set; }
-        private ICollection<NotBetEmployee> _notBetEmployees;
 
-        public ICollection<NotBetEmployee> NotBetEmployees
+
+        private ICollection<Employee> _employees;
+
+        public ICollection<Employee> Employees
         {
-            get => _notBetEmployees;
+            get => _employees;
             set 
             {
-                if (_notBetEmployees != null)
+                if (_employees != null)
                 {
-                    UpdateRange(value, _notBetEmployees);
+                    UpdateRange(value, _employees);
                     return;
-                }
-                _notBetEmployees = value ?? throw new ArgumentNullException(nameof(NotBetEmployees));
-            }
-        }
-        private ICollection<BetEmployee> _betEmployees;
-
-        public ICollection<BetEmployee> BetEmployees
-        {
-            get => _betEmployees;
-            set 
-            {
-                if (_betEmployees != null)
-                {
-                    UpdateRange(value, _betEmployees);
-                    return;
-                }
-                _betEmployees = value ?? throw new ArgumentNullException(nameof(BetEmployees));
+                } 
+                _employees = value ??  throw new ArgumentNullException(nameof(value));
             }
         }
 
+        private ICollection<Payout> _payouts;
 
-        private ICollection<PayoutNotBetEmployee> _payoutsNotBetEmployee;
-
-        public ICollection<PayoutNotBetEmployee> PayoutsNotBetEmployees
+        public ICollection<Payout> Payouts
         {
-            get => _payoutsNotBetEmployee;
+            get => _payouts;
             set 
             {
-                if (_payoutsNotBetEmployee != null)
+                if (_payouts != null)
                 {
-                    UpdateRange(value, _payoutsNotBetEmployee);
+                    UpdateRange(value, _payouts);
                     return;
                 }
-                _payoutsNotBetEmployee = value ?? throw new ArgumentNullException(nameof(PayoutsNotBetEmployees));
-            }
-        }
-
-        private ICollection<PayoutBetEmployee> _payoutsBetEmployee;    
-
-        public ICollection<PayoutBetEmployee> PayoutsBetEmployees
-        {
-            get => _payoutsBetEmployee;
-            set 
-            {
-                if (_payoutsBetEmployee != null)
-                {
-                    UpdateRange(value, _payoutsBetEmployee);
-                    return;
-                }
-                _payoutsBetEmployee = value ?? throw new ArgumentNullException(nameof(PayoutsNotBetEmployees));
+                _payouts = value ?? throw new ArgumentNullException(nameof(Payouts));
             }
         }
 
@@ -135,12 +85,7 @@ namespace Accounting.Domain.Models
             }
         }
 
-        public decimal GetSumOfPayouts()
-        {
-            var sumOfPayouts = PayoutsNotBetEmployees.Sum(x => x.Ammount);
-            sumOfPayouts += PayoutsBetEmployees.Sum(x => x.Ammount);
-            return sumOfPayouts;
-        }
+        public decimal GetSumOfPayouts() => Payouts.Sum(x => x.Ammount);
 
         public DateTime DateCreate { get; set; }  
     }

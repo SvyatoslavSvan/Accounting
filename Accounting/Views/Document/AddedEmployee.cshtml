@@ -1,29 +1,28 @@
 ﻿@using Accounting.Domain.Models
 @using Accounting.Domain.Models.Base
 @using Accounting.ViewModels
-@model AddedEmployeeViewModel
+@model Employee
 @{
 
-    var trId = Model.Employee.Id + "tr" + Model.CountInSessionDocument;
-    var formToDeleteEmployee = Model.Employee.Id + "formToDelete" + Model.CountInSessionDocument;
-    var formPayout = Model.Employee.Id + "createPayout" + Model.CountInSessionDocument;
-    var payoutDivId = Model.Employee.Id + "PayoutDiv" + Model.CountInSessionDocument;
-    var payoutInput = Model.Employee.Id + "payoutinput" + Model.CountInSessionDocument;
-    var payoutId = Model.Employee.Id + "payoutId" + Model.CountInSessionDocument;
+    var trId = Model.Id + "tr";
+    var formToDeleteEmployee = Model.Id + "formToDelete";
+    var formPayout = Model.Id + "createPayout";
+    var payoutDivId = Model.Id + "PayoutDiv";
+    var payoutInput = Model.Id + "payoutinput";
+    var payoutId = Model.Id + "payoutId";
 }
 <tr id="@trId">
-    <td>@Model.Employee.InnerId</td>
-    <td>@Model.Employee.Name</td>
+    <td>@Model.InnerId</td>
+    <td>@Model.Name</td>
     <td>
         <div id="@payoutDivId">
             <form id="@formPayout" onsubmit="return false;">
-                <input type="hidden" name="EmployeeId" value="@Model.Employee.Id" />
+                <input type="hidden" name="EmployeeId" value="@Model.Id" />
                 <input type="text" placeholder="Додати Суми" name="Ammount" onchange="sendForm('@formPayout', '/Payout/CreatePayout', '@trId')" id="@payoutInput" autofocus />
                 <input type="checkbox" value="true" name="IsAdditional" />
             </form>
         </div>
     </td>
-   
 </tr>
 
 <script type="text/javascript">

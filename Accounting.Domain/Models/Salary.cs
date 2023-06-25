@@ -6,7 +6,7 @@ namespace Accounting.Domain.Models
     {
 		public Salary() { }
 
-		public Salary(decimal payment, decimal additionalPayout, decimal deducation, decimal additionalDeducation, EmployeeBase employee)
+		public Salary(decimal payment, decimal additionalPayout, decimal deducation, decimal additionalDeducation, Employee employee)
 		{
 			Payment = payment;
 			AdditionalDeducation = additionalDeducation;
@@ -15,7 +15,7 @@ namespace Accounting.Domain.Models
 			Employee = employee;
 		}
 
-		private EmployeeBase _employee = null!;
+		private Employee _employee = null!;
 
 		private decimal _payment;
 
@@ -25,7 +25,7 @@ namespace Accounting.Domain.Models
 
         private decimal _additionalDeducation;
 
-		public EmployeeBase Employee
+		public Employee Employee
 		{
 			get => _employee;
 			set => _employee = value ?? throw new ArgumentNullException();

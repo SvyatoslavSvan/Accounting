@@ -1,7 +1,6 @@
 ﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accouting.Domain.Managers.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -21,7 +20,7 @@ namespace Accouting.Domain.Managers.Implementations
         }
 
 
-        private IList<Salary> GetSalaries(IList<EmployeeBase> employees, DateTime from, DateTime to)
+        private IList<Salary> GetSalaries(IList<Employee> employees, DateTime from, DateTime to)
         {
             var salaries = new List<Salary>();
             foreach (var item in employees)

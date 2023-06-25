@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
-    public class BetEmployee : EmployeeBase
+    public class BetEmployee : Employee
     {
 #nullable disable
         [JsonConstructor]
@@ -26,8 +26,6 @@ namespace Accounting.Domain.Models
         private List<WorkDay> _workDays;
 
         private ICollection<Timesheet> _timesheets;
-
-        private ICollection<PayoutBetEmployee> _accruals;
 
         public decimal Bet
         {
@@ -61,15 +59,6 @@ namespace Accounting.Domain.Models
             set { _timesheets = value; }
         }
 
-
-        [JsonIgnore]
-        public ICollection<PayoutBetEmployee> Accruals
-        {
-            get { return _accruals; }
-            set { _accruals = value ?? throw new ArgumentNullException(); }
-        }
-
-        
         public override Salary CalculateSalary(DateTime from, DateTime to)
         {
             var salary = base.CalculateSalary(from, to);

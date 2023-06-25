@@ -8,9 +8,9 @@ namespace Accounting.Services
     public interface ISessionDocumentService
     {
         public Task<bool> Create();
-        public Task<bool> AddEmployeeToDocument(EmployeeBase employee);
-        public List<PayoutBase> GetPayoutsByEmployeeId(Guid employeeId);
-        public Task<bool> AddPayout(PayoutBase payout);
+        public Task<bool> AddEmployeeToDocument(Employee employee);
+        public List<Payout> GetPayoutsByEmployeeId(Guid employeeId);
+        public Task<bool> AddPayout(Payout payout);
         public Task<bool> UpdatePayout(Guid payoutId, decimal ammount);
         public Task<bool> DeleteAccrual(Guid payoutId);
         public Task<bool> DeleteEmployee(Guid employeeId, Guid PayoutId);
@@ -18,7 +18,7 @@ namespace Accounting.Services
         public Task<bool> LoadDocument(Document document);
         public decimal GetSumOfPayouts();
         public int GetCountOfTwinsEmployees(Guid id);
-        public IList<PayoutBase> GetPayouts();
-        public IList<EmployeeBase> GetEmployees();
+        public IList<Payout> GetPayouts();
+        public IList<Employee> GetEmployees();
     }
 }

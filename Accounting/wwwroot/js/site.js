@@ -18,8 +18,9 @@ function appendEmployee(elementToRemoveId, response) {
     $('#addedEmployeesTbody').append(response);
 }
 
-function removeEmployee(elementToRemoveId, response) {
-    $('#' + elementToRemoveId).remove();
+function removeEmployee(elementToRemoveId) {
+    var employeeTr = document.getElementById(elementToRemoveId);
+    employeeTr.remove();
     getSumOfAccruals();
 }
 
@@ -29,11 +30,8 @@ function insertResponse(url, response, elementToRemoveId, formId) {
     }
     if (url == '/Payout/CreatePayout') {
         getSumOfAccruals();
-        let formTr = document.getElementById(elementToRemoveId);
-        while (formTr.firstChild) {
-            formTr.removeChild(formTr.firstChild)
-        }
-        formTr.innerHTML += response;
+        document.getElementById(elementToRemoveId).remove();
+        $('#addedEmployeesTbody').append(response);
     }
     if (url == '/Document/DeleteEmployee') {
         removeEmployee(elementToRemoveId, response);

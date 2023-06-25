@@ -9,7 +9,7 @@ namespace Accounting.Domain.ViewModels
 #nullable disable
         public Guid Id { get; set; }
         [BindNever]
-        public List<AddedEmployeeViewModel> EmployeesInDocument { get; set; }
-        public List<EmployeeBase> Employees { get; set; }
+        public List<Payout> Payouts { get; set; }
+        public List<Employee> Employees { get; set; }
     }
 }

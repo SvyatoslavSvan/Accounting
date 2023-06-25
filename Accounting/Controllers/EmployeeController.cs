@@ -45,7 +45,7 @@ namespace Accounting.Controllers
         {
             if (ModelState.IsValid)
             {
-                EmployeeBase employee;
+                Employee employee;
                 var employeeGroup = await _groupManager.GetById(employeeViewModel.GroupId);
                 if (employeeViewModel.IsBet)
                 {
@@ -54,7 +54,7 @@ namespace Accounting.Controllers
                 }
                 else
                 {
-                    employee = new NotBetEmployee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
+                    employee = new Employee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
                     employee.AddToGroup(employeeGroup.Data);
                 }
                 var createResult = await _employeeManager.Create(employee);
@@ -98,7 +98,7 @@ namespace Accounting.Controllers
                 updateViewModel.IsBet = true;
                 updateViewModel.Premium = betEmployee.Premium;
             }
-            else if (getByIdResult.Data is NotBetEmployee notBetEmployee)
+            else if (getByIdResult.Data is Employee notBetEmployee)
             {
                 updateViewModel.Name = notBetEmployee.Name;
                 updateViewModel.InnerId = notBetEmployee.InnerId;

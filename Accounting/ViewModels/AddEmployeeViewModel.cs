@@ -4,7 +4,7 @@ namespace Accounting.ViewModels
 {
     public class AddEmployeeViewModel
     {
-        public EmployeeBase Employee { get; set; }
+        public Employee Employee { get; set; }
         public int TwinsCount { get; set; }
     }
 }

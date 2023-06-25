@@ -1,5 +1,4 @@
 ﻿using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
 using Accounting.Services;
@@ -30,29 +29,13 @@ namespace Accounting.Controllers
             var getEmployeeResult = await _employeeManager.GetById(viewModel.EmployeeId);
             if (getEmployeeResult.Succed)
             {
-                PayoutBase payout;
-                if (getEmployeeResult.Data is BetEmployee betEmployee)
-                {
-                    payout = new PayoutBetEmployee(viewModel.Ammount, viewModel.IsAdditional, betEmployee);
-                }
-                else
-                {
-                    payout = new PayoutNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, getEmployeeResult.Data as NotBetEmployee);
-                }
+                var payout = new Payout(viewModel.Ammount, viewModel.IsAdditional, getEmployeeResult.Data);
                 var createResult = await _payoutManager.Create(payout);
                 if (createResult.Succed)
                 {
                     if (await _sessionDocumentService.AddPayout(payout))
                     {
-                        return PartialView("AddedPayout", new UpdatePayoutViewModel()
-                        {
-                            PayoutId = payout.Id,
-                            Ammount = payout.Ammount,
-                            IsAdditional = payout.IsAdditional,
-                            Employee = getEmployeeResult.Data,
-                            CountInSessionDocument = _sessionDocumentService.GetCountOfTwinsEmployees(getEmployeeResult.Data.Id),
-                            Payout = createResult.Data
-                        });
+                        return PartialView("AddedPayout", payout);
                     }
                 }
                 return StatusCode(500);

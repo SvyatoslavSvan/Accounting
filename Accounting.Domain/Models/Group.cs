@@ -4,8 +4,16 @@ namespace Accounting.Domain.Models
 #nullable disable
     public class Group : EntityBase
     {
-        public Group() { }
         private string _name;
+
+        private ICollection<Employee> _employees;
+
+        public Group(string name)
+        {
+            Name = name;
+        }
+
+        public Group() { }
 
         public string Name
         {
@@ -20,25 +28,20 @@ namespace Accounting.Domain.Models
             }
         }
 
-        public List<BetEmployee> BetEmployees { get; private set; }
-        public List<NotBetEmployee> NotBetEmployees { get; private set; } 
-        public Group(string name)
+        public ICollection<Employee> Employees
         {
-            Name = name;
+            get => _employees;
+            set { _employees = value; }
         }
-        public virtual void AddToGroup(EmployeeBase employee)
+
+        public void AddToGroup(Employee employee)
         {
-            if (employee is BetEmployee betEmployee)
-                BetEmployees.Add(betEmployee);
-            else if (employee is NotBetEmployee notBetEmployee)
-                NotBetEmployees.Add(notBetEmployee);
+            _employees.Add(employee);
         }
-        public virtual void RemoveFromGroup(EmployeeBase employee)
+
+        public void RemoveFromGroup(Employee employee)
         {
-            if (employee is BetEmployee betEmployee)
-                BetEmployees.Remove(betEmployee);
-            else if (employee is NotBetEmployee notBetEmployee)
-                NotBetEmployees.Remove(notBetEmployee);
+            _employees.Remove(employee);
         }
     }
 }
