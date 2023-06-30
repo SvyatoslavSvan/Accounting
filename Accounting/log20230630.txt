@@ -1,0 +1,2 @@
+2023-06-30 16:18:58.818 +03:00 [ERR] Failed executing DbCommand (27ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [BetEmployeeTimesheet] ADD CONSTRAINT [FK_BetEmployeeTimesheet_Employees_EmployeesId] FOREIGN KEY ([EmployeesId]) REFERENCES [Employees] ([Id]) ON DELETE CASCADE;
