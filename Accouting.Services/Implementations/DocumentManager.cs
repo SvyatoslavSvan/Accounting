@@ -1,5 +1,6 @@
 ﻿using Accounting.DAL.Interfaces;
 using Accounting.DAL.Result.Provider.Base;
+using Accounting.Domain.Enums;
 using Accounting.Domain.Models;
 using Accounting.Domain.Requests;
 using Accouting.Domain.Managers.Interfaces;
@@ -11,9 +12,11 @@ namespace Accouting.Domain.Managers.Implementations
     public class DocumentManager : IDocumentManager
     {
         private readonly IDocumentProvider _provider;
-        public DocumentManager(IDocumentProvider provider)
+        private readonly IPayoutManager _payoutManager;
+        public DocumentManager(IDocumentProvider provider, IPayoutManager payoutManager)
         {
             _provider = provider;
+            _payoutManager = payoutManager;
         }
         public async Task<BaseResult<Document>> Create(Document model)
         {
@@ -21,7 +24,18 @@ namespace Accouting.Domain.Managers.Implementations
             return new BaseResult<Document>(createResult.Succed, model, createResult.OperationStatus);
         }
 
-        public async Task<BaseResult<bool>> Delete(Guid id) => await _provider.Delete(id);
+        public async Task<BaseResult<bool>> Delete(Guid id)
+        {
+            var deletePayoutsTiedToDocument = await _payoutManager.DeleteByDocumentId(id);
+            if (deletePayoutsTiedToDocument.Succed)
+            {
+                return await _provider.Delete(id);
+            }
+            else
+            {
+                return deletePayoutsTiedToDocument;
+            }
+        }
         
 
         public async Task<BaseResult<IList<Document>>> GetAll()
@@ -47,23 +61,17 @@ namespace Accouting.Domain.Managers.Implementations
                 predicate = predicate.And(x => x.Name.Contains(request.Name));
             if (request.DateCreate != default(DateTime) && request.From == default(DateTime) && request.To == default(DateTime))
                 predicate = predicate.And(x => x.DateCreate == request.DateCreate);
+            if (request.DocumentType == DocumentType.Accrual)
+                predicate = predicate.And(x => x.DocumentType == DocumentType.Accrual);
+            if (request.DocumentType == DocumentType.Deducation)
+                predicate = predicate.And(x => x.DocumentType == DocumentType.Deducation);
             return predicate;
         }
 
         public async Task<BaseResult<Document>> Update(Document model)
         {
-            var getDocumentToUpdateResult = await _provider.GetById(model.Id);
-            UpdateFieds(getDocumentToUpdateResult.Data, model);
-            var updateResult = await _provider.Update(getDocumentToUpdateResult.Data);
+            var updateResult = await _provider.Update(model);
             return new BaseResult<Document>(updateResult.Succed, model, updateResult.OperationStatus);
-        }
-
-        private void UpdateFieds(Document oldDocument, Document newDocument)
-        {
-            oldDocument.NotBetEmployees = newDocument.NotBetEmployees;
-            oldDocument.PayoutsNotBetEmployees = newDocument.PayoutsNotBetEmployees;
-            oldDocument.Name = newDocument.Name;
-            oldDocument.DateCreate = newDocument.DateCreate;
-        }     
+        }        
     }
 }

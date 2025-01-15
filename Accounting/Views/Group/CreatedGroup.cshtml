@@ -1,0 +1,16 @@
+﻿@using Accounting.Domain.Models
+@model Group
+@{
+    string GetDeleteFormId(Guid id) => id.ToString() + "delgrpfrm";
+    string GetLiId(Guid Id) => Id.ToString() + "ligrpid";
+    string GetUpdateFormId(Guid id) => id.ToString() + "updgrpfrm";
+}
+<li class="list-group-item" id="@GetLiId(Model.Id)">
+    <form id="@GetUpdateFormId(Model.Id)">
+        <input type="hidden" value="@Model.Id" name="Id" />
+        <input type="text" value="@Model.Name" name="Name" onchange="sendForm('@GetUpdateFormId(Model.Id)', '/Group/Update')" />
+    </form> <form id="@GetDeleteFormId(Model.Id)">
+        <input type="hidden" name="id" value="@Model.Id">
+        <button type="button" onclick="sendForm('@GetDeleteFormId(Model.Id)','/Group/Delete', '@GetLiId(Model.Id)')" class="btn btn-outline-danger">Видалити</button>
+    </form>
+</li>

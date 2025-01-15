@@ -1,10 +1,9 @@
 ﻿using Accounting.Domain.Enums;
 using Accounting.Domain.Models.Base;
-using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
-    public class Document
+    public class Document : EntityBase
     {
 #nullable disable
         public Document() { }
@@ -15,80 +14,79 @@ namespace Accounting.Domain.Models
             DateCreate = dateCreate;
         }
 
-        [JsonConstructor]
-        public Document(ICollection<NotBetEmployee> notBetEmployees, ICollection<BetEmployee> betEmployees, ICollection<PayoutBetEmployee> payoutsBetEmployees, ICollection<PayoutNotBetEmployee> payoutsNotBetEmployees)
+        public Document(ICollection<Employee> employees, string name, DateTime dateCreate, DocumentType documentType, ICollection<Payout> payouts)
         {
-            _betEmployees = betEmployees;
-            _notBetEmployees = notBetEmployees;
-            _payoutsBetEmployee = payoutsBetEmployees;
-            _payoutsNotBetEmployee = payoutsNotBetEmployees;
-        }
-
-        public Document(List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
-        {
-            _notBetEmployees = employees;
-            _payoutsNotBetEmployee = accruals;
             Name = name;
             DateCreate = dateCreate;
-        }
-
-        public Document(Guid id,List<NotBetEmployee> employees, List<PayoutNotBetEmployee> accruals, string name, DateTime dateCreate)
-        {
-            Id = id;
-            _notBetEmployees = employees;
-            _payoutsNotBetEmployee = accruals;
-            Name = name;
-            DateCreate = dateCreate;
+            DocumentType = documentType;
+            Payouts = payouts;
+            Employees = employees;
         }
 
         public DocumentType DocumentType { get; private set; }
-        public Guid Id { get; private set; }
+        
         public string Name { get; set; }
-        private ICollection<NotBetEmployee> _notBetEmployees;
 
-        public ICollection<NotBetEmployee> NotBetEmployees
+
+        private ICollection<Employee> _employees;
+
+        public ICollection<Employee> Employees
         {
-            get => _notBetEmployees;
+            get => _employees;
             set 
             {
-                _notBetEmployees = value ?? throw new ArgumentNullException(); 
-            }
-        }
-        private ICollection<BetEmployee> _betEmployees;
-
-        public ICollection<BetEmployee> BetEmployees
-        {
-            get { return _betEmployees; }
-            set { _betEmployees = value; }
-        }
-
-
-        private ICollection<PayoutNotBetEmployee> _payoutsNotBetEmployee;
-
-        public ICollection<PayoutNotBetEmployee> PayoutsNotBetEmployees
-        {
-            get => _payoutsNotBetEmployee;
-            set 
-            {
-                //UpdateAccruals(value); 
+                if (_employees != null)
+                {
+                    UpdateRange(value, _employees);
+                    return;
+                } 
+                _employees = value ??  throw new ArgumentNullException(nameof(value));
             }
         }
 
-        private ICollection<PayoutBetEmployee> _payoutsBetEmployee;    
+        private ICollection<Payout> _payouts;
 
-        public ICollection<PayoutBetEmployee> PayoutsBetEmployees
+        public ICollection<Payout> Payouts
         {
-            get => _payoutsBetEmployee;
-            set { _payoutsBetEmployee = value ?? throw new ArgumentNullException(); }
+            get => _payouts;
+            set 
+            {
+                if (_payouts != null)
+                {
+                    UpdateRange(value, _payouts);
+                    return;
+                }
+                _payouts = value ?? throw new ArgumentNullException(nameof(Payouts));
+            }
         }
 
-        public void Initialize()
+        private void UpdateRange<T>(ICollection<T> newRange, ICollection<T> oldRange) where T : EntityBase
         {
-            _betEmployees = new List<BetEmployee>();
-            _notBetEmployees = new List<NotBetEmployee>();
-            _payoutsBetEmployee = new List<PayoutBetEmployee>();
-            _payoutsNotBetEmployee = new List<PayoutNotBetEmployee>();
+            foreach (var item in newRange)
+            {
+                var containsInThis = oldRange.Contains(oldRange.FirstOrDefault(x => x.Id == item.Id));
+                if (!containsInThis)
+                {
+                    oldRange.Add(item);
+                }
+            }
+            var elementsToRemove = new List<Guid>();
+            foreach (var thisEmployee in oldRange)
+            {
+                var containsInUpdate = newRange.Contains(newRange.FirstOrDefault(x => x.Id == thisEmployee.Id));
+                if (!containsInUpdate)
+                {
+                    elementsToRemove.Add(thisEmployee.Id);
+                }
+            }
+            foreach (var item in elementsToRemove)
+            {
+                oldRange.Remove(oldRange.FirstOrDefault(x => x.Id == item));
+            }
         }
+
+        public decimal GetSumOfPayouts() => Payouts.Sum(x => x.Ammount);
+
         public DateTime DateCreate { get; set; }  
     }
 }

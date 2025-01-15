@@ -3,23 +3,30 @@
 @using Accouting.Domain.Managers.Interfaces
 @model DocumentViewModel
 @inject IEmployeeManager employeeManager
-<h4 class="text-center text-success">Створити документ нарахування</h4>
+@{
+    ViewData["Title"] = "Створити документ";
+}
+<h4 class="text-center text-success" id="documentLabel">Створити документ нарахування</h4>
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
-            <form method="post" asp-action="Create" asp-controller="Document">
+            <form method="post" asp-action="Create" asp-controller="Document" id="createDocumentfrm">
                 <label class="form-label" asp-for="Name">Назва документа</label>
                 <input type="text" asp-for="Name" class="form-control"/>
                 <label class="form-label" asp-for="Name">Дата Створення</label>
                 <input type="date" asp-for="DateCreate" class="form-control"/>
-                <button type="submit" class="btn btn-outline-primary m-auto">Сохранити</button>
+                <label class="form-label">Документ типу</label>
+                <select asp-for="DocumentType" class="form-select" onchange="onDocumentTypeInputChange()" id="documentTypeInput">
+                    <option value="0">Начислення</option>
+                    <option value="1">Утримання</option>
+                </select>
             </form>
         </div>
         <div class="col-md-2 m-auto" id="sumAccrual">
-
+            <h3>Сума: @Model.SumOfpayouts</h3>
         </div>
     </div>
-    <div class="row">
+    <div class="row ">
         <div class="col-md-12">
             <div data-bs-spy="scroll" style="overflow: scroll; max-height: 600px" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" class="scrollspy-example bg-light p-3 rounded-2" tabindex="0">
                 <table class="table table-hover" id="addedEmployees">
@@ -38,7 +45,46 @@
         <div class="col-md-3">
             <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
         </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-primary m-auto" form="createDocumentfrm" id="addEmployeesBtn">Сохранити</button>
+        </div>
     </div>
 </div>
 <partial name="CreateAccrualModalPartial"></partial>
 <partial name="AddEmployeeToDocumentPartial" model="employeeManager.GetAll().Result.Data"></partial>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addEmployeeToDocumentModal').on('shown.bs.modal', function (e) {
+                $('#SearchInnerIdInput').focus();
+            });
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                document.getElementById('searchEmployeesbtn').click();
+                document.getElementById('SearchInnerIdInput').value = "";
+            }
+            if (event.code === 'Space') {
+                var isShown = $('#addEmployeeToDocumentModal').hasClass('show');
+                if (isShown) {
+                    var ul = document.getElementById('chooseEmployeeUl');
+                    var liList = ul.getElementsByTagName('li');
+                    if (liList.length > 0) {
+                        var firstLi = liList[0];
+                        var submitButton = firstLi.querySelector('button[type="button"]');
+                        submitButton.click();
+                    }
+                }
+                else {
+                    document.getElementById('addEmployeesBtn').click();
+                }
+            }
+        });
+
+    </script>
+}

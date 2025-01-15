@@ -42,7 +42,7 @@ namespace Accounting.DAL.Providers
                 var group = await _unitOfWork.GetRepository<Group>()
                 .GetFirstOrDefaultAsync(
                 predicate: x => x.Id == id,
-                include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees),
+                include: x => x.Include(x => x.Employees),
                 disableTracking: false
                 );
                 if (group is null)
@@ -61,7 +61,7 @@ namespace Accounting.DAL.Providers
             try
             {
                 var Groups = await _unitOfWork.GetRepository<Group>().GetAllAsync(
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.BetEmployees));
+                    include: x => x.Include(x => x.Employees));
                 return new BaseResult<List<Group>>(true, Groups.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)

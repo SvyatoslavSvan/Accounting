@@ -1,56 +1,94 @@
 ﻿@using Accounting.Extensions;
 @using Accounting.Domain.Models
-@model IList<BetEmployee>
+@using Accounting.ViewModels
+@model TimesheetViewModel
 @{
-    var employeeToCountDays = Model.FirstOrDefault();
     string getUpdateFormId(Guid id) => id.ToString() + "updateWorkDayForm";
 }
 <div class="container">
     <div class="row">
-        <div class="col-md-6 m-auto">
+        <div class="col-md-6">
             <form method="get" asp-action="Timesheet" asp-controller="Timesheet">
                 <label class="form-label">
-                    Данні за 
+                    Данні за @Model.Date.Date.ToShortDateString()
                 </label>
-                <input type="date" class="form-control" name="month"/>
+                <input type="date" class="form-control" asp-for="Date"/>
                 <input type="submit" class="btn btn-outline-primary"/>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form id="updateHoursWorkDays">
+                <input type="hidden" name="TimesheetId" value="@Model.Id"/>
+                <label class="form-label">Кількість днів</label>
+                <input type="number" name="Workdays" class="form-control" value="@Model.DaysCount"/>
+                <label class="form-label">Кількість годин</label>
+                <input type="text" name="WorkHours" class="form-control" value="@Model.HoursCount" />
+                <button type="button" onclick="sendForm('updateHoursWorkDays', '/Timesheet/UpdateWorkHoursDays', '')" class="btn btn-outline-primary">Оновити</button>
             </form>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12" style="max-width: 100%; overflow: scroll" >
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Працівник</th>
-                        @foreach (var item in employeeToCountDays.WorkDays)
-                        {
-                            <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+        <div class="col-md-12" style="overflow: scroll" >
+                <table>
+                    <thead>
                         <tr>
-                            <td>
-                                @item.Name
-                            </td>
-                            @foreach (var workDay in item.WorkDays)
+                            <th>Працівник</th>
+                            @foreach (var item in Model.WorkDaysToHeader)
                             {
-                                <td class="m-0">
-                                    <form id="@getUpdateFormId(workDay.Id)">
-                                        <input type="hidden" value="@workDay.Id" name="Id"/>
-                                        <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
-                                    </form>
-                                    
-                                </td>
+                                <th>@item.Date.DayOfWeek.ToUkranianShortcutDayOfWeek(item.Date)</th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Employees)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                @foreach (var workDay in item.WorkDays)
+                                {
+                                    <td class="m-0">
+                                        <form id="@getUpdateFormId(workDay.Id)" onsubmit="return false;">
+                                            <input type="hidden" value="@workDay.Id" name="Id" />
+                                            <input type="text" name="Hours" value="@workDay.Hours" style="width: 25px;" onchange="sendForm('@getUpdateFormId(workDay.Id)', '/WorkDay/Update')" />
+                                        </form>
+
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
         </div>
-       
+    </div>
+    <div class="row"> 
+        <div class="col-md-6">
+            <h6 class="text-center">Оновити значення робочих днів для одного працівника</h6>
+            <form method="post" asp-action="UpdateWorkDaysForEmployee" asp-controller="Timesheet">
+                <label class="form-label">Значення годин для працівника</label>
+                <input type="text" name="Value" class="form-control"/>
+                <label class="form-label">Працівник</label>
+                <select name="EmployeeId" class="form-select">
+                    @foreach (var item in Model.Employees)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <input type="hidden" name="TimesheetId" value="@Model.Id"/>
+                <button type="submit" class="btn btn-outline-primary">Оновити</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h6 class="text-center">Оновити значення робочого дня для всіх працівників</h6>
+            <form method="post" asp-action="UpdateWorkDaysByDate" asp-controller="Timesheet">
+                <label class="form-label">Значення годин для робочого дня</label>
+                <input type="text" name="value" class="form-control"/>
+                <label class="form-label">Дата робочого дня</label>
+                <input type="date" name="date" class="form-control"/>
+                <input type="hidden" name="timesheetId" value="@Model.Id"/>
+                <button type="submit" class="btn btn-outline-primary">Оновити</button>
+            </form>
+        </div>
     </div>
 </div>

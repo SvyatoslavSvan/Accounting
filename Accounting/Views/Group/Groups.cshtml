@@ -1,20 +1,30 @@
 ﻿@using Accounting.Domain.Models;
 @using Accounting.Domain.ViewModels
 @model IEnumerable<Group>
-
+@{
+    string GetDeleteFormId(Guid id) => id.ToString() + "delgrpfrm";
+    string GetUpdateFormId(Guid id) => id.ToString() + "updgrpfrm";
+    string GetLiId(Guid Id) => Id.ToString() + "ligrpid";
+}
 <div class="container">
-    <div class="col-md-6">
-        <ul class="list-group">
+    <h4 class="text-center">Групи</h4>
+    <div class="col-md-12 " style="overflow: scroll; max-height: 600px">
+        <ul class="list-group" id="groupsUl">
             @foreach (var item in Model)
             {
-                <li class="list-group-item">@item.Name</li>
+                <li class="list-group-item d-flex align-content-between" id="@GetLiId(item.Id)"><form id="@GetUpdateFormId(item.Id)">
+                    <input type="hidden" value="@item.Id" name="Id" />
+                        <input type="text" class="form-control" value="@item.Name" name="Name" onchange="sendForm('@GetUpdateFormId(item.Id)', '/Group/Update')" />
+                </form> <form id="@GetDeleteFormId(item.Id)">
+                    <input type="hidden" name="id" value="@item.Id">
+                        <button type="button" onclick="sendForm('@GetDeleteFormId(item.Id)','/Group/Delete', '@GetLiId(item.Id)')" class="btn btn-outline-danger">Видалити</button>
+                </form></li>
             }
         </ul>
     </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+        Створити групу
+    </button>
 </div>
-
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
-    Додати групу
-</button>
 
 @await Html.PartialAsync("CreateGroupPartial", new GroupViewModel())

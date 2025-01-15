@@ -1,5 +1,6 @@
 ﻿@using Accounting.Domain.Models
-@model NotBetEmployee
+@using Accounting.Domain.Models.Base
+@model Employee
 @{
     var liId = Model.Id + "li";
 }
@@ -8,6 +9,6 @@
     <h5>ПІБ: @Model.Name</h5>
     <form asp-action="AddEmployeeToDocument" asp-controller="Document" class="my-1" id="@Model.Id">
         <input type="hidden" name="employeeId" value="@Model.Id" />
-        <button type="button" class="btn btn-primary my-3" onclick="sendForm('@Model.Id', '/Document/AddEmployeeToDocument', '@liId')">Додати</button>
+        <button type="button" class="btn btn-primary my-3" onclick="sendForm('@Model.Id', '/Document/AddEmployee', '@liId')">Додати</button>
     </form>
 </li>

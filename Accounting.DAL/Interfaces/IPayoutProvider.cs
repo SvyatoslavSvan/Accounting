@@ -6,10 +6,9 @@ using System.Linq.Expressions;
 
 namespace Accounting.DAL.Interfaces
 {
-    public interface IPayoutProvider : IBaseProvider<PayoutBase>
+    public interface IPayoutProvider : IBaseProvider<Payout>
     {
-        public Task<BaseResult<bool>> DeleteRange(List<PayoutBase> accruals);
-        public Task<BaseResult<IList<PayoutBase>>> GetAllByPredicate(Expression<Func<PayoutBetEmployee, 
-            bool>> predicatePayoutBetEmployee, Expression<Func<PayoutNotBetEmployee, bool>> predicatePayoutNotBetEmployee);
+        public Task<BaseResult<bool>> DeleteRange(List<Payout> accruals);
+        public Task<BaseResult<IList<Payout>>> GetAllByPredicate(Expression<Func<Payout, bool>> predicate);
     }
 }

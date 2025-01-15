@@ -1,4 +1,5 @@
-﻿using Accounting.Domain.Models;
+﻿using Accounting.Domain.Models.Base;
+using Accounting.ViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Accounting.Domain.ViewModels
@@ -8,8 +9,7 @@ namespace Accounting.Domain.ViewModels
 #nullable disable
         public Guid Id { get; set; }
         [BindNever]
-        public List<NotBetEmployee> EmployeesInDocument { get; set; }
-        [BindNever]
-        public List<NotBetEmployee> EmployeesAddToDocument { get; set; }
+        public List<Payout> Payouts { get; set; }
+        public List<Employee> Employees { get; set; }
     }
 }

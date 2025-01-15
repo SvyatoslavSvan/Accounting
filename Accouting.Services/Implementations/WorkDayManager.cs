@@ -2,7 +2,10 @@
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Accouting.Domain.Managers.Interfaces;
+using Accouting.Domain.Managers.Result;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Accouting.Domain.Managers.Implementations
 {
@@ -43,6 +46,8 @@ namespace Accouting.Domain.Managers.Implementations
             return workDays;
         }
 
+        private HoursDaysInWorkMonth GetHoursDaysInWorkMonth(List<WorkDay> WorkDays) => new HoursDaysInWorkMonth(WorkDays.Sum(x => x.Hours), WorkDays.Where(x => x.Hours != 0f).ToList().Count());
+
         private IList<WorkDay> GetWorkDaysWithEmployees(IList<BetEmployee> employees)
         {
             var workDays = new List<WorkDay>();
@@ -53,22 +58,13 @@ namespace Accouting.Domain.Managers.Implementations
             return workDays;
         }
 
-        private async Task<bool> IsNeededToCreateNewDays() => await _workDayProvider.Count(predicate: x => x.Date.Month == DateTime.Now.Month) == 0 ? true : false;
-
-        public async Task<BaseResult<bool>> CreateNewWorkDays()
+        public async Task<CreateWorkDaysResult> CreateNewWorkDays()
         {
-            if (await IsNeededToCreateNewDays())
-            {
-                var getEmployeesResult = await _employeeManager.GetBetEmployees();
-                var workDays = GetWorkDaysWithEmployees(getEmployeesResult.Data);
-                var createResult = await _workDayProvider.CreateRange(workDays);
-                if (createResult.Succed)
-                {
-                    return createResult;
-                }
-                return new BaseResult<bool>(false, false, createResult.OperationStatus);
-            }
-            return new BaseResult<bool>(true, true, OperationStatuses.AllWorkDaysMatch);
+            var getEmployeesResult = await _employeeManager.GetBetEmployees();
+            var workDays = GetWorkDaysWithEmployees(getEmployeesResult.Data);
+            var hoursDaysInWorkMonth = GetHoursDaysInWorkMonth(GetWorkDays(getEmployeesResult.Data.First()));
+            var createResult = await _workDayProvider.CreateRange(workDays);
+            return new CreateWorkDaysResult(createResult.Succed, workDays, OperationStatuses.Ok, getEmployeesResult.Data, hoursDaysInWorkMonth);
         }
 
         public async Task<BaseResult<bool>> Delete(Guid id) => await _workDayProvider.Delete(id);
@@ -87,6 +83,11 @@ namespace Accouting.Domain.Managers.Implementations
         {
             var updateResult = await _workDayProvider.Update(model);
             return new BaseResult<WorkDay>(updateResult.Succed, model, updateResult.OperationStatus);
+        }
+        public async Task<BaseResult<IList<WorkDay>>> UpdateRange(IList<WorkDay> workDays)
+        {
+            var updateResult = await _workDayProvider.UpdateRange(workDays);
+            return new BaseResult<IList<WorkDay>>(updateResult.Succed, workDays, OperationStatuses.Ok);
         }
     }
 }

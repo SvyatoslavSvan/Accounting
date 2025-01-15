@@ -2,30 +2,46 @@
 namespace Accounting.Domain.Models
 {
 #nullable disable
-    public class Group
+    public class Group : EntityBase
     {
-        public Group() { }
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public List<BetEmployee> BetEmployees { get; private set; }
-        public List<NotBetEmployee> NotBetEmployees { get; private set; } // возможно надо будут миграции потому что private set
+        private string _name;
+
+        private ICollection<Employee> _employees;
+
         public Group(string name)
         {
             Name = name;
         }
-        public virtual void AddToGroup(EmployeeBase employee)
+
+        public Group() { }
+
+        public string Name
         {
-            if (employee is BetEmployee betEmployee)
-                BetEmployees.Add(betEmployee);
-            else if (employee is NotBetEmployee notBetEmployee)
-                NotBetEmployees.Add(notBetEmployee);
+            get => _name;
+            set 
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Value cannot be WhiteSpace" + nameof(Name));
+                }
+                _name = value;
+            }
         }
-        public virtual void RemoveFromGroup(EmployeeBase employee)
+
+        public ICollection<Employee> Employees
         {
-            if (employee is BetEmployee betEmployee)
-                BetEmployees.Remove(betEmployee);
-            else if (employee is NotBetEmployee notBetEmployee)
-                NotBetEmployees.Remove(notBetEmployee);
+            get => _employees;
+            set { _employees = value; }
+        }
+
+        public void AddToGroup(Employee employee)
+        {
+            _employees.Add(employee);
+        }
+
+        public void RemoveFromGroup(Employee employee)
+        {
+            _employees.Remove(employee);
         }
     }
 }

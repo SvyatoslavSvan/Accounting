@@ -3,6 +3,7 @@ using Accounting.DAL.Interfaces;
 using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Calabonga.PredicatesBuilder;
 using Calabonga.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,9 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Create(Document entity)
         {
-            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.Employees);
+            _unitOfWork.DbContext.AttachRange(entity.Payouts);
+            await DeletePayoutsByDocumentId(entity.Id);
             await _unitOfWork.GetRepository<Document>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -34,14 +36,19 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
             _unitOfWork.GetRepository<Document>().Delete(id);
-            var accrualRepository = _unitOfWork.GetRepository<PayoutNotBetEmployee>();
-            accrualRepository.Delete(await accrualRepository.GetAllAsync(predicate: x => x.Document.Id == id));
+            
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
                 return HandleException<bool>();
             }
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
+
+        private async Task DeletePayoutsByDocumentId(Guid id)  
+        {
+            var payoutRepository = _unitOfWork.GetRepository<Payout>();
+            payoutRepository.Delete(await payoutRepository.GetAllAsync(predicate: x => x.Document.Id == id));
         }
 
         public async Task<BaseResult<List<Document>>> GetAll()
@@ -66,7 +73,8 @@ namespace Accounting.DAL.Providers
                 var documents = await _unitOfWork.GetRepository<Document>().GetAllAsync(
                   orderBy: x => x.OrderBy(x => x.DateCreate)
                  , disableTracking: false,
-                  predicate: predicate);
+                  predicate: predicate,
+                  include: x => x.Include(x => x.Payouts));
                 return new BaseResult<IList<Document>>(true, documents, OperationStatuses.Ok);
             }
             catch (Exception ex)
@@ -79,11 +87,11 @@ namespace Accounting.DAL.Providers
         {
             try
             {
-                var document = await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, 
-                    include: x => x.Include(x => x.NotBetEmployees).Include(x => x.PayoutsNotBetEmployees), disableTracking: false);
-                if (document is null)
-                    return new BaseResult<Document>(false, null, OperationStatuses.NotFound);
-                return new BaseResult<Document>(true, document, OperationStatuses.Ok);
+                return new BaseResult<Document>(true, await _unitOfWork.GetRepository<Document>().GetFirstOrDefaultAsync(
+                    predicate: x => x.Id == id,
+                    include: x => x.Include(x => x.Employees).Include(x => x.Payouts),
+                    disableTracking: false 
+                    ), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
@@ -108,8 +116,8 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Update(Document entity)
         {
-            _unitOfWork.DbContext.AttachRange(entity.PayoutsNotBetEmployees);
-            _unitOfWork.DbContext.AttachRange(entity.NotBetEmployees);
+            _unitOfWork.DbContext.AttachRange(entity.Payouts);
+            _unitOfWork.DbContext.AttachRange(entity.Employees);
             _unitOfWork.GetRepository<Document>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)

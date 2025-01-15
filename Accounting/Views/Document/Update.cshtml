@@ -1,10 +1,16 @@
 ﻿@using Accounting.Domain.ViewModels
+@using Accounting.ViewModels
 @model UpdateDocumentViewModel
+@{
+    string getUpdatePayoutForm(Guid id) => id + "updatePayout";
+    string getFormToDeleteId(Guid id) => id + "formToDelete";
+    string getTrId(Guid id) => id + "tr";
+}
 <h4 class="text-center">Оновити - @Model.Name</h4>
 <div class="container">
     <div class="row">
         <div class="col-md-5 m-auto mb-4">
-            <form method="post" asp-action="Update" asp-controller="Document">
+            <form method="post" asp-action="Update" asp-controller="Document" id="updateDocumentfrm">
                 <input type="hidden" asp-for="Id" value="@Model.Id"/>
                 <label class="form-label" asp-for="Name">Назва документа</label>
                 <input type="text" asp-for="Name" class="form-control" />
@@ -14,6 +20,7 @@
             </form>
         </div>
         <div class="col-md-2 m-auto" id="sumAccrual">
+            <h3>Сума: @Model.SumOfpayouts</h3>
         </div>
     </div>
     <div class="row">
@@ -28,18 +35,56 @@
                         </tr>
                     </thead>
                     <tbody id="addedEmployeesTbody">
-                        @foreach (var item in Model.EmployeesInDocument)
+                        @foreach (var item in Model.Payouts)
                         {
-                            <partial name="AddedEmployee" model="item"></partial>
+                           <partial name="AddedPayout" model="item"/>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
         <div class="col-md-3">
-            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal">Додати в документ</button>
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addEmployeeToDocumentModal" id="addEmployeesBtn">Додати в документ</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-primary m-auto" form="updateDocumentfrm">Сохранити</button>
         </div>
     </div>
 </div>
-<partial name="CreateAccrualModalPartial"></partial>
-<partial name="AddEmployeeToDocumentPartial" model="Model.EmployeesAddToDocument"></partial>
+<partial name="AddEmployeeToDocumentPartial" model="Model.Employees"></partial>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addEmployeeToDocumentModal').on('shown.bs.modal', function (e) {
+                $('#SearchInnerIdInput').focus();
+            });
+        });
+
+        document.addEventListener('keydown', function (event) 
+        {
+            if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                document.getElementById('searchEmployeesbtn').click();
+                document.getElementById('SearchInnerIdInput').value = "";
+            }
+            if (event.code === 'Space') {
+                var isShown = $('#addEmployeeToDocumentModal').hasClass('show');
+                if(isShown) {
+                    var ul = document.getElementById('chooseEmployeeUl'); 
+                    var liList = ul.getElementsByTagName('li');
+                    if (liList.length > 0)
+                    {
+                       var firstLi = liList[0];
+                       var submitButton = firstLi.querySelector('button[type="button"]');
+                       submitButton.click();
+                    }
+                }
+                else {
+                    document.getElementById('addEmployeesBtn').click();
+                }
+            }
+        });
+
+    </script>
+}

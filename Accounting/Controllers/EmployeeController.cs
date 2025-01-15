@@ -1,6 +1,6 @@
-﻿using Accounting.DAL.Interfaces.Base;
-using Accounting.Domain.Models;
+﻿using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
+using Accounting.Domain.Requests;
 using Accounting.Domain.ViewModels;
 using Accouting.Domain.Managers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +17,7 @@ namespace Accounting.Controllers
             _employeeManager = employeeProvider;
             _groupManager = groupProvider;
         }
+
         [HttpGet]
         public async Task<IActionResult> Employees()
         {
@@ -27,12 +28,24 @@ namespace Accounting.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSearch(EmployeeSearchRequest request)
+        {
+            var getSearchedResult = await _employeeManager.GetSearch(request);
+            if (getSearchedResult.Succed)
+            {
+                return View("Employees", getSearchedResult.Data);
+            }
+            return StatusCode(500);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateEmployeeViewModel employeeViewModel)
         {
             if (ModelState.IsValid)
             {
-                EmployeeBase employee;
+                Employee employee;
                 var employeeGroup = await _groupManager.GetById(employeeViewModel.GroupId);
                 if (employeeViewModel.IsBet)
                 {
@@ -41,7 +54,7 @@ namespace Accounting.Controllers
                 }
                 else
                 {
-                    employee = new NotBetEmployee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
+                    employee = new Employee(employeeViewModel.Name, employeeViewModel.InnerId, employeeViewModel.Premium);
                     employee.AddToGroup(employeeGroup.Data);
                 }
                 var createResult = await _employeeManager.Create(employee);
@@ -81,15 +94,17 @@ namespace Accounting.Controllers
                 updateViewModel.Bet = betEmployee.Bet;
                 updateViewModel.Name = betEmployee.Name;
                 updateViewModel.InnerId = betEmployee.InnerId;
-                updateViewModel.GroupId = betEmployee.GroupId;
+                updateViewModel.GroupId = (Guid)betEmployee.GroupId;
                 updateViewModel.IsBet = true;
+                updateViewModel.Premium = betEmployee.Premium;
             }
-            else if (getByIdResult.Data is NotBetEmployee notBetEmployee)
+            else if (getByIdResult.Data is Employee notBetEmployee)
             {
                 updateViewModel.Name = notBetEmployee.Name;
                 updateViewModel.InnerId = notBetEmployee.InnerId;
-                updateViewModel.GroupId = notBetEmployee.GroupId;
+                updateViewModel.GroupId = (Guid)notBetEmployee.GroupId;
                 updateViewModel.IsBet = false;
+                updateViewModel.Premium = notBetEmployee.Premium;
             }
             return PartialView(updateViewModel);
         }
@@ -111,6 +126,7 @@ namespace Accounting.Controllers
                             getEmployeeToUpdateResult.Data.Name = viewModel.Name;
                             getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
                             getEmployeeToUpdateResult.Data.Bet = (decimal)viewModel.Bet;
+                            getEmployeeToUpdateResult.Data.Premium = viewModel.Premium;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);
                             return RedirectToAction(nameof(Employees));
                         }
@@ -121,6 +137,7 @@ namespace Accounting.Controllers
                         if (getEmployeeToUpdateResult.Succed)
                         {
                             getEmployeeToUpdateResult.Data.AddToGroup(getGroupResult.Data);
+                            getEmployeeToUpdateResult.Data.Premium = viewModel.Premium;
                             getEmployeeToUpdateResult.Data.Name = viewModel.Name;
                             getEmployeeToUpdateResult.Data.InnerId = viewModel.InnerId;
                             await _employeeManager.Update(getEmployeeToUpdateResult.Data);

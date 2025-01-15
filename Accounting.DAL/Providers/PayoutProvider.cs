@@ -13,20 +13,12 @@ namespace Accounting.DAL.Providers
     public class PayoutProvider : ProviderBase, IPayoutProvider
     {
 #nullable disable
-        public PayoutProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<PayoutBase> logger) : base(unitOfWork, logger) { }
+        public PayoutProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Payout> logger) : base(unitOfWork, logger) { }
 
-        public async Task<BaseResult<bool>> Create(PayoutBase entity)
+        public async Task<BaseResult<bool>> Create(Payout entity)
         {
-            if (entity is PayoutBetEmployee payoutBetEmployee)
-            {
-                _unitOfWork.DbContext.Attach(payoutBetEmployee.BetEmployee);
-                await _unitOfWork.GetRepository<PayoutBetEmployee>().InsertAsync(payoutBetEmployee);
-            }
-            if (entity is PayoutNotBetEmployee payoutNotBetEmployee)
-            {
-                _unitOfWork.DbContext.Attach(payoutNotBetEmployee.Employee);
-                await _unitOfWork.GetRepository<PayoutNotBetEmployee>().InsertAsync(payoutNotBetEmployee);
-            }
+            _unitOfWork.DbContext.Attach(entity.Employee);
+            await _unitOfWork.GetRepository<Payout>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -37,15 +29,7 @@ namespace Accounting.DAL.Providers
 
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            var count = await _unitOfWork.GetRepository<PayoutBetEmployee>().CountAsync(predicate: x => x.Id == id);
-            if (count == 0)
-            {
-                _unitOfWork.GetRepository<PayoutNotBetEmployee>().Delete(id);
-            }
-            else
-            {
-                _unitOfWork.GetRepository<PayoutBetEmployee>().Delete(id);
-            }
+            _unitOfWork.GetRepository<Payout>().Delete(id);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -54,19 +38,9 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<bool>> DeleteRange(List<PayoutBase> deducationBases)
+        public async Task<BaseResult<bool>> DeleteRange(List<Payout> payouts)
         {
-            var deducationsBetEmployee = new List<PayoutBetEmployee>();
-            var deducationsNotBetEmployee = new List<PayoutNotBetEmployee>();
-            deducationBases.ForEach(x =>
-            {
-                if (x is PayoutBetEmployee xBet)
-                    deducationsBetEmployee.Add(xBet);
-                if (x is PayoutNotBetEmployee xNotBet)
-                    deducationsNotBetEmployee.Add(xNotBet);
-            });
-            _unitOfWork.GetRepository<PayoutBetEmployee>().Delete(deducationsBetEmployee);
-            _unitOfWork.GetRepository<PayoutNotBetEmployee>().Delete(deducationsNotBetEmployee);
+            _unitOfWork.GetRepository<Payout>().Delete(payouts);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -75,64 +49,48 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        public async Task<BaseResult<List<PayoutBase>>> GetAll()
+        public async Task<BaseResult<List<Payout>>> GetAll()
         {
             try
             {
-                var deducations = new List<PayoutBase>();
-                deducations.AddRange(await _unitOfWork.GetRepository<PayoutBetEmployee>().GetAllAsync(
-                    disableTracking: true));
-                deducations.AddRange(await _unitOfWork.GetRepository<PayoutNotBetEmployee>().GetAllAsync(true));
-                return new BaseResult<List<PayoutBase>>(true, deducations, OperationStatuses.Ok);
+                var payouts = await _unitOfWork.GetRepository<Payout>().GetAllAsync(disableTracking: true);
+                return new BaseResult<List<Payout>>(true, payouts.ToList(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<List<PayoutBase>>(ex);
+                return HandleException<List<Payout>>(ex);
             }
         }
 
-        public Task<BaseResult<IList<PayoutBase>>> GetAllByPredicate(Expression<Func<PayoutBetEmployee, bool>> predicatePayoutBetEmployee, 
-            Expression<Func<PayoutNotBetEmployee, bool>> predicatePayoutNotBetEmployee)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<BaseResult<PayoutBase>> GetById(Guid id)
+        public async Task<BaseResult<IList<Payout>>> GetAllByPredicate(Expression<Func<Payout, bool>> predicate)
         {
             try
             {
-                var count = await _unitOfWork.GetRepository<PayoutBetEmployee>().CountAsync(predicate: x => x.Id == id);
-                if (count == 0)
-                {
-                    return new BaseResult<PayoutBase>(true, await _unitOfWork.
-                        GetRepository<PayoutNotBetEmployee>().
-                        GetFirstOrDefaultAsync(predicate: x => x.Id == id), OperationStatuses.Ok);
-                }
-                else
-                {
-                    return new BaseResult<PayoutBase>(true, await
-                        _unitOfWork.GetRepository<PayoutBetEmployee>()
-                        .GetFirstOrDefaultAsync(predicate: x => x.Id == id), OperationStatuses.Ok);
-                }
+                var payouts = new List<Payout>();
+                payouts.AddRange(await _unitOfWork.GetRepository<Payout>().GetAllAsync(predicate: predicate));
+                return new BaseResult<IList<Payout>>(true, payouts, OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<PayoutBase>(ex);
+                return HandleException<IList<Payout>>(ex);
             }
         }
 
-        public async Task<BaseResult<bool>> Update(PayoutBase entity)
+        public async Task<BaseResult<Payout>> GetById(Guid id)
         {
-            if (entity is PayoutBetEmployee deducationBetEmployee)
+            try
             {
-                _unitOfWork.DbContext.Attach(deducationBetEmployee.BetEmployee);
-                _unitOfWork.GetRepository<PayoutBetEmployee>().Update(deducationBetEmployee);
+                    return new BaseResult<Payout>(true, await _unitOfWork.GetRepository<Payout>().GetFirstOrDefaultAsync(predicate: x => x.Id == id), OperationStatuses.Ok);
             }
-            if (entity is PayoutNotBetEmployee deducationNotBetEmployee)
+            catch (Exception ex)
             {
-                _unitOfWork.DbContext.Attach(deducationNotBetEmployee);
-                _unitOfWork.GetRepository<PayoutNotBetEmployee>().Update(deducationNotBetEmployee);
+                return HandleException<Payout>(ex);
             }
+        }
+
+        public async Task<BaseResult<bool>> Update(Payout entity)
+        {
+            _unitOfWork.GetRepository<Payout>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {

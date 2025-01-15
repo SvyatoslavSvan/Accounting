@@ -1,30 +1,33 @@
 ﻿@using Accounting.Domain.Models
 @using Accounting.Domain.Models.Base
-@model EmployeeBase
+@using Accounting.ViewModels
+@model Employee
 @{
-    var formId = Model.Id + "form";
-    var formTdId = Model.Id + "tdForm";
+
     var trId = Model.Id + "tr";
     var formToDeleteEmployee = Model.Id + "formToDelete";
+    var formPayout = Model.Id + "createPayout";
+    var payoutDivId = Model.Id + "PayoutDiv";
+    var payoutInput = Model.Id + "payoutinput";
+    var payoutId = Model.Id + "payoutId";
 }
 <tr id="@trId">
     <td>@Model.InnerId</td>
     <td>@Model.Name</td>
     <td>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccrualModal" onclick="openCreateAccrualModal('@Model.Id')">
-            Додати виплати
-        </button> 
-    </td>
-    <td>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <form id="@formToDeleteEmployee">
-                        <input type="hidden" name="EmployeeId" value="@Model.Id" />
-                        <button type="button" onclick="sendForm('@formToDeleteEmployee', '/Document/DeleteEmployeeFromDocument', '@trId')" class="btn btn-info mx-auto">Видалити з документа</button>
-                    </form>
-                </div>
-            </div>
+        <div id="@payoutDivId">
+            <form id="@formPayout" onsubmit="return false;">
+                <input type="hidden" name="EmployeeId" value="@Model.Id" />
+                <input type="text" placeholder="Додати Суми" name="Ammount" onchange="sendForm('@formPayout', '/Payout/CreatePayout', '@trId')" id="@payoutInput" autofocus />
+                <input type="checkbox" value="true" name="IsAdditional" />
+            </form>
         </div>
     </td>
 </tr>
+
+<script type="text/javascript">
+    setTimeout(function(){
+        document.getElementById('@payoutInput').focus();
+    }, 500);
+</script>
+

@@ -10,6 +10,7 @@ namespace Accounting.Extensions
         {
             session.SetString(key, JsonSerializer.Serialize(value));
         }
+
         public static T GetJson<T>(this ISession session, string key)
         {
             var sessionValue = session.GetString(key);

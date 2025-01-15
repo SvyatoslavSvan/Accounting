@@ -12,102 +12,16 @@ using System.Linq.Expressions;
 
 namespace Accounting.DAL.Providers
 {
-    public class EmployeeProvider : ProviderBase,IEmployeeProvider
+    public class EmployeeProvider : ProviderBase, IEmployeeProvider
     {
 #nullable disable
-        
-        
-        public EmployeeProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<EmployeeBase> logger) : base(unitOfWork, logger) { }
-       
 
-        public async Task<BaseResult<bool>> Create(EmployeeBase entity)
-        {
-            var isUniq = await IsUniqInnerId(entity);
-            if (isUniq)
-            {
-                _unitOfWork.DbContext.Attach(entity.Group);
-                if (entity is BetEmployee betEmployee)
-                {
-                    await _unitOfWork.GetRepository<BetEmployee>().InsertAsync(betEmployee);
-                }
-                else if (entity is NotBetEmployee notBetEmployee)
-                {
-                    await _unitOfWork.GetRepository<NotBetEmployee>().InsertAsync(notBetEmployee);  
-                }
-                await _unitOfWork.SaveChangesAsync();
-                if (!_unitOfWork.LastSaveChangesResult.IsOk)
-                {
-                    return HandleException<bool>();
-                }
-                return new BaseResult<bool>(true, true, OperationStatuses.Ok);
-            }
-            return new BaseResult<bool>(false, false, OperationStatuses.NotUniqInnerId);
-        }
+        public EmployeeProvider(IUnitOfWork<ApplicationDBContext> unitOfWork, ILogger<Employee> logger) : base(unitOfWork, logger) { }
 
-        
-
-        private async Task<bool> IsUniqInnerId(EmployeeBase entity) => await CheckInnerId(entity);
-
-        private async Task<bool> CheckInnerId(EmployeeBase entity)
-        {
-            if (entity is BetEmployee)
-                return await CountOfEmployee<BetEmployee>(x => x.InnerId == entity.InnerId) == 0 ? true : false;
-            if (entity is NotBetEmployee)
-                return await CountOfEmployee<NotBetEmployee>(x => x.InnerId == entity.InnerId) == 0 ? true : false;
-            return false;
-        }
-
-        private async Task<int> CountOfEmployee<TRepository>(Expression<Func<TRepository, bool>> predicate) where TRepository : EmployeeBase => await _unitOfWork.GetRepository<TRepository>()
-            .CountAsync(predicate: predicate);
-
-        public async Task<BaseResult<List<EmployeeBase>>> GetAll()
-        {
-            try
-            { 
-                var employees = new List<EmployeeBase>();
-                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
-                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group)));
-                employees.OrderBy(x => x.Name);
-                return new BaseResult<List<EmployeeBase>>(true, employees, OperationStatuses.Ok);
-            }
-            catch (Exception ex)
-            {
-                return HandleException<List<EmployeeBase>>(ex);
-            }
-        }
-
-        public async Task<BaseResult<EmployeeBase>> GetById(Guid id)
-        {
-            try
-            {
-                var count = await _unitOfWork.GetRepository<BetEmployee>().CountAsync(x => x.Id == id);
-                if (count > 0)
-                {
-                    return await GetEmployee<BetEmployee>(id);
-                }
-                else
-                {
-                    return await GetEmployee<NotBetEmployee>(id);
-                }
-            }
-            catch (Exception ex)
-            {
-                return HandleException<EmployeeBase>(ex);
-            }
-        }
-
-        private async Task<BaseResult<EmployeeBase>> GetEmployee<TRepository>(Guid id) where TRepository : EmployeeBase
-        {
-            var employee = await _unitOfWork.GetRepository<TRepository>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, disableTracking: false);
-            if (employee is null)
-                return new BaseResult<EmployeeBase>(false, null, OperationStatuses.NotFound);
-            return new BaseResult<EmployeeBase>(true, employee, OperationStatuses.Ok);
-        }
-
-        public async Task<BaseResult<bool>> Update(EmployeeBase entity)
+        public async Task<BaseResult<bool>> Create(Employee entity)
         {
             _unitOfWork.DbContext.Attach(entity.Group);
-            SelectEmployeeRepository(entity);
+            await _unitOfWork.GetRepository<Employee>().InsertAsync(entity);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -116,21 +30,47 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        private void SelectEmployeeRepository(EmployeeBase entity)
+        public async Task<BaseResult<List<Employee>>> GetAll()
         {
-            if (entity is BetEmployee betEmployee)
-                UpdateEmployee<BetEmployee>(betEmployee);
-            if (entity is NotBetEmployee notBetEmployee)
-                UpdateEmployee<NotBetEmployee>(notBetEmployee);
+            try
+            {
+                var employees = await _unitOfWork.GetRepository<Employee>().GetAllAsync(disableTracking: false, orderBy: x => x.OrderBy(x => x.Name), include: x => x.Include(x => x.Group));
+                return new BaseResult<List<Employee>>(true, employees.ToList(), OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<List<Employee>>(ex);
+            }
         }
 
-        private void UpdateEmployee<TRepository>(TRepository employee) where TRepository : EmployeeBase => _unitOfWork.GetRepository<TRepository>().Update(employee);
+        public async Task<BaseResult<Employee>> GetById(Guid id)
+        {
+            try
+            {
+                var employee = await _unitOfWork.GetRepository<Employee>().GetFirstOrDefaultAsync(predicate: x => x.Id == id);
+                return new BaseResult<Employee>(true, employee, OperationStatuses.Ok);
+            }
+            catch (Exception ex)
+            {
+                return HandleException<Employee>(ex);
+            }
+        }
 
-        
+        public async Task<BaseResult<bool>> Update(Employee entity)
+        {
+            _unitOfWork.DbContext.Attach(entity.Group);
+            await _unitOfWork.GetRepository<Employee>().InsertAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
+        }
 
         public async Task<BaseResult<bool>> Delete(Guid id)
         {
-            await ChooseRepositoryToDelete(id);
+            _unitOfWork.GetRepository<Employee>().Delete(id);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
             {
@@ -139,55 +79,42 @@ namespace Accounting.DAL.Providers
             return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
 
-        private async Task ChooseRepositoryToDelete(Guid id)
-        {
-            var countOfBetEmployees = await CountOfEmployee<BetEmployee>(x => x.Id == id);
-            if (countOfBetEmployees > 0)
-                DeleteEmployee<BetEmployee>(id);
-            else
-                DeleteEmployee<NotBetEmployee>(id);
-        }
-
-        private void DeleteEmployee<TRepository>(Guid id) where TRepository : EmployeeBase => _unitOfWork.GetRepository<TRepository>().Delete(id);
-
-        public async Task<BaseResult<NotBetEmployee>> GetNotBetEmployee(Guid id)
+        public async Task<BaseResult<Employee>> GetNotBetEmployee(Guid id)
         {
             try
             {
-                var employee = await _unitOfWork.GetRepository<NotBetEmployee>().GetFirstOrDefaultAsync(predicate: x => x.Id == id, disableTracking: false);
+                var employee = await _unitOfWork.DbContext.Employees.OfType<Employee>().FirstOrDefaultAsync(x => x.Id == id);
                 if (employee is null)
-                    return new BaseResult<NotBetEmployee>(false, null, OperationStatuses.NotFound);
-                return new BaseResult<NotBetEmployee>(true, employee, OperationStatuses.Ok);
+                    return new BaseResult<Employee>(false, null, OperationStatuses.NotFound);
+                return new BaseResult<Employee>(true, employee, OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<NotBetEmployee>(ex);
+                return HandleException<Employee>(ex);
             }
         }
 
-        public async Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployees()
+        public async Task<BaseResult<IEnumerable<Employee>>> GetNotBetEmployees()
         {
             try
             {
-                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _unitOfWork.
-                    GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Group), disableTracking: false), OperationStatuses.Ok);
+                return new BaseResult<IEnumerable<Employee>>(true, await _unitOfWork.DbContext.Employees.OfType<Employee>().ToListAsync(), OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<IEnumerable<NotBetEmployee>>(ex);
+                return HandleException<IEnumerable<Employee>>(ex);
             }
         }
 
-        public async Task<BaseResult<IEnumerable<NotBetEmployee>>> GetNotBetEmployeesIncludeDocument()
+        public async Task<BaseResult<IEnumerable<Employee>>> GetNotBetEmployeesIncludeDocument()
         {
             try
             {
-                return new BaseResult<IEnumerable<NotBetEmployee>>(true, await _unitOfWork.
-                    GetRepository<NotBetEmployee>().GetAllAsync(include: x => x.Include(x => x.Documents), disableTracking: false), OperationStatuses.Ok);
+                return new BaseResult<IEnumerable<Employee>>(true, await _unitOfWork.DbContext.Employees.OfType<Employee>().Include(x => x.Documents).ToListAsync());
             }
             catch (Exception ex)
             {
-                return HandleException<IEnumerable<NotBetEmployee>>(ex);
+                return HandleException<IEnumerable<Employee>>(ex);
             }
         }
 
@@ -243,21 +170,31 @@ namespace Accounting.DAL.Providers
             }
         }
 
-        public async Task<BaseResult<IList<EmployeeBase>>> GetAllByPredicate(Expression<Func<BetEmployee, bool>> betEmployeePredicate = null, 
-            Expression<Func<NotBetEmployee, bool>> notBetEmployeePredicate = null, Func<IQueryable<BetEmployee>, 
-                IIncludableQueryable<BetEmployee, object>> includeBetEmployee = null, Func<IQueryable<NotBetEmployee>, IIncludableQueryable<NotBetEmployee, object>> includeNotBetEmployee = null)
+        public async Task<BaseResult<IList<Employee>>> GetAllByPredicate(Expression<Func<BetEmployee, bool>> betEmployeePredicate = null,
+            Expression<Func<Employee, bool>> notBetEmployeePredicate = null, Func<IQueryable<BetEmployee>,
+                IIncludableQueryable<BetEmployee, object>> includeBetEmployee = null, Func<IQueryable<Employee>, IIncludableQueryable<Employee, object>> includeNotBetEmployee = null,
+            Func<IQueryable<BetEmployee>, IOrderedQueryable<BetEmployee>> orderByBetEmployee = null,
+            Func<IQueryable<Employee>, IOrderedQueryable<Employee>> orderByNotBetEmployee = null)
         {
             try
             {
-                var employees = new List<EmployeeBase>();
-                employees.AddRange(await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(predicate: betEmployeePredicate, include: includeBetEmployee));
-                employees.AddRange(await _unitOfWork.GetRepository<NotBetEmployee>().GetAllAsync(predicate: notBetEmployeePredicate, include: includeNotBetEmployee));
-                return new BaseResult<IList<EmployeeBase>>(true, employees, OperationStatuses.Ok);
+                var employees = new List<Employee>();
+                var betEmployees = await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(predicate: betEmployeePredicate, include: includeBetEmployee, orderBy: orderByBetEmployee);
+                var notBetEmployees = await _unitOfWork.GetRepository<Employee>().GetAllAsync(predicate: notBetEmployeePredicate, include: includeNotBetEmployee, orderBy: orderByNotBetEmployee);
+                foreach (var item in betEmployees)
+                {
+                    notBetEmployees.Remove(notBetEmployees.FirstOrDefault(x => x.Id == item.Id));
+                }
+                employees.AddRange(betEmployees);
+                employees.AddRange(notBetEmployees);
+                return new BaseResult<IList<Employee>>(true, employees, OperationStatuses.Ok);
             }
             catch (Exception ex)
             {
-                return HandleException<IList<EmployeeBase>>(ex);
+                return HandleException<IList<Employee>>(ex);
             }
         }
+
+       
     }
-}
+    }

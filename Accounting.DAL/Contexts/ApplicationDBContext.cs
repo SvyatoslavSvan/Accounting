@@ -1,4 +1,5 @@
 ﻿using Accounting.Domain.Models;
+using Accounting.Domain.Models.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace Accounting.DAL.Contexts
@@ -10,12 +11,11 @@ namespace Accounting.DAL.Contexts
         {
 
         }
-        public DbSet<NotBetEmployee> NotBetEmployees { get; set; }
-        public DbSet<BetEmployee> BetEmployees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<PayoutNotBetEmployee> AccrualsNotBetEmployee { get; set; }
-        public DbSet<PayoutBetEmployee> AccrualsBetEmployee { get; set; }
+        public DbSet<Payout> Payouts { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<WorkDay> WorkDays { get; set; }
+        public DbSet<Timesheet> Timesheets { get; set; }
     }
 }

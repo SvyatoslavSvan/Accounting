@@ -3,12 +3,29 @@ using System.Text.Json.Serialization;
 
 namespace Accounting.Domain.Models
 {
-    public class BetEmployee : EmployeeBase
+    public class BetEmployee : Employee
     {
+#nullable disable
         [JsonConstructor]
         public BetEmployee(Guid id, string name) : base(id, name) { }
 
+        public BetEmployee() { }
+
+        public BetEmployee(string name, decimal bet, string innerId, int premium) : base(name, innerId, premium)
+        {
+            Bet = bet;
+        }
+
+        public BetEmployee(Guid id, Group group, string name, string innerId, decimal bet, int premium) : base(id, group, name, innerId, premium)
+        {
+            Bet = bet;
+        }
+
         private decimal _bet;
+
+        private List<WorkDay> _workDays;
+
+        private ICollection<Timesheet> _timesheets;
 
         public decimal Bet
         {
@@ -24,9 +41,7 @@ namespace Accounting.Domain.Models
                 _bet = value; 
             }
         }
-#nullable disable
 
-        private List<WorkDay> _workDays;
         [JsonIgnore]
         public List<WorkDay> WorkDays
         {
@@ -38,29 +53,32 @@ namespace Accounting.Domain.Models
             }
         }
 
-        private ICollection<PayoutBetEmployee> _accruals;
-        [JsonIgnore]
-        public ICollection<PayoutBetEmployee> Accruals
+        public ICollection<Timesheet> Timesheets
         {
-            get { return _accruals; }
-            set { _accruals = value ?? throw new ArgumentNullException(); }
+            get => _timesheets;
+            set { _timesheets = value; }
         }
 
-        public BetEmployee(string name, decimal bet, string innerId, int premium) : base(name, innerId, premium)
+        public override Salary CalculateSalary(DateTime from, DateTime to)
         {
-            Bet = bet;
+            var salary = base.CalculateSalary(from, to);
+            salary.Payment += CalculateBetPayout(from, to);
+            return salary;
         }
 
-        public BetEmployee(Guid id, Group group, string name, string innerId, decimal bet, int premium) : base(id, group, name, innerId, premium)
+        private decimal CalculateBetPayout(DateTime from, DateTime to)
         {
-            Bet = bet;
-        }
-        
-        public override Salary CalculateSalary()
-        {
-            throw new NotImplementedException();
+            decimal payment = 0;
+            var timesheets = Timesheets.Where(x => x.Date.Year >= from.Date.Year && x.Date.Year <= to.Date.Year && x.Date.Month >= from.Date.Month && x.Date.Month <= to.Date.Month).ToList();
+            timesheets.ForEach(x =>
+            {
+                var payForHour = (Bet / x.DaysCount) / (decimal)(x.HoursCount / x.DaysCount);
+                var workHours = x.WorkDays.Where(x => x.EmployeeId == this.Id).Where(x => x.Date >= from.Date && x.Date <= to.Date).Sum(x => x.Hours);
+                payment += (decimal)workHours * payForHour;
+            });
+            return payment; 
         }
 
-        
+       
     }
 }

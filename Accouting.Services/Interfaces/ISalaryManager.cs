@@ -4,6 +4,6 @@ namespace Accouting.Domain.Managers.Interfaces
 {
     public interface ISalaryManager
     {
-        public Task<IList<Salary>> CalculateSalaries(DateTime from, DateTime to);
+        public Task<IList<Salary>> CalculateSalariesAsync(DateTime from, DateTime to);
     }
 }

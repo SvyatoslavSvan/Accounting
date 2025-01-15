@@ -1,0 +1,40 @@
+﻿@using Accounting.Domain.Models.Base;
+@using Accounting.Services;
+@using Accounting.ViewModels;
+@model Payout
+@{
+    var UpdatePayoutForm = Model.Id + "updatePayout";
+    var formToDeleteEmployee = Model.Id + "formToDeletePayout";
+    var trId = Model.Id + "tr";
+}
+<tr id="@trId">
+    <td>@Model.Employee.InnerId</td>
+    <td>@Model.Employee.Name</td>
+    <td>
+        <form id="@UpdatePayoutForm" onchange="sendForm('@UpdatePayoutForm', '/Payout/Update')" onsubmit="return false;">
+            <input type="hidden" name="PayoutId" value="@Model.Id" />
+            <input type="text" placeholder="Додати Суми" name="Ammount" value="@Model.Ammount" />
+            @if (Model.IsAdditional)
+            {
+                <input type="checkbox" value="true" name="IsAdditional" checked />
+            }
+            @if (!Model.IsAdditional)
+            {
+                <input type="checkbox" value="true" name="IsAdditional" />
+            }
+        </form>
+    </td>
+    <td>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <form id="@formToDeleteEmployee">
+                        <input type="hidden" name="EmployeeId" value="@Model.Employee.Id" />
+                        <input type="hidden" name="PayoutId" value="@Model.Id" />
+                        <button type="button" onclick="sendForm('@formToDeleteEmployee', '/Document/DeleteEmployee', '@trId')" class="btn btn-info mx-auto">Видалити з документа</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>

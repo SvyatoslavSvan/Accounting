@@ -1,62 +1,44 @@
-﻿using Accounting.Domain.Models;
-using Accounting.Domain.Models.Base;
+﻿using Accounting.Domain.Models.Base;
 
 namespace Accounting.SessionEntity
 {
     public class SessionDocument
     {
-        public List<NotBetEmployee> NotBetEmployees { get; set; } = new List<NotBetEmployee>();
-        public List<BetEmployee> BetEmployees { get; set; } = new List<BetEmployee>();
-        public List<PayoutBetEmployee> PayoutsBetEmployee { get; set; } = new List<PayoutBetEmployee>();
-        public List<PayoutNotBetEmployee> PayoutsNotBetEmployee { get; set; } = new List<PayoutNotBetEmployee>();
+        public List<Employee> Employees { get; set; } = new List<Employee>();
+        public List<Payout> Payouts { get; set; } = new List<Payout>();
 
-        public void AddEmployee(EmployeeBase employeeBase)
+        public void AddEmployee(Employee employeeBase)
         {
-            if (employeeBase is BetEmployee betEmployee)
-            {
-                BetEmployees.Add(betEmployee);
-            }
-            if (employeeBase is NotBetEmployee notBetEmployee)
-            {
-                NotBetEmployees.Add(notBetEmployee);
-            }
-        }
-        public void AddPayout(PayoutBase payoutBase)
-        {
-            if (payoutBase is PayoutBetEmployee payoutBetEmployee)
-            {
-                PayoutsBetEmployee.Add(payoutBetEmployee);
-            }
-            if (payoutBase is PayoutNotBetEmployee payoutNotBetEmployee)
-            {
-                PayoutsNotBetEmployee.Add(payoutNotBetEmployee);
-            }
+            Employees.Add(employeeBase);
         }
 
-        public List<PayoutBase> GetPayoutsByEmployeeId(Guid employeeId)
+        public void AddPayout(Payout payout)
         {
-            var payouts = new List<PayoutBase>();
-            payouts.AddRange(PayoutsBetEmployee.Where(x => x.EmployeeId == employeeId));
-            payouts.AddRange(PayoutsNotBetEmployee.Where(x => x.EmployeeId == employeeId));
-            return payouts;
+            Payouts.Add(payout);
         }
+
+        public void AddPayouts(IList<Payout> payouts)
+        {
+            Payouts.AddRange(payouts);
+        }
+
+        public List<Payout> GetPayoutsByEmployeeId(Guid employeeId) => Payouts.Where(x => x.EmployeeId == employeeId).ToList(); 
 
         public void UpdatePayout(Guid payoutId, decimal ammount)
         {
-            var payoutBetEmployee = PayoutsBetEmployee.FirstOrDefault(x => x.Id == payoutId);
-            if (payoutBetEmployee == null)
-            {
-                var payoutNotBetEmployee = PayoutsNotBetEmployee.FirstOrDefault(x => x.Id == payoutId);
-                payoutNotBetEmployee.Ammount = ammount;
-                return;
-            }
-            payoutBetEmployee.Ammount = ammount;
+            Payouts.First(x => x.Id == payoutId).Ammount = ammount;
         }
 
-        public void DeleteAccrual(Guid payoutId)
+
+        public void DeletePayout(Guid payoutId)
         {
-            PayoutsBetEmployee.RemoveAll(x => x.Id == payoutId);
-            PayoutsNotBetEmployee.RemoveAll(x => x.Id == payoutId);
+            Payouts.RemoveAll(x => x.Id == payoutId);
+        }
+
+        public void DeleteEmployee(Guid employeeId, Guid payoutId)
+        {
+            Employees.RemoveAll(x => x.Id == employeeId);
+            Payouts.RemoveAll(x => x.Id == payoutId);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Accounting.DAL.Result.Provider.Base;
-using Accounting.Domain.Models;
 using Accounting.Domain.Models.Base;
 using Accounting.Domain.ViewModels;
 using Accounting.Services;
@@ -13,6 +12,7 @@ namespace Accounting.Controllers
         private readonly ISessionDocumentService _sessionDocumentService;
         private readonly IEmployeeManager _employeeManager;
         private readonly IPayoutManager _payoutManager;
+
         public PayoutController(ISessionDocumentService sessionDocumentService, IEmployeeManager employeeManager, IPayoutManager payoutManager)
         {
             _sessionDocumentService = sessionDocumentService;
@@ -21,14 +21,7 @@ namespace Accounting.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreatePayout(Guid id)
-        {
-            return PartialView(new CreatePayoutViewModel()
-            {
-                Payouts = _sessionDocumentService.GetAccrualsByEmployeeId(id),
-                EmployeeId = id
-            });
-        }
+        public async Task<IActionResult> GetSumOfPayouts() => PartialView(_sessionDocumentService.GetSumOfPayouts());
 
         [HttpPost]
         public async Task<IActionResult> CreatePayout(PayoutViewModel viewModel)
@@ -36,26 +29,13 @@ namespace Accounting.Controllers
             var getEmployeeResult = await _employeeManager.GetById(viewModel.EmployeeId);
             if (getEmployeeResult.Succed)
             {
-                PayoutBase payout;
-                if (getEmployeeResult.Data is BetEmployee betEmployee)
-                {
-                    payout = new PayoutBetEmployee(viewModel.Ammount, viewModel.IsAdditional, betEmployee);
-                }
-                else
-                {
-                    payout = new PayoutNotBetEmployee(viewModel.Ammount, viewModel.IsAdditional, getEmployeeResult.Data as NotBetEmployee);
-                }
+                var payout = new Payout(viewModel.Ammount, viewModel.IsAdditional, getEmployeeResult.Data);
                 var createResult = await _payoutManager.Create(payout);
                 if (createResult.Succed)
                 {
                     if (await _sessionDocumentService.AddPayout(payout))
                     {
-                        return PartialView("AddedPayout", new UpdatePayoutViewModel()
-                        {
-                            PayoutId = payout.Id,
-                            Ammount = payout.Ammount,
-                            IsAdditional = payout.IsAdditional
-                        });
+                        return PartialView("AddedPayout", payout);
                     }
                 }
                 return StatusCode(500);
@@ -74,6 +54,7 @@ namespace Accounting.Controllers
             if (getPayoutResult.Succed)
             {
                 getPayoutResult.Data.Ammount = viewModel.Ammount;
+                getPayoutResult.Data.IsAdditional = viewModel.IsAdditional;
                 var updateResult = await _payoutManager.Update(getPayoutResult.Data);
                 if (await _sessionDocumentService.UpdatePayout(viewModel.PayoutId, viewModel.Ammount))
                 {

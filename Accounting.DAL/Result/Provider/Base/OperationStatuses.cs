@@ -7,6 +7,6 @@
         Ok,
         NotUniqName,
         NotUniqInnerId,
-        AllWorkDaysMatch
+        AllTimesheetsMatch
     }
 }

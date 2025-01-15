@@ -4,7 +4,6 @@ using Accounting.DAL.Providers.BaseProvider;
 using Accounting.DAL.Result.Provider.Base;
 using Accounting.Domain.Models;
 using Calabonga.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
@@ -20,59 +19,6 @@ namespace Accounting.DAL.Providers
         public Task<BaseResult<bool>> Create(WorkDay entity)
         {
             throw new NotImplementedException();
-        }
-
-        private List<WorkDay> GetWorkDays(BetEmployee employee)
-        {
-            const float dontWork = WorkDay.MinHoursValue;
-            const float workHours = WorkDay.MaxHoursValue;
-            var workDays = new List<WorkDay>();
-            for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
-            {
-                var day = new DateTime(DateTime.Now.Year, DateTime.Now.Month, i);
-                if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    workDays.Add(new WorkDay(day, dontWork, employee));
-                }
-                else
-                {
-                    workDays.Add(new WorkDay(day, workHours, employee));
-                }
-            }
-            return workDays;
-        }
-
-        private IList<WorkDay> GetWorkDaysWithEmployees(IList<BetEmployee> employees)
-        {
-            var workDays = new List<WorkDay>();
-            foreach (var item in employees)
-            {
-                workDays.AddRange(GetWorkDays(item));
-            }
-            return workDays;
-        }
-
-        private async Task<bool> IsNeededToCreateNewDays() => await _unitOfWork.GetRepository<WorkDay>().CountAsync(predicate: x => x.Date.Month == DateTime.Now.Month) == 0 ? true : false;
-
-        public async Task<BaseResult<bool>> CreateNewWorkDays()
-        {
-            if (await IsNeededToCreateNewDays())
-            {
-                var employees = await _unitOfWork.GetRepository<BetEmployee>().GetAllAsync(true);
-                var workDays = GetWorkDaysWithEmployees(employees);
-                _unitOfWork.DbContext.AttachRange(employees);
-                await _unitOfWork.GetRepository<WorkDay>().InsertAsync(workDays);
-                await _unitOfWork.SaveChangesAsync();
-                if (!_unitOfWork.LastSaveChangesResult.IsOk)
-                {
-                    return HandleException<bool>();
-                }
-                return new BaseResult<bool>(true, true, OperationStatuses.Ok);
-            }
-            else
-            {
-                return new BaseResult<bool>(true , true, OperationStatuses.AllWorkDaysMatch);
-            }
         }
 
         public Task<BaseResult<bool>> Delete(Guid id)
@@ -114,7 +60,9 @@ namespace Accounting.DAL.Providers
         public async Task<BaseResult<bool>> CreateRange(IList<WorkDay> workDays)
         {
             foreach (var item in workDays)
+            {
                 _unitOfWork.DbContext.Attach(item.Employee);
+            }
             await _unitOfWork.GetRepository<WorkDay>().InsertAsync(workDays);
             await _unitOfWork.SaveChangesAsync();
             if (!_unitOfWork.LastSaveChangesResult.IsOk)
@@ -135,6 +83,21 @@ namespace Accounting.DAL.Providers
             {
                 return HandleException<IList<WorkDay>>(ex);
             }
+        }
+
+        public async Task<BaseResult<bool>> UpdateRange(IList<WorkDay> workDays)
+        {
+            foreach (var item in workDays)
+            {
+                _unitOfWork.DbContext.Attach(item.Timesheet);
+            }
+            _unitOfWork.GetRepository<WorkDay>().Update(workDays);
+            await _unitOfWork.SaveChangesAsync();
+            if (!_unitOfWork.LastSaveChangesResult.IsOk)
+            {
+                return HandleException<bool>();
+            }
+            return new BaseResult<bool>(true, true, OperationStatuses.Ok);
         }
     }
 }

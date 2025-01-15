@@ -1,0 +1,4 @@
+2023-06-25 14:36:03.648 +03:00 [ERR] Failed executing DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [BetEmployeeTimesheet] ADD CONSTRAINT [FK_BetEmployeeTimesheet_Employees_EmployeesId] FOREIGN KEY ([EmployeesId]) REFERENCES [Employees] ([Id]) ON DELETE CASCADE;
+2023-06-25 15:00:06.486 +03:00 [ERR] Failed executing DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [BetEmployeeTimesheet] ADD CONSTRAINT [FK_BetEmployeeTimesheet_Employees_EmployeesId] FOREIGN KEY ([EmployeesId]) REFERENCES [Employees] ([Id]) ON DELETE CASCADE;
